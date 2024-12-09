@@ -56,11 +56,21 @@ class User extends Authenticatable implements JWTSubject
         ];
     }
 
+    /**
+     * Get JWT identifier
+     *
+     * @return mixed
+     */
     public function getJWTIdentifier(): mixed
     {
         return $this->getKey();
     }
 
+    /**
+     * Add custom claims to JWT
+     *
+     * @return array
+     */
     public function getJWTCustomClaims(): array
     {
         return [

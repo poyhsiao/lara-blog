@@ -2,8 +2,11 @@
 
 namespace App\Http\Middleware;
 
+use App\Helper\JsonResponseHelper;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response as HttpResponse;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class JwtAdminMiddleware
@@ -16,25 +19,13 @@ class JwtAdminMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         try {
-            $user = auth()->user();
+            $user = Auth::user();
 
             if ($user->role < 1) {
-                return response()->json([
-                    'status_code' => 401,
-                    'data' => null,
-                    'error' => [
-                        'message' => 'Unauthorized',
-                    ],
-                ], Response::HTTP_UNAUTHORIZED);
+                return JsonResponseHelper::unauthorized();
             }
         } catch (\Exception $e) {
-            return response()->json([
-                'status_code' => 401,
-                'data' => null,
-                'error' => [
-                    'message'=> 'Unauthorized',
-                ],
-            ], Response::HTTP_UNAUTHORIZED);
+            return JsonResponseHelper::error($e->getMessage(), 'Unauthorized', HttpResponse::HTTP_UNAUTHORIZED);
         }
 
         return $next($request);

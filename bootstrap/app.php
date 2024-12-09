@@ -23,7 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->name('api.v1.')
                 ->group(base_path('routes/api/v1.php'));
 
-            Route::middleware(['api', 'jwt-admin'])
+            Route::middleware(['api', 'jwt', 'jwt-admin'])
                 ->prefix('api/admin')
                 ->name('api.admin.')
                 ->group(base_path('routes/api/admin.php'));

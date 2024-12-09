@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Helper\JsonResponseHelper;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,22 +20,10 @@ class JwtSuperMiddleware
             $user = auth()->user();
 
             if ($user->role < 2) {
-                return response()->json([
-                    'status_code' => 401,
-                    'data' => null,
-                    'error' => [
-                        'message'=> 'Unauthorized',
-                    ],
-                ], Response::HTTP_FORBIDDEN);
+                return JsonResponseHelper::unauthorized();
             }
         } catch (\Exception $e) {
-            return response()->json([
-                'status_code' => 401,
-                'data' => null,
-                'error' => [
-                    'message' => 'Unauthorized',
-                ],
-            ], Response::HTTP_UNAUTHORIZED);
+            return JsonResponseHelper::unauthorized('Unauthorized', $e->getMessage());
         }
         return $next($request);
     }

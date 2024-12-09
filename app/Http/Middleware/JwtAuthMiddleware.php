@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Helper\JsonResponseHelper;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,13 +20,7 @@ class JwtAuthMiddleware
         try {
             JWTAuth::parseToken()->authenticate();
         } catch (\Exception $e) {
-            return response()->json([
-                'status_code' => 401,
-                'data' => null,
-                'error' => [
-                    'message' => 'Invalid token'
-                ],
-            ], 401);
+            return JsonResponseHelper::unauthorized('Invalid token', $e->getMessage());
         }
         return $next($request);
     }
