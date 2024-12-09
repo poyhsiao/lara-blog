@@ -7,7 +7,7 @@ use Illuminate\Http\Response;
 
 class JsonResponseHelper
 {
-  public static function success(string $message = "success", mixed $data): JsonResponse
+  public static function success(mixed $data, string $message = "success"): JsonResponse
   {
     return response()->json([
       'status_code' => Response::HTTP_OK,

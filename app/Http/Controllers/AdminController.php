@@ -40,7 +40,7 @@ class AdminController extends Controller
             return JsonResponseHelper::error('User not found');
         }
 
-        return JsonResponseHelper::success('Get user successfully', compact('user'));
+        return JsonResponseHelper::success(compact('user'), 'Get user successfully');
     }
 
     /**
@@ -76,7 +76,7 @@ class AdminController extends Controller
 
         $users = QueryHelper::easyPaginate($paginator, 'users', $detail, ['password', 'remember_token']);
 
-        return JsonResponseHelper::success('Get all users successfully', compact('users'));
+        return JsonResponseHelper::success(compact('users'), 'Get all users successfully');
     }
 
     /**
@@ -112,7 +112,7 @@ class AdminController extends Controller
 
         $users = QueryHelper::easyPaginate($paginator, 'users', $detail, ['password', 'remember_token']);
 
-        return JsonResponseHelper::success('Get all inactive users successfully', compact('users'));
+        return JsonResponseHelper::success(compact('users'), 'Get all inactive users successfully');
     }
 
     /**
@@ -147,7 +147,7 @@ class AdminController extends Controller
 
         $users = QueryHelper::easyPaginate($paginator, 'users', $detail, ['password', 'remember_token']);
 
-        return JsonResponseHelper::success('Get all non validated users successfully', compact('users'));
+        return JsonResponseHelper::success(compact('users'), 'Get all non validated users successfully');
     }
 
     /**
@@ -183,6 +183,6 @@ class AdminController extends Controller
 
         $users = QueryHelper::easyPaginate($paginator, 'users', $detail, ['password', 'remember_token']);
 
-        return JsonResponseHelper::success('Get all trashed users successfully', $users);
+        return JsonResponseHelper::success($users, 'Get all trashed users successfully');
     }
 }

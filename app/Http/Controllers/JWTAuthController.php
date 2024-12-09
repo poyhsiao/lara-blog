@@ -157,7 +157,7 @@ class JWTAuthController extends Controller
         $token = JWTAuth::fromUser($user);
         $type = 'Bearer';
 
-        return JsonResponseHelper::success('Register successfully', compact('user', 'token', 'type'));
+        return JsonResponseHelper::success(compact('user', 'token', 'type'), 'Register successfully');
     }
 
     /**
@@ -330,7 +330,7 @@ class JWTAuthController extends Controller
                 return JsonResponseHelper::unauthorized('The user is not active or email is not verified');
             }
 
-            return JsonResponseHelper::success('Login successfully', compact('user', 'token', 'type'));
+            return JsonResponseHelper::success(compact('user', 'token', 'type'), 'Login successfully');
         } catch (\Exception $e) {
             return JsonResponseHelper::error(['data' => $e->getMessage()], 'Login failed');
         }
@@ -410,7 +410,7 @@ class JWTAuthController extends Controller
             return JsonResponseHelper::error(null, 'Invalid token');
         }
 
-        return JsonResponseHelper::success('Get user successfully', compact('user'));
+        return JsonResponseHelper::success(compact('user'), 'Get user successfully');
     }
 
     /**
@@ -497,7 +497,7 @@ class JWTAuthController extends Controller
         try {
             JWTAuth::invalidate(JWTAuth::getToken());
 
-            return JsonResponseHelper::success('Logout successfully', null);
+            return JsonResponseHelper::success(null, 'Logout successfully');
         } catch (\Exception $e) {
             return JsonResponseHelper::error(null, 'Logout failed');
         }
