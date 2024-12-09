@@ -317,7 +317,7 @@ class JWTAuthController extends Controller
              * User name/email or password is incorrect
              */
             if (!$token) {
-                return JsonResponseHelper::error('Login failed', ['data' => 'Invalid username or password']);
+                return JsonResponseHelper::error( ['data' => 'Invalid username or password'], 'Login failed');
             }
 
             $user = Auth::user();
@@ -332,7 +332,7 @@ class JWTAuthController extends Controller
 
             return JsonResponseHelper::success('Login successfully', compact('user', 'token', 'type'));
         } catch (\Exception $e) {
-            return JsonResponseHelper::error('Login failed', ['data' => $e->getMessage()]);
+            return JsonResponseHelper::error(['data' => $e->getMessage()], 'Login failed');
         }
     }
 
@@ -407,7 +407,7 @@ class JWTAuthController extends Controller
                 return JsonResponseHelper::notFound('User not found');
             }
         } catch (\Exception $e) {
-            return JsonResponseHelper::error('Invalid token', null);
+            return JsonResponseHelper::error(null, 'Invalid token');
         }
 
         return JsonResponseHelper::success('Get user successfully', compact('user'));
@@ -499,7 +499,7 @@ class JWTAuthController extends Controller
 
             return JsonResponseHelper::success('Logout successfully', null);
         } catch (\Exception $e) {
-            return JsonResponseHelper::error('Logout failed', null);
+            return JsonResponseHelper::error(null, 'Logout failed');
         }
     }
 }
