@@ -20,6 +20,1259 @@
     ],
     "paths": {
         "/": {},
+        "/api/admin/user/detail": {
+            "get": {
+                "tags": [
+                    "Admin/User"
+                ],
+                "summary": "Get user detail by email, name, or id",
+                "description": "Get user detail by email, name, or id",
+                "operationId": "getUserDetail",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "description": "Name, email, or ID",
+                            "type": "string",
+                            "example": "QHs4o@example.com"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string"
+                                                },
+                                                "data": {
+                                                    "properties": {
+                                                        "user": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "integer",
+                                                                        "example": 1
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string",
+                                                                        "example": "John Doe"
+                                                                    },
+                                                                    "email": {
+                                                                        "type": "string",
+                                                                        "example": "QHs4o@example.com"
+                                                                    },
+                                                                    "display_name": {
+                                                                        "type": "string",
+                                                                        "example": "John Doe"
+                                                                    },
+                                                                    "email_verified_at": {
+                                                                        "type": "string",
+                                                                        "example": "2020-01-01 00:00:00"
+                                                                    },
+                                                                    "gender": {
+                                                                        "type": "integer",
+                                                                        "example": 1
+                                                                    },
+                                                                    "active": {
+                                                                        "type": "integer",
+                                                                        "example": 1
+                                                                    },
+                                                                    "role": {
+                                                                        "type": "integer",
+                                                                        "example": 1
+                                                                    },
+                                                                    "created_at": {
+                                                                        "type": "string",
+                                                                        "example": "2020-01-01 00:00:00"
+                                                                    },
+                                                                    "updated_at": {
+                                                                        "type": "string",
+                                                                        "example": "2020-01-01 00:00:00"
+                                                                    },
+                                                                    "deleted_at": {
+                                                                        "type": "string",
+                                                                        "example": "2020-01-01 00:00:00"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            }
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": null
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 400
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": null
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Invalid data"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 401
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": null
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Unauthorized"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 404
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": null
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "User not found"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/user/all": {
+            "get": {
+                "tags": [
+                    "Admin/User"
+                ],
+                "summary": "Get all users data (paginated)",
+                "operationId": "getAllUsers",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number, default: 1",
+                        "required": false,
+                        "example": "1"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Number of items per page, default: 10",
+                        "required": false,
+                        "example": "10"
+                    },
+                    {
+                        "name": "order",
+                        "in": "query",
+                        "description": "Order by field, default: id",
+                        "required": false,
+                        "example": "id"
+                    },
+                    {
+                        "name": "detail",
+                        "in": "query",
+                        "description": "Show user detail, 0 = no, 1 = yes, default: 0",
+                        "required": false,
+                        "example": "0"
+                    },
+                    {
+                        "name": "desc",
+                        "in": "query",
+                        "description": "Order by desc, 0 = asc, 1 = desc, default: 0",
+                        "required": false,
+                        "example": "0"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string"
+                                                },
+                                                "data": {
+                                                    "properties": {
+                                                        "users": {
+                                                            "properties": {
+                                                                "meta": {
+                                                                    "properties": {
+                                                                        "current_page": {
+                                                                            "type": "integer",
+                                                                            "example": 1
+                                                                        },
+                                                                        "total": {
+                                                                            "type": "integer",
+                                                                            "example": 100
+                                                                        },
+                                                                        "items_per_page": {
+                                                                            "type": "integer",
+                                                                            "example": 10
+                                                                        },
+                                                                        "last_page": {
+                                                                            "type": "integer",
+                                                                            "example": 10
+                                                                        },
+                                                                        "next_page_url": {
+                                                                            "type": "string",
+                                                                            "example": "http://localhost:8000/api/admin/users/all?page=2"
+                                                                        },
+                                                                        "prev_page_url": {
+                                                                            "type": "string",
+                                                                            "example": "http://localhost:8000/api/admin/users/all?page=1"
+                                                                        },
+                                                                        "last_page_url": {
+                                                                            "type": "string",
+                                                                            "example": "http://localhost:8000/api/admin/users/all?page=10"
+                                                                        },
+                                                                        "options": {
+                                                                            "properties": {
+                                                                                "path": {
+                                                                                    "type": "string",
+                                                                                    "example": "http://localhost:8000/api/admin/users/all"
+                                                                                },
+                                                                                "pageName": {
+                                                                                    "type": "string",
+                                                                                    "example": "users"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                },
+                                                                "users": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "properties": {
+                                                                            "id": {
+                                                                                "type": "integer",
+                                                                                "example": 1
+                                                                            },
+                                                                            "name": {
+                                                                                "type": "string",
+                                                                                "example": "John Doe"
+                                                                            },
+                                                                            "email": {
+                                                                                "type": "string",
+                                                                                "example": "QHs4o@example.com"
+                                                                            },
+                                                                            "display_name": {
+                                                                                "type": "string",
+                                                                                "example": "John Doe"
+                                                                            },
+                                                                            "email_verified_at": {
+                                                                                "type": "string",
+                                                                                "example": "2021-01-01 00:00:00"
+                                                                            },
+                                                                            "gender": {
+                                                                                "type": "integer",
+                                                                                "example": 1
+                                                                            },
+                                                                            "active": {
+                                                                                "type": "integer",
+                                                                                "example": 1
+                                                                            },
+                                                                            "role": {
+                                                                                "type": "integer",
+                                                                                "example": 1
+                                                                            },
+                                                                            "created_at": {
+                                                                                "type": "string",
+                                                                                "example": "2021-01-01 00:00:00"
+                                                                            },
+                                                                            "updated_at": {
+                                                                                "type": "string",
+                                                                                "example": "2021-01-01 00:00:00"
+                                                                            },
+                                                                            "deleted_at": {
+                                                                                "type": "string",
+                                                                                "example": "2021-01-01 00:00:00"
+                                                                            }
+                                                                        },
+                                                                        "type": "object"
+                                                                    }
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "error": {
+                                            "type": "object",
+                                            "example": null
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "example": null
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Invalid data"
+                                                },
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "page": {
+                                                                "type": "string",
+                                                                "example": "page must be an integer"
+                                                            },
+                                                            "limit": {
+                                                                "type": "string",
+                                                                "example": "limit must be an integer"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 401
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": null
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Invalid token"
+                                                },
+                                                "data": {
+                                                    "type": "string",
+                                                    "example": "The token could not be parsed from the request"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/user/inactive": {
+            "get": {
+                "tags": [
+                    "Admin/User"
+                ],
+                "summary": "Get all inactive users data (paginated)",
+                "operationId": "getInactiveUser",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number, default: 1",
+                        "required": false,
+                        "example": "1"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Number of items per page, default: 10",
+                        "required": false,
+                        "example": "10"
+                    },
+                    {
+                        "name": "order",
+                        "in": "query",
+                        "description": "Order by field, default: id",
+                        "required": false,
+                        "example": "id"
+                    },
+                    {
+                        "name": "detail",
+                        "in": "query",
+                        "description": "Show user detail, 0 = no, 1 = yes, default: 0",
+                        "required": false,
+                        "example": "0"
+                    },
+                    {
+                        "name": "desc",
+                        "in": "query",
+                        "description": "Order by desc, 0 = asc, 1 = desc, default: 0",
+                        "required": false,
+                        "example": "0"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string"
+                                                },
+                                                "data": {
+                                                    "properties": {
+                                                        "users": {
+                                                            "properties": {
+                                                                "meta": {
+                                                                    "properties": {
+                                                                        "current_page": {
+                                                                            "type": "integer",
+                                                                            "example": 1
+                                                                        },
+                                                                        "total": {
+                                                                            "type": "integer",
+                                                                            "example": 100
+                                                                        },
+                                                                        "items_per_page": {
+                                                                            "type": "integer",
+                                                                            "example": 10
+                                                                        },
+                                                                        "last_page": {
+                                                                            "type": "integer",
+                                                                            "example": 10
+                                                                        },
+                                                                        "next_page_url": {
+                                                                            "type": "string",
+                                                                            "example": "http://localhost:8000/api/admin/users/inactive?page=2"
+                                                                        },
+                                                                        "prev_page_url": {
+                                                                            "type": "string",
+                                                                            "example": "http://localhost:8000/api/admin/users/inactive?page=1"
+                                                                        },
+                                                                        "last_page_url": {
+                                                                            "type": "string",
+                                                                            "example": "http://localhost:8000/api/admin/users/inactive?page=10"
+                                                                        },
+                                                                        "options": {
+                                                                            "properties": {
+                                                                                "path": {
+                                                                                    "type": "string",
+                                                                                    "example": "http://localhost:8000/api/admin/users/inactive"
+                                                                                },
+                                                                                "pageName": {
+                                                                                    "type": "string",
+                                                                                    "example": "users"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                },
+                                                                "users": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "properties": {
+                                                                            "id": {
+                                                                                "type": "integer",
+                                                                                "example": 1
+                                                                            },
+                                                                            "name": {
+                                                                                "type": "string",
+                                                                                "example": "John Doe"
+                                                                            },
+                                                                            "email": {
+                                                                                "type": "string",
+                                                                                "example": "QHs4o@example.com"
+                                                                            },
+                                                                            "display_name": {
+                                                                                "type": "string",
+                                                                                "example": "John Doe"
+                                                                            },
+                                                                            "email_verified_at": {
+                                                                                "type": "string",
+                                                                                "example": "2021-01-01 00:00:00"
+                                                                            },
+                                                                            "gender": {
+                                                                                "type": "integer",
+                                                                                "example": 1
+                                                                            },
+                                                                            "active": {
+                                                                                "type": "integer",
+                                                                                "example": 1
+                                                                            },
+                                                                            "role": {
+                                                                                "type": "integer",
+                                                                                "example": 1
+                                                                            },
+                                                                            "created_at": {
+                                                                                "type": "string",
+                                                                                "example": "2021-01-01 00:00:00"
+                                                                            },
+                                                                            "updated_at": {
+                                                                                "type": "string",
+                                                                                "example": "2021-01-01 00:00:00"
+                                                                            },
+                                                                            "deleted_at": {
+                                                                                "type": "string",
+                                                                                "example": "2021-01-01 00:00:00"
+                                                                            }
+                                                                        },
+                                                                        "type": "object"
+                                                                    }
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "error": {
+                                            "type": "object",
+                                            "example": null
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "example": null
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Invalid data"
+                                                },
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "page": {
+                                                                "type": "string",
+                                                                "example": "page must be an integer"
+                                                            },
+                                                            "limit": {
+                                                                "type": "string",
+                                                                "example": "limit must be an integer"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 401
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": null
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Invalid token"
+                                                },
+                                                "data": {
+                                                    "type": "string",
+                                                    "example": "The token could not be parsed from the request"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/user/invalid": {
+            "get": {
+                "tags": [
+                    "Admin/User"
+                ],
+                "summary": "Get all invalid users data (paginated)",
+                "operationId": "getInvalidUsers",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number, default: 1",
+                        "required": false,
+                        "example": "1"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Number of items per page, default: 10",
+                        "required": false,
+                        "example": "10"
+                    },
+                    {
+                        "name": "order",
+                        "in": "query",
+                        "description": "Order by field, default: id",
+                        "required": false,
+                        "example": "id"
+                    },
+                    {
+                        "name": "detail",
+                        "in": "query",
+                        "description": "Show user detail, 0 = no, 1 = yes, default: 0",
+                        "required": false,
+                        "example": "0"
+                    },
+                    {
+                        "name": "desc",
+                        "in": "query",
+                        "description": "Order by desc, 0 = asc, 1 = desc, default: 0",
+                        "required": false,
+                        "example": "0"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string"
+                                                },
+                                                "data": {
+                                                    "properties": {
+                                                        "users": {
+                                                            "properties": {
+                                                                "meta": {
+                                                                    "properties": {
+                                                                        "current_page": {
+                                                                            "type": "integer",
+                                                                            "example": 1
+                                                                        },
+                                                                        "total": {
+                                                                            "type": "integer",
+                                                                            "example": 100
+                                                                        },
+                                                                        "items_per_page": {
+                                                                            "type": "integer",
+                                                                            "example": 10
+                                                                        },
+                                                                        "last_page": {
+                                                                            "type": "integer",
+                                                                            "example": 10
+                                                                        },
+                                                                        "next_page_url": {
+                                                                            "type": "string",
+                                                                            "example": "http://localhost:8000/api/admin/users/invalid?page=2"
+                                                                        },
+                                                                        "prev_page_url": {
+                                                                            "type": "string",
+                                                                            "example": "http://localhost:8000/api/admin/users/invalid?page=1"
+                                                                        },
+                                                                        "last_page_url": {
+                                                                            "type": "string",
+                                                                            "example": "http://localhost:8000/api/admin/users/invalid?page=10"
+                                                                        },
+                                                                        "options": {
+                                                                            "properties": {
+                                                                                "path": {
+                                                                                    "type": "string",
+                                                                                    "example": "http://localhost:8000/api/admin/users/invalid"
+                                                                                },
+                                                                                "pageName": {
+                                                                                    "type": "string",
+                                                                                    "example": "users"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                },
+                                                                "users": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "properties": {
+                                                                            "id": {
+                                                                                "type": "integer",
+                                                                                "example": 1
+                                                                            },
+                                                                            "name": {
+                                                                                "type": "string",
+                                                                                "example": "John Doe"
+                                                                            },
+                                                                            "email": {
+                                                                                "type": "string",
+                                                                                "example": "QHs4o@example.com"
+                                                                            },
+                                                                            "display_name": {
+                                                                                "type": "string",
+                                                                                "example": "John Doe"
+                                                                            },
+                                                                            "email_verified_at": {
+                                                                                "type": "string",
+                                                                                "example": "2021-01-01 00:00:00"
+                                                                            },
+                                                                            "gender": {
+                                                                                "type": "integer",
+                                                                                "example": 1
+                                                                            },
+                                                                            "active": {
+                                                                                "type": "integer",
+                                                                                "example": 1
+                                                                            },
+                                                                            "role": {
+                                                                                "type": "integer",
+                                                                                "example": 1
+                                                                            },
+                                                                            "created_at": {
+                                                                                "type": "string",
+                                                                                "example": "2021-01-01 00:00:00"
+                                                                            },
+                                                                            "updated_at": {
+                                                                                "type": "string",
+                                                                                "example": "2021-01-01 00:00:00"
+                                                                            },
+                                                                            "deleted_at": {
+                                                                                "type": "string",
+                                                                                "example": "2021-01-01 00:00:00"
+                                                                            }
+                                                                        },
+                                                                        "type": "object"
+                                                                    }
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "error": {
+                                            "type": "object",
+                                            "example": null
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "example": null
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Invalid data"
+                                                },
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "page": {
+                                                                "type": "string",
+                                                                "example": "page must be an integer"
+                                                            },
+                                                            "limit": {
+                                                                "type": "string",
+                                                                "example": "limit must be an integer"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 401
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": null
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Invalid token"
+                                                },
+                                                "data": {
+                                                    "type": "string",
+                                                    "example": "The token could not be parsed from the request"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/user/trashed": {
+            "get": {
+                "tags": [
+                    "Admin/User"
+                ],
+                "summary": "Get all soft-deleted users data (paginated)",
+                "operationId": "getAllTrashedUsers",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number, default: 1",
+                        "required": false,
+                        "example": "1"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Number of items per page, default: 10",
+                        "required": false,
+                        "example": "10"
+                    },
+                    {
+                        "name": "order",
+                        "in": "query",
+                        "description": "Order by field, default: id",
+                        "required": false,
+                        "example": "id"
+                    },
+                    {
+                        "name": "detail",
+                        "in": "query",
+                        "description": "Show user detail, 0 = no, 1 = yes, default: 0",
+                        "required": false,
+                        "example": "0"
+                    },
+                    {
+                        "name": "desc",
+                        "in": "query",
+                        "description": "Order by desc, 0 = asc, 1 = desc, default: 0",
+                        "required": false,
+                        "example": "0"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string"
+                                                },
+                                                "data": {
+                                                    "properties": {
+                                                        "users": {
+                                                            "properties": {
+                                                                "meta": {
+                                                                    "properties": {
+                                                                        "current_page": {
+                                                                            "type": "integer",
+                                                                            "example": 1
+                                                                        },
+                                                                        "total": {
+                                                                            "type": "integer",
+                                                                            "example": 100
+                                                                        },
+                                                                        "items_per_page": {
+                                                                            "type": "integer",
+                                                                            "example": 10
+                                                                        },
+                                                                        "last_page": {
+                                                                            "type": "integer",
+                                                                            "example": 10
+                                                                        },
+                                                                        "next_page_url": {
+                                                                            "type": "string",
+                                                                            "example": "http://localhost:8000/api/admin/users/trashed?page=2"
+                                                                        },
+                                                                        "prev_page_url": {
+                                                                            "type": "string",
+                                                                            "example": "http://localhost:8000/api/admin/users/trashed?page=1"
+                                                                        },
+                                                                        "last_page_url": {
+                                                                            "type": "string",
+                                                                            "example": "http://localhost:8000/api/admin/users/trashed?page=10"
+                                                                        },
+                                                                        "options": {
+                                                                            "properties": {
+                                                                                "path": {
+                                                                                    "type": "string",
+                                                                                    "example": "http://localhost:8000/api/admin/users/trashed"
+                                                                                },
+                                                                                "pageName": {
+                                                                                    "type": "string",
+                                                                                    "example": "users"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                },
+                                                                "users": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "properties": {
+                                                                            "id": {
+                                                                                "type": "integer",
+                                                                                "example": 1
+                                                                            },
+                                                                            "name": {
+                                                                                "type": "string",
+                                                                                "example": "John Doe"
+                                                                            },
+                                                                            "email": {
+                                                                                "type": "string",
+                                                                                "example": "QHs4o@example.com"
+                                                                            },
+                                                                            "display_name": {
+                                                                                "type": "string",
+                                                                                "example": "John Doe"
+                                                                            },
+                                                                            "email_verified_at": {
+                                                                                "type": "string",
+                                                                                "example": "2021-01-01 00:00:00"
+                                                                            },
+                                                                            "gender": {
+                                                                                "type": "integer",
+                                                                                "example": 1
+                                                                            },
+                                                                            "active": {
+                                                                                "type": "integer",
+                                                                                "example": 1
+                                                                            },
+                                                                            "role": {
+                                                                                "type": "integer",
+                                                                                "example": 1
+                                                                            },
+                                                                            "created_at": {
+                                                                                "type": "string",
+                                                                                "example": "2021-01-01 00:00:00"
+                                                                            },
+                                                                            "updated_at": {
+                                                                                "type": "string",
+                                                                                "example": "2021-01-01 00:00:00"
+                                                                            },
+                                                                            "deleted_at": {
+                                                                                "type": "string",
+                                                                                "example": "2021-01-01 00:00:00"
+                                                                            }
+                                                                        },
+                                                                        "type": "object"
+                                                                    }
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "error": {
+                                            "type": "object",
+                                            "example": null
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "example": null
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Invalid data"
+                                                },
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "page": {
+                                                                "type": "string",
+                                                                "example": "page must be an integer"
+                                                            },
+                                                            "limit": {
+                                                                "type": "string",
+                                                                "example": "limit must be an integer"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 401
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": null
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Invalid token"
+                                                },
+                                                "data": {
+                                                    "type": "string",
+                                                    "example": "The token could not be parsed from the request"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/v1/register": {
             "post": {
                 "tags": [
@@ -476,6 +1729,10 @@
         }
     },
     "tags": [
+        {
+            "name": "Admin/User",
+            "description": "Admin/User"
+        },
         {
             "name": "Auth",
             "description": "Auth"

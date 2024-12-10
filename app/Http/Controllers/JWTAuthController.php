@@ -317,7 +317,7 @@ class JWTAuthController extends Controller
              * User name/email or password is incorrect
              */
             if (!$token) {
-                return JsonResponseHelper::error( ['data' => 'Invalid username or password'], 'Login failed');
+                return JsonResponseHelper::error(['data' => 'Invalid username or password'], 'Login failed');
             }
 
             $user = Auth::user();

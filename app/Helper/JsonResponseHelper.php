@@ -7,75 +7,118 @@ use Illuminate\Http\Response;
 
 class JsonResponseHelper
 {
-  public static function success(mixed $data, string $message = "success"): JsonResponse
-  {
-    return response()->json([
-      'status_code' => Response::HTTP_OK,
-      'data' => [
-        'message'=> $message,
-        'data'=> $data
-      ],
-      'error' => null,
-    ], Response::HTTP_OK);
-  }
+    /**
+     * Success response
+     *
+     * @param mixed $data
+     * @param string $message
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public static function success(mixed $data, string $message = 'success'): JsonResponse
+    {
+        return response()->json([
+            'status_code' => Response::HTTP_OK,
+            'data' => [
+                'message' => $message,
+                'data' => $data
+            ],
+            'error' => null,
+        ], Response::HTTP_OK);
+    }
 
-  public static function error(mixed $data, string $message = 'error', int $errorCode = Response::HTTP_BAD_REQUEST): JsonResponse
-  {
-    return response()->json([
-      'status_code' => $errorCode,
-      'data' => null,
-      'error' => [
-        'message'=> $message,
-        'data' => $data,
-      ],
-    ], Response::HTTP_BAD_REQUEST);
-  }
+    /**
+     * Error response
+     *
+     * @param mixed $data
+     * @param string $message
+     * @param int $errorCode
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public static function error(mixed $data, string $message = 'error', int $errorCode = Response::HTTP_BAD_REQUEST): JsonResponse
+    {
+        return response()->json([
+            'status_code' => $errorCode,
+            'data' => null,
+            'error' => [
+                'message' => $message,
+                'data' => $data,
+            ],
+        ], Response::HTTP_BAD_REQUEST);
+    }
 
-  public static function unauthorized(string $message = 'Unauthorized', mixed $data = null): JsonResponse
-  {
-    return response()->json([
-      'status_code' => Response::HTTP_UNAUTHORIZED,
-      'data' => null,
-      'error' => [
-        'message'=> $message,
-        'data' => $data,
-      ],
-    ], Response::HTTP_UNAUTHORIZED);
-  }
+    /**
+     * Unauthorized response
+     *
+     * @param string $message
+     * @param mixed $data
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public static function unauthorized(string $message = 'Unauthorized', mixed $data = null): JsonResponse
+    {
+        return response()->json([
+            'status_code' => Response::HTTP_UNAUTHORIZED,
+            'data' => null,
+            'error' => [
+                'message' => $message,
+                'data' => $data,
+            ],
+        ], Response::HTTP_UNAUTHORIZED);
+    }
 
-  public static function forbidden(string $message = 'Forbidden', mixed $data = null): JsonResponse
-  {
-    return response()->json([
-      'status_code' => Response::HTTP_FORBIDDEN,
-      'data' => null,
-      'error' => [
-        'message'=> $message,
-        'data' => $data,
-      ],
-    ], Response::HTTP_FORBIDDEN);
-  }
+    /**
+     * Forbidden response
+     *
+     * @param string $message
+     * @param mixed $data
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public static function forbidden(string $message = 'Forbidden', mixed $data = null): JsonResponse
+    {
+        return response()->json([
+            'status_code' => Response::HTTP_FORBIDDEN,
+            'data' => null,
+            'error' => [
+                'message' => $message,
+                'data' => $data,
+            ],
+        ], Response::HTTP_FORBIDDEN);
+    }
 
-  public static function notFound(string $message = 'Not Found', mixed $data = null): JsonResponse
-  {
-    return response()->json([
-      'status_code' => Response::HTTP_NOT_FOUND,
-      'data' => null,
-      'error' => [
-        'message'=> $message,
-        'data' => $data,
-      ],
-    ], Response::HTTP_NOT_FOUND);
-  }
+    /**
+     * Not Found response
+     *
+     * @param string $message
+     * @param mixed $data
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public static function notFound(string $message = 'Not Found', mixed $data = null): JsonResponse
+    {
+        return response()->json([
+            'status_code' => Response::HTTP_NOT_FOUND,
+            'data' => null,
+            'error' => [
+                'message' => $message,
+                'data' => $data,
+            ],
+        ], Response::HTTP_NOT_FOUND);
+    }
 
-  public static function notAcceptable(string $message = 'Unacceptable', mixed $data = null): JsonResponse
-  {
-    return response()->json([
-      'status_code' => Response::HTTP_NOT_ACCEPTABLE,
-      'data' => null,
-      'error' => [
-        'message'=> $message,
-        'data' => $data,
-      ],
-    ], Response::HTTP_NOT_ACCEPTABLE);
-  }
+    /**
+     * Not Acceptable response
+     *
+     * @param string $message
+     * @param mixed $data
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public static function notAcceptable(string $message = 'Unacceptable', mixed $data = null): JsonResponse
+    {
+        return response()->json([
+            'status_code' => Response::HTTP_NOT_ACCEPTABLE,
+            'data' => null,
+            'error' => [
+                'message' => $message,
+                'data' => $data,
+            ],
+        ], Response::HTTP_NOT_ACCEPTABLE);
+    }
 }
