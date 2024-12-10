@@ -35,4 +35,34 @@ Route::group(['prefix' => 'user', 'name' => 'user.'], function () {
      */
     Route::get('trashed', [App\Http\Controllers\AdminController::class, 'getAllTrashedUsers'])
       ->name('getTrashed');
+
+    /**
+     * Update user's profile
+     */
+    Route::patch('profile', [App\Http\Controllers\AdminController::class, 'updateUserProfile'])
+      ->name('updateProfile');
+
+    /**
+     * Update user's password
+     */
+    Route::patch('password', [App\Http\Controllers\AdminController::class, 'setPassword'])
+      ->name('setPassword');
+
+    /**
+     * Set user's verify or not
+     */
+    Route::patch('verify', [App\Http\Controllers\AdminController::class, 'setVerify'])
+      ->name('setVerify');
+
+    /**
+     * Set user's active or not
+     */
+    Route::patch('active', [App\Http\Controllers\AdminController::class,'setActive'])
+      ->name('setActive');
+
+    /**
+     * Soft-delete or restore user
+     */
+    Route::patch('trash', [App\Http\Controllers\AdminController::class,'setTrash'])
+      ->name('setTrash');
 });
