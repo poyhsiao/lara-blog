@@ -305,21 +305,21 @@
                                                                         },
                                                                         "next_page_url": {
                                                                             "type": "string",
-                                                                            "example": "http://localhost:8000/api/admin/users/all?page=2"
+                                                                            "example": "http://localhost:8000/api/ admin/users/all?page=2"
                                                                         },
                                                                         "prev_page_url": {
                                                                             "type": "string",
-                                                                            "example": "http://localhost:8000/api/admin/users/all?page=1"
+                                                                            "example": "http://localhost:8000/api/ admin/users/all?page=1"
                                                                         },
                                                                         "last_page_url": {
                                                                             "type": "string",
-                                                                            "example": "http://localhost:8000/api/admin/users/all?page=10"
+                                                                            "example": "http://localhost:8000/api/ admin/users/all?page=10"
                                                                         },
                                                                         "options": {
                                                                             "properties": {
                                                                                 "path": {
                                                                                     "type": "string",
-                                                                                    "example": "http://localhost:8000/api/admin/users/all"
+                                                                                    "example": "http://localhost:8000/ api/admin/users/all"
                                                                                 },
                                                                                 "pageName": {
                                                                                     "type": "string",
@@ -1042,7 +1042,7 @@
                     {
                         "name": "detail",
                         "in": "query",
-                        "description": "Show user detail, 0 = no, 1 = yes, default: 0",
+                        "description": "Show user detail, 0 = no, 1 = yes, default:  0",
                         "required": false,
                         "example": "0"
                     },
@@ -1254,7 +1254,7 @@
                                                 },
                                                 "data": {
                                                     "type": "string",
-                                                    "example": "The token could not be parsed from the request"
+                                                    "example": "The token could not be parsed from  the request"
                                                 }
                                             },
                                             "type": "object"
@@ -1409,7 +1409,7 @@
                     "Auth"
                 ],
                 "summary": "User Login",
-                "operationId": "503c9c4770f3101a4de0c4735e1816c0",
+                "operationId": "3c59992da251091e5a6c566d58c95396",
                 "requestBody": {
                     "description": "Pass user credentials",
                     "required": true,
