@@ -6,6 +6,7 @@ use App\Helper\JsonResponseHelper;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth;
 
 class JwtSuperMiddleware
 {
@@ -17,7 +18,7 @@ class JwtSuperMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         try {
-            $user = auth()->user();
+            $user = Auth::user();
 
             if ($user->role < 2) {
                 return JsonResponseHelper::unauthorized();
