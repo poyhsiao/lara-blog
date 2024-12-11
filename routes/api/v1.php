@@ -22,5 +22,24 @@ Route::group([], function () {
 });
 
 /**
- * Admin
+ * User
  */
+Route::group(['prefix'=> 'user', 'name'=> 'user.'], function () {
+    /**
+     * Get myself information
+     */
+    Route::get('me', [App\Http\Controllers\UserController::class, 'me'])
+      ->name('me');
+
+    /**
+     * Change the authenticated user's password
+     */
+    Route::patch('password', [App\Http\Controllers\UserController::class, 'changePassword'])
+      ->name('changePassword');
+
+    /**
+     * Update the authenticated user's profile information
+     */
+    Route::patch('profile', [App\Http\Controllers\UserController::class, 'updateProfile'])
+      ->name('updateProfile');
+});

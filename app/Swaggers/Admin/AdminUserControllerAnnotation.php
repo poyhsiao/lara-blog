@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Swaggers;
+namespace App\Swaggers\Admin;
 
+use App\Swaggers\ControllerAnnotation;
 use Illuminate\Http\Request;
 use OpenApi\Annotations as OA;
 
-class AdminControllerAnnotation extends ControllerAnnotation
+class AdminUserControllerAnnotation extends ControllerAnnotation
 {
     /**
      * @OA\Get(
@@ -1476,7 +1477,9 @@ class AdminControllerAnnotation extends ControllerAnnotation
      *     ),
      * )
      */
-    public function updateUserProfile(Request $request) {}
+    public function updateUserProfile(Request $request)
+    {
+    }
 
     /**
      * @OA\Patch(
@@ -1699,7 +1702,9 @@ class AdminControllerAnnotation extends ControllerAnnotation
      *     ),
      * )
      */
-    public function setPassword(Request $request) {}
+    public function setPassword(Request $request)
+    {
+    }
 
     /**
      * @OA\Patch(
@@ -1923,7 +1928,9 @@ class AdminControllerAnnotation extends ControllerAnnotation
      *     ),
      * )
      */
-    public function setVerify(Request $request) {}
+    public function setVerify(Request $request)
+    {
+    }
 
     /**
      * @OA\Patch(
@@ -2147,7 +2154,9 @@ class AdminControllerAnnotation extends ControllerAnnotation
      *     ),
      * )
      */
-    public function setActive(Request $request) {}
+    public function setActive(Request $request)
+    {
+    }
 
     /**
      * @OA\Patch(
@@ -2371,5 +2380,7 @@ class AdminControllerAnnotation extends ControllerAnnotation
      *     ),
      * )
      */
-    public function setTrash(Request $request) {}
+    public function setTrash(Request $request)
+    {
+    }
 }

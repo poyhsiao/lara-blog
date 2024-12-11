@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Repositories\Admin;
 
 use App\Models\User;
+use App\Repositories\Repository;
 use Illuminate\Contracts\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
-class AdminRepository extends Repository
+class AdminUserRepository extends Repository
 {
     public function __construct(User $model)
     {

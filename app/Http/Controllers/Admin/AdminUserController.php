@@ -1,21 +1,22 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use App\Helper\JsonResponseHelper;
 use App\Helper\QueryHelper;
+use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Repositories\AdminRepository;
+use App\Repositories\Admin\AdminUserRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
-class AdminController extends Controller
+class AdminUserController extends Controller
 {
     protected $repo;
 
-    public function __construct(AdminRepository $repo)
+    public function __construct(AdminUserRepository $repo)
     {
         $this->repo = $repo;
     }
@@ -206,7 +207,7 @@ class AdminController extends Controller
         $validator = Validator::make($data, [
             'name' => [
                 'string',
-                'max:255',
+                'between:2,255',
                 Rule::unique('users', 'name')->ignore($theUser->id),
             ],
             'email' => [
@@ -216,10 +217,10 @@ class AdminController extends Controller
             ],
             'display_name' => [
                 'string',
-                'max:255',
+                'between:2,255',
                 Rule::unique('users', 'display_name')->ignore($theUser->id),
             ],
-            'gender' => 'in:0,1,2',
+            'gender' => 'enum:0,1,2',
         ]);
 
         if ($validator->fails()) {
@@ -230,7 +231,7 @@ class AdminController extends Controller
             return JsonResponseHelper::error('Update user failed');
         }
 
-        return JsonResponseHelper::success(compact('user'),'Update user successfully');
+        return JsonResponseHelper::success(compact('user'), 'Update user successfully');
     }
 
     /**
@@ -259,7 +260,7 @@ class AdminController extends Controller
             return JsonResponseHelper::error('Update user failed');
         }
 
-        return JsonResponseHelper::success(compact('user'),'Update user successfully');
+        return JsonResponseHelper::success(compact('user'), 'Update user successfully');
     }
 
     /**
@@ -288,7 +289,7 @@ class AdminController extends Controller
             return JsonResponseHelper::error('Update user failed');
         }
 
-        return JsonResponseHelper::success(compact('user'),'Update user successfully');
+        return JsonResponseHelper::success(compact('user'), 'Update user successfully');
     }
 
     /**
@@ -306,7 +307,7 @@ class AdminController extends Controller
         $data = $request->only(['active']);
 
         $validator = Validator::make($data, [
-            'active'=> 'required|in:0,1',
+            'active' => 'required|in:0,1',
         ]);
 
         if ($validator->fails()) {
@@ -317,7 +318,7 @@ class AdminController extends Controller
             return JsonResponseHelper::error('Update user failed');
         }
 
-        return JsonResponseHelper::success(compact('user'),'Update user successfully');
+        return JsonResponseHelper::success(compact('user'), 'Update user successfully');
     }
 
     /**
@@ -346,7 +347,7 @@ class AdminController extends Controller
             return JsonResponseHelper::error('Update user failed');
         }
 
-        return JsonResponseHelper::success(compact('user'),'Update user successfully');
+        return JsonResponseHelper::success(compact('user'), 'Update user successfully');
     }
 
     /**
@@ -358,7 +359,7 @@ class AdminController extends Controller
     private function validateGivenUser(Request $request): ?User
     {
         $validate = Validator::make($request->all(), [
-            'user'=> 'required|string',
+            'user' => 'required|string',
         ]);
 
         if ($validate->fails()) {
