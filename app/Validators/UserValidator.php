@@ -65,4 +65,23 @@ class UserValidator
 
         return $validated->validated();
     }
+
+    /**
+     * Validate get posts request.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return array|JsonResponse
+     */
+    public static function getPosts(Request $request): array|JsonResponse
+    {
+        $validated = Validator::make($request->all(), [
+            'filter' => 'string|in:all,trashed,draft,published',
+        ]);
+
+        if ($validated->fails()) {
+            return JsonResponseHelper::notAcceptable('Get posts failed', $validated->errors());
+        }
+
+        return $validated->validated();
+    }
 }

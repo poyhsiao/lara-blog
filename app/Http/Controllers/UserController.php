@@ -13,9 +13,10 @@ class UserController extends Controller
 {
     protected $repo;
 
-    public function __construct(UserRepository $repo)
+    public function __construct(UserRepository $repo, UserValidator $validator)
     {
         $this->repo = $repo;
+        $this->validator = $validator;
     }
 
     /**
@@ -41,7 +42,7 @@ class UserController extends Controller
      */
     public function changePassword(Request $request): JsonResponse
     {
-        $validated = UserValidator::changePasswordValidate($request);
+        $validated = $this->validator::changePasswordValidate($request);
 
         if ($validated instanceof JsonResponse) {
             return $validated;
@@ -73,7 +74,7 @@ class UserController extends Controller
 
         $user = Auth::user();
 
-        $validate = UserValidator::updateProfileValidate($request, $user->id);
+        $validate = $this->validator::updateProfileValidate($request, $user->id);
 
         if ($validate instanceof JsonResponse) {
             return $validate;
@@ -86,5 +87,24 @@ class UserController extends Controller
         }
 
         return JsonResponseHelper::success($user, 'Update profile successfully');
+    }
+
+    public function getPosts(Request $request): JsonResponse
+    {
+        $user = Auth::user();
+
+        $validated = $this->validator::getPosts($request);
+
+        if ($validated instanceof JsonResponse) {
+            return $validated;
+        }
+
+        $posts = $this->repo->getPosts($user, $validated['filter'] ?? 'published');
+
+        if ($posts instanceof JsonResponse) {
+            return $posts;
+        }
+
+        return JsonResponseHelper::success($posts , 'Get ' . ($validated['filter'] ?? 'published') . ' posts successfully');
     }
 }
