@@ -49,7 +49,7 @@ class CategoryController extends Controller
             return $result;
         }
 
-        return JsonResponseHelper::success($result,'Get category successfully');
+        return JsonResponseHelper::success($result, 'Get category successfully');
     }
 
     /**
@@ -67,7 +67,7 @@ class CategoryController extends Controller
             return $result;
         }
 
-        return JsonResponseHelper::success($result,'Get categories successfully');
+        return JsonResponseHelper::success($result, 'Get categories successfully');
     }
 
     /**

@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Helper\JsonResponseHelper;
 use App\Models\Category;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -26,9 +27,9 @@ class CategoryRepository extends Repository
     public function index(): array|JsonResponse
     {
         try {
-            return $this->model::with(['posts', 'childCategories'])
-              ->get()
-              ->toArray();
+            $result = $this->model::all();
+
+            return $this->getSubCategories($result);
         } catch (\Exception $e) {
             Log::error('Failed to get categories', [
                 'message' => $e->getMessage(),
@@ -186,5 +187,35 @@ class CategoryRepository extends Repository
             ]);
             return JsonResponseHelper::error(null, 'Failed to restore category');
         }
+    }
+
+    /**
+     * Recursive function to get the subcategories of the given categories.
+     *
+     * This method takes a collection of categories and an optional parent ID as parameters.
+     * It loops through the categories and checks if the parent ID of each category matches the given parent ID.
+     * If it does, it calls itself with the category ID as the parent ID and assigns the result to the children property of the category.
+     * Finally, it returns an array of the categories with their children.
+     *
+     * @param \Illuminate\Database\Eloquent\Collection $categories The collection of categories to get the subcategories of.
+     * @param int|null $parentId The ID of the parent category to get the subcategories of. Defaults to null.
+     * @return array|null An array of subcategories or null if none are found.
+     */
+    private function getSubCategories(Collection $categories, int $parentId = null): ?array
+    {
+        $result = [];
+
+        foreach ($categories as $category) {
+            if ($category->parent == $parentId) {
+                $children = $this->getSubCategories($categories, $category->id);
+
+                if ($children) {
+                    $category->children = $children;
+                }
+
+                $result[] = $category;
+            }
+        }
+        return $result;
     }
 }
