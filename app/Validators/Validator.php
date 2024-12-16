@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Validators;
 
 use Illuminate\Database\Eloquent\Model;
 
-abstract class Repository
+abstract class Validator
 {
     private $model;
 

@@ -13,6 +13,8 @@ class UserController extends Controller
 {
     protected $repo;
 
+    protected $validator;
+
     public function __construct(UserRepository $repo, UserValidator $validator)
     {
         $this->repo = $repo;
@@ -42,19 +44,15 @@ class UserController extends Controller
      */
     public function changePassword(Request $request): JsonResponse
     {
-        $validated = $this->validator::changePasswordValidate($request);
+        $validated = $this->validator->changePasswordValidate($request);
 
-        if ($validated instanceof JsonResponse) {
+        if ($this->isJsonResponse($validated)) {
             return $validated;
         }
 
         $user = $this->repo->changePassword(Auth::user(), $validated['password'], $validated['new_password']);
 
-        if ($user instanceof JsonResponse) {
-            return $user;
-        }
-
-        return JsonResponseHelper::success($user, 'Change password successfully');
+        return $this->repoResponse($user, 'Change password successfully');
     }
 
     /**
@@ -74,37 +72,38 @@ class UserController extends Controller
 
         $user = Auth::user();
 
-        $validate = $this->validator::updateProfileValidate($request, $user->id);
+        $validate = $this->validator->updateProfileValidate($request, $user->id);
 
-        if ($validate instanceof JsonResponse) {
+        if ($this->isJsonResponse($validate)) {
             return $validate;
         }
 
         $user = $this->repo->updateProfile($user, $validate);
 
-        if ($user instanceof JsonResponse) {
-            return $user;
-        }
-
-        return JsonResponseHelper::success($user, 'Update profile successfully');
+        return $this->repoResponse($user, 'Update profile successfully');
     }
 
+    /**
+     * Retrieve the posts associated with the authenticated user, filtered by the specified status.
+     *
+     * Depending on the filter provided, this method retrieves all posts, trashed posts, drafts, or published posts.
+     * Results are ordered accordingly and, if 'all' is specified, grouped by publish status.
+     *
+     * @param \Illuminate\Http\Request $request The request object containing filter data.
+     * @return \Illuminate\Http\JsonResponse A JSON response containing the result of the operation.
+     */
     public function getPosts(Request $request): JsonResponse
     {
         $user = Auth::user();
 
-        $validated = $this->validator::getPosts($request);
+        $validated = $this->validator->getPosts($request);
 
-        if ($validated instanceof JsonResponse) {
+        if ($this->isJsonResponse($validated)) {
             return $validated;
         }
 
         $posts = $this->repo->getPosts($user, $validated['filter'] ?? 'published');
 
-        if ($posts instanceof JsonResponse) {
-            return $posts;
-        }
-
-        return JsonResponseHelper::success($posts , 'Get ' . ($validated['filter'] ?? 'published') . ' posts successfully');
+        return $this->repoResponse($posts, 'Get ' . ($validated['filter'] ?? 'published') . ' posts successfully');
     }
 }

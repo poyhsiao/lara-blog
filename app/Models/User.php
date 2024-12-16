@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -64,6 +65,57 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
+     * Get the posts created by the user
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function posts(): HasMany
+    {
+        return $this->hasMany(Post::class, 'author', 'id');
+    }
+
+    public function scopeAdmin(Builder|User $query): Builder
+    {
+        return $query->where('role', '>', 0);
+    }
+
+    public function scopeSuperAdmin(Builder|user $query): Builder
+    {
+        return $query->where('role', 2);
+    }
+
+    public function scopeActive(Builder|User $query): Builder
+    {
+        return $query->where('active', 1);
+    }
+
+    public function scopeCanLogin(Builder|User $query): Builder
+    {
+        return $query->where('active', 1)
+            ->where('email_validated_at', '!=', null);
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role > 0;
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === 2;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->active === 1;
+    }
+
+    public function isValidated(): bool
+    {
+        return $this->email_verified_at !== null && $this->active === 1;
+    }
+
+    /**
      * Get JWT identifier
      *
      * @return mixed
@@ -84,15 +136,5 @@ class User extends Authenticatable implements JWTSubject
             'role' => $this->role,
             'active' => $this->role_active,
         ];
-    }
-
-    /**
-     * Get the posts created by the user
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function posts(): HasMany
-    {
-        return $this->hasMany(Post::class, 'author', 'id');
     }
 }

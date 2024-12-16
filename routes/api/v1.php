@@ -73,7 +73,7 @@ Route::group(['prefix' => 'post', 'name' => 'post.'], function () {
 /**
  * Category
  */
-Route::group(['prefix'=> 'category','name'=> 'category.'], function () {
+Route::group(['prefix' => 'category', 'name' => 'category.'], function () {
     /**
      * Get all categories
      */
@@ -89,7 +89,7 @@ Route::group(['prefix'=> 'category','name'=> 'category.'], function () {
     /**
      * Get all trashed categories
      */
-    Route::get('trashed', [App\Http\Controllers\CategoryController::class,'indexTrashed'])
+    Route::get('trashed', [App\Http\Controllers\CategoryController::class, 'indexTrashed'])
     ->name('getTrashed');
 
     /**
@@ -115,4 +115,33 @@ Route::group(['prefix'=> 'category','name'=> 'category.'], function () {
      */
     Route::patch('/restore/{id}', [App\Http\Controllers\CategoryController::class, 'restore'])
     ->name('restore');
+});
+
+/**
+ * Tag
+ */
+Route::group(['prefix' => 'tag', 'name' => 'tag.'], function () {
+    /**
+     * Get all tags
+     */
+    Route::get('', [App\Http\Controllers\TagController::class, 'index'])
+      ->name('index');
+
+    /**
+     * Get a tag by ID
+     */
+    Route::get('id/{id}', [App\Http\Controllers\TagController::class, 'getById'])
+      ->name('getById');
+
+    /**
+     * Get all trashed tags
+     */
+    Route::get('trashed', [App\Http\Controllers\TagController::class, 'trashed'])
+      ->name('trashed');
+
+    /**
+     * Create a new tag
+     */
+    Route::post('', [App\Http\Controllers\TagController::class, 'create'])
+      ->name('create');
 });

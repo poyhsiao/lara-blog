@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Log;
 
 class CategoryRepository extends Repository
 {
+    private $model;
+
     public function __construct(Category $model)
     {
         $this->model = $model;

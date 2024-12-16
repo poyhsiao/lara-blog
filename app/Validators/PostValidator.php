@@ -3,20 +3,31 @@
 namespace App\Validators;
 
 use App\Helper\JsonResponseHelper;
+use App\Models\Post;
+use App\Models\User;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
-class PostValidator
+class PostValidator extends Validator
 {
+    private $model;
+
+    public function __construct(Post $model)
+    {
+        $this->model = $model;
+    }
+
     /**
      * Validate create post request.
      *
      * @param \Illuminate\Http\Request $request
      * @return array|JsonResponse
      */
-    public static function create(Request $request): array|JsonResponse
+    public function create(Request $request): array|JsonResponse
     {
         $validated = Validator::make($request->all(), [
             'title' => 'required|string|between:2,255|unique:posts,title',
@@ -38,7 +49,7 @@ class PostValidator
      * @param int $id The ID of the post to retrieve.
      * @return array|JsonResponse
      */
-    public static function getById(int $id): array|JsonResponse
+    public function getById(int $id, User|Authenticatable $user = Auth::user()): array|JsonResponse
     {
         $validated = Validator::make(compact('id'), [
             'id' => 'required|numeric|exists:posts,id',
@@ -48,17 +59,14 @@ class PostValidator
             return JsonResponseHelper::notAcceptable('Get post failed', $validated->errors());
         }
 
+        if (!$user->isAdmin() && $user->id !== $this->model::find($id)->author) {
+            return JsonResponseHelper::unauthorized('You are not authorized to perform this action');
+        }
+
         return $validated->validated();
     }
 
-    /**
-     * Validate update post request.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id The ID of the post to update.
-     * @return array|JsonResponse
-     */
-    public static function update(Request $request, int $id): array|JsonResponse
+    public function update(Request $request, int $id, User|Authenticatable $user): array|JsonResponse
     {
         $validId = Validator::make(compact('id'), [
             'id' => 'required|numeric|exists:posts,id',
@@ -66,6 +74,10 @@ class PostValidator
 
         if ($validId->fails()) {
             return JsonResponseHelper::notAcceptable('Update post failed', $validId->errors());
+        }
+
+        if (!$user->isAdmin() && $user->id !== $this->model::find($id)->author) {
+            return JsonResponseHelper::unauthorized('You are not authorized to perform this action');
         }
 
         $validated = Validator::make($request->all(), [
@@ -99,14 +111,18 @@ class PostValidator
      * @param int $id The ID of the post to delete.
      * @return array|JsonResponse
      */
-    public static function delete(int $id): array|JsonResponse
+    public function delete(int $id, User|Authenticatable $user = Auth::user()): array|JsonResponse
     {
-      $validated = Validator::make(compact('id'), [
-        'id'=> 'required|numeric|exists:posts,id',
+        $validated = Validator::make(compact('id'), [
+            'id' => 'required|numeric|exists:posts,id',
         ]);
 
         if ($validated->fails()) {
             return JsonResponseHelper::notAcceptable('Delete post failed', $validated->errors());
+        }
+
+        if (!$user->isAdmin() && $this->model::find($id)->author !== $user->id) {
+            return JsonResponseHelper::unauthorized('You are not authorized to perform this action');
         }
 
         return $validated->validated();

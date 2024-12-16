@@ -14,7 +14,7 @@ use Illuminate\Validation\Rule;
 
 class AdminUserController extends Controller
 {
-    protected $repo;
+    private $repo;
 
     public function __construct(AdminUserRepository $repo)
     {

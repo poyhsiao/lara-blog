@@ -12,6 +12,8 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class JWTAuthController extends Controller
 {
+    private $repo;
+
     public function __construct(AuthRepository $repo)
     {
         $this->repo = $repo;

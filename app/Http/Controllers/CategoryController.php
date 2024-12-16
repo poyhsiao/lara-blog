@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Helper\JsonResponseHelper;
 use App\Repositories\CategoryRepository;
 use App\Validators\CategoryValidator;
 use Illuminate\Http\JsonResponse;
@@ -11,6 +10,10 @@ use Illuminate\Support\Arr;
 
 class CategoryController extends Controller
 {
+    private $repo;
+
+    private $validator;
+
     public function __construct(CategoryRepository $repo, CategoryValidator $validator)
     {
         $this->repo = $repo;
@@ -28,28 +31,20 @@ class CategoryController extends Controller
     {
         $result = $this->repo->index();
 
-        if ($result instanceof JsonResponse) {
-            return $result;
-        }
-
-        return JsonResponseHelper::success($result, 'Get categories successfully');
+        return $this->repoResponse($result, 'Get categories successfully');
     }
 
     public function getById(int $id): JsonResponse
     {
-        $validated = $this->validator::getById($id);
+        $validated = $this->validator->getById($id);
 
-        if ($validated instanceof JsonResponse) {
+        if ($this->isJsonResponse($validated)) {
             return $validated;
         }
 
         $result = $this->repo->getById($validated);
 
-        if ($result instanceof JsonResponse) {
-            return $result;
-        }
-
-        return JsonResponseHelper::success($result, 'Get category successfully');
+        return $this->repoResponse($result, 'Get category successfully');
     }
 
     /**
@@ -63,11 +58,7 @@ class CategoryController extends Controller
     {
         $result = $this->repo->trashed();
 
-        if ($result instanceof JsonResponse) {
-            return $result;
-        }
-
-        return JsonResponseHelper::success($result, 'Get categories successfully');
+        return $this->repoResponse($result, 'Get trashed categories successfully');
     }
 
     /**
@@ -80,19 +71,15 @@ class CategoryController extends Controller
      */
     public function create(Request $request): JsonResponse
     {
-        $validated = $this->validator::create($request);
+        $validated = $this->validator->create($request);
 
-        if ($validated instanceof JsonResponse) {
+        if ($this->isJsonResponse($validated)) {
             return $validated;
         }
 
         $result = $this->repo->create($validated);
 
-        if ($result instanceof JsonResponse) {
-            return $result;
-        }
-
-        return JsonResponseHelper::success($result, 'Create category successfully');
+        return $this->repoResponse($result, 'Create category successfully');
     }
 
     /**
@@ -107,9 +94,9 @@ class CategoryController extends Controller
      */
     public function update(Request $request, int $id): JsonResponse
     {
-        $validated = $this->validator::update($request, $id);
+        $validated = $this->validator->update($request, $id);
 
-        if ($validated instanceof JsonResponse) {
+        if ($this->isJsonResponse($validated)) {
             return $validated;
         }
 
@@ -119,11 +106,7 @@ class CategoryController extends Controller
 
         $result = $this->repo->update($updates, $id);
 
-        if ($result instanceof JsonResponse) {
-            return $result;
-        }
-
-        return JsonResponseHelper::success($result, 'Update category successfully');
+        return $this->repoResponse($result, 'Update category successfully');
     }
 
     /**
@@ -139,17 +122,13 @@ class CategoryController extends Controller
     {
         $validated = $this->validator->delete($id);
 
-        if ($validated instanceof JsonResponse) {
+        if ($this->isJsonResponse($validated)) {
             return $validated;
         }
 
         $result = $this->repo->delete($id);
 
-        if ($result instanceof JsonResponse) {
-            return $result;
-        }
-
-        return JsonResponseHelper::success($result, 'Delete category successfully');
+        return $this->repoResponse($result, 'Delete category successfully');
     }
 
     /**
@@ -165,16 +144,12 @@ class CategoryController extends Controller
     {
         $validated = $this->validator->restore($id);
 
-        if ($validated instanceof JsonResponse) {
+        if ($this->isJsonResponse($validated)) {
             return $validated;
         }
 
         $result = $this->repo->restore($id);
 
-        if ($result instanceof JsonResponse) {
-            return $result;
-        }
-
-        return JsonResponseHelper::success($result, 'Restore category successfully');
+        return $this->repoResponse($result, 'Restore category successfully');
     }
 }

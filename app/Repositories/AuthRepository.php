@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\DB;
 
 class AuthRepository extends Repository
 {
+    private $model;
+
     public function __construct(User $model)
     {
         $this->model = $model;

@@ -3,16 +3,24 @@
 namespace App\Validators;
 
 use App\Helper\JsonResponseHelper;
+use App\Models\Category;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
-class CategoryValidator
+class CategoryValidator extends Validator
 {
-    public static function getById(int $id): int|JsonResponse
+    private $model;
+
+    public function __construct(Category $model)
     {
-        return self::validateId($id);
+        $this->model = $model;
+    }
+
+    public function getById(int $id): int|JsonResponse
+    {
+        return $this->validateId($id);
     }
 
     /**
@@ -21,7 +29,7 @@ class CategoryValidator
      * @param \Illuminate\Http\Request $request
      * @return array|JsonResponse
      */
-    public static function create(Request $request): array|JsonResponse
+    public function create(Request $request): array|JsonResponse
     {
         $validated = Validator::make($request->all(), [
             'name' => 'required|string|between:2,255|unique:categories,name',
@@ -53,7 +61,7 @@ class CategoryValidator
      * @param int $id The ID of the category to update.
      * @return array|JsonResponse The validated data or a JsonResponse with validation errors.
      */
-    public static function update(Request $request, int $id): array|JsonResponse
+    public function update(Request $request, int $id): array|JsonResponse
     {
         $theId = self::validateId($id);
 
@@ -97,7 +105,7 @@ class CategoryValidator
      * @param int $id The ID of the category to delete.
      * @return int|JsonResponse The validated ID as an integer or a JsonResponse with validation errors.
      */
-    public static function delete(int $id): int|JsonResponse
+    public function delete(int $id): int|JsonResponse
     {
         $validated = Validator::make(['id' => $id], [
             'id' => 'required|numeric|exists:categories,id',
@@ -118,9 +126,9 @@ class CategoryValidator
      * @param int $id The ID of the category to restore.
      * @return int|JsonResponse The validated ID as an integer or a JsonResponse with validation errors.
      */
-    public static function restore(int $id): int|JsonResponse
+    public function restore(int $id): int|JsonResponse
     {
-        return self::delete($id);
+        return $this->delete($id);
     }
 
     /**
@@ -131,7 +139,7 @@ class CategoryValidator
      * @param int $id The ID of the category to validate.
      * @return int|JsonResponse The validated ID as an integer or a JsonResponse with validation errors.
      */
-    private static function validateId(int $id): int|JsonResponse
+    private function validateId(int $id): int|JsonResponse
     {
         $validated = Validator::make(['id' => $id], [
             'id' => 'required|numeric|exists:categories,id',

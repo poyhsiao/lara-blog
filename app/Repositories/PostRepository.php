@@ -2,13 +2,18 @@
 
 namespace App\Repositories;
 
+use App\Helper\JsonResponseHelper;
 use App\Models\Post;
 use App\Repositories\Repository;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class PostRepository extends Repository
 {
+    private $model;
+
     public function __construct(Post $model)
     {
         $this->model = $model;
@@ -20,104 +25,110 @@ class PostRepository extends Repository
     }
 
     /**
-     * Create a new post.
+     * Create a new post
      *
-     * @param array $data
-     * @return Post|null
+     * Attempts to create a new post in the database using the given data.
+     * If creation is successful, the created post is returned. If an
+     * error occurs, an error response is returned.
+     *
+     * @param array $data The data to create the post with.
+     * @return Post|JsonResponse The created post or an error response.
      */
-    public function create($data): ?Post
+    public function create(array $data): Post|JsonResponse
     {
-        $result = null;
-
         try {
             DB::transaction(function () use ($data, &$result) {
-                $result = $this->model->create($data);
+                return $this->model->create($data);
             });
         } catch (\Exception $e) {
             Log::error('Create post failed', ['message' => $e->getMessage()]);
-            return null;
+            return JsonResponseHelper::error(null, 'Create post failed');
         }
-
-        return $result;
     }
 
     /**
-     * Retrieve a post by its ID, including its author.
+     * Retrieve a post by its ID.
      *
-     * Attempts to find a post with the given ID along with its associated author.
-     * If the post is found, it is returned. If an exception occurs, null is returned.
+     * This method attempts to retrieve a post from the database using the provided ID.
+     * If the post is found, it is returned along with its author details.
+     * If an error occurs during the operation, a JSON error response is returned.
      *
-     * @param array $data An array containing the 'id' key, which specifies the post ID to retrieve.
-     * @return Post|null The post with the specified ID and its author, or null if not found or on error.
+     * @param array $validated An array containing the validated ID of the post to retrieve.
+     * @return Collection|JsonResponse The post with its author details or a JSON error response.
      */
-    public function getById(array $data): ?Post
+    public function getById(array $validated): Collection|JsonResponse
     {
+        $id = $validated['id'];
         try {
-            $result = $this->model::with('author')
-            ->find($data['id']);
+            return $this->model::with('author')
+            ->find($id);
         } catch (\Exception $e) {
             Log::error('Failed to get post by ID', [
-                'id' => $data['id'],
+                'id' => $id,
                 'message' => $e->getMessage()
             ]);
-            return null;
+            return JsonResponseHelper::error(null, 'Failed to get post by ID');
         }
-
-        return $result ?? null;
     }
 
     /**
-     * Update a post.
+     * Update a post
      *
-     * Updates a post with the given ID, specified in the $data array. If the post is found and the update is successful, the updated post is returned. If an exception occurs, null is returned.
+     * Attempts to update a post with the given ID using the given data.
+     * If the update is successful, the updated post is returned. If an
+     * error occurs, an error response is returned.
      *
-     * @param array $data An associative array containing the post data to update. Must contain the 'id' key.
+     * @param array $data The data to update the post with.
      * @param int $id The ID of the post to update.
-     * @return Post|null The updated post, or null if the post is not found or if an error occurs.
+     * @return Post|JsonResponse The updated post or an error response.
      */
-    public function update(array $data, int $id): ?Post
+    public function update(array $data, int $id): Post|JsonResponse
     {
-        $result = null;
-
         try {
+            $result = null;
+
             DB::transaction(function () use ($data, $id, &$result) {
                 $result = tap($this->model::with('author')->find($id))
                 ->update($data);
             });
+
+            return $result;
         } catch (\Exception $e) {
             Log::error('Update post failed', [
                 'id' => $id,
                 'message' => $e->getMessage()
             ]);
-            return null;
+            return JsonResponseHelper::error(null, 'Update post failed');
         }
-
-        return $result;
     }
 
     /**
-     * Delete a post.
+     * Delete a post by its validated ID.
      *
-     * Deletes a post with the given ID. If the post is found and the deletion is successful, the deleted post is returned. If an exception occurs, null is returned.
+     * This method attempts to delete a post from the database using the provided validated ID.
+     * If the post is successfully deleted, it returns the deleted Post object.
+     * If an error occurs during the deletion process, it logs the error and returns a JsonResponse with an error message.
      *
-     * @param int $id The ID of the post to delete.
-     * @return Post|null The deleted post, or null if the post is not found or if an error occurs.
+     * @param array $validated The validated data containing the post ID.
+     * @return Post|JsonResponse The deleted Post object or a JsonResponse in case of an error.
      */
-    public function delete(int $id): ?Post
+    public function delete(array $validated): Post|JsonResponse
     {
-        $result = null;
         try {
-            DB::transaction(function () use ($id, &$result) {
+            $id = $validated['id'];
+            $result = null;
+
+            DB::transaction(callback: function () use ($id, &$result) {
                 $result = tap($this->model::with('author')->find($id))->delete();
             });
+
+            return $result;
         } catch (\Exception $e) {
             Log::error('Delete post failed', [
                 'id' => $id,
                 'message' => $e->getMessage()
             ]);
-            return null;
+            return JsonResponseHelper::error(null, 'Delete post failed');
         }
-
-        return $result;
     }
 }

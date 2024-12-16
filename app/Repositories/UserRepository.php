@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 
 class UserRepository extends Repository
 {
-    protected $model;
+    private $model;
 
     public function __construct(User $model)
     {
@@ -47,6 +47,12 @@ class UserRepository extends Repository
 
             return $user;
         } catch (\Exception $e) {
+            Log::error('Change password failed', [
+                'id' => $user->id,
+                'password' => $password,
+                'new_password' => $newPassword,
+                'message' => $e->getMessage(),
+            ]);
             return JsonResponseHelper::error($e->getMessage(), 'Change password failed');
         }
     }
@@ -73,6 +79,10 @@ class UserRepository extends Repository
 
             return $user;
         } catch (\Exception $e) {
+            Log::error('Update profile failed', [
+                'id'=> $user->id,
+                'message' => $e->getMessage(),
+            ]);
             return JsonResponseHelper::error($e->getMessage(), 'Update profile failed');
         }
     }

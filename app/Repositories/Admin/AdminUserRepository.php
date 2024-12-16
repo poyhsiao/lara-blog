@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 
 class AdminUserRepository extends Repository
 {
+    private $model;
+
     public function __construct(User $model)
     {
         $this->model = $model;

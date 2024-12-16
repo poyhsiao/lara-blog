@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Helper\JsonResponseHelper;
 use App\Repositories\PostRepository;
 use App\Validators\PostValidator;
 use Illuminate\Http\JsonResponse;
@@ -11,37 +10,42 @@ use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
+    private $repo;
+
+    private $validator;
+
+    private $user;
+
     public function __construct(PostRepository $repo, PostValidator $validator)
     {
         $this->repo = $repo;
         $this->validator = $validator;
+        $this->user = Auth::user();
     }
 
     /**
      * Create a new post.
      *
-     * Validates the request using the PostValidator. If validation fails, returns a JsonResponse with the validation errors. Otherwise, sets the author of the post to the authenticated user's ID and attempts to create the post using the PostRepository. If the creation fails, returns an error response.
-     * Otherwise, returns a success response with the created post.
+     * Validates the request using the PostValidator. If validation fails, returns a JsonResponse with the validation errors.
+     * Otherwise, sets the author of the post to the authenticated user's ID and attempts to create the post using the PostRepository.
+     * If the creation fails, returns an error response. Otherwise, returns a success response with the created post.
      *
      * @param \Illuminate\Http\Request $request The request object containing post data.
      * @return \Illuminate\Http\JsonResponse A JSON response containing the result of the operation.
      */
     public function create(Request $request): JsonResponse
     {
-        $validated = $this->validator::create($request);
+        $postData = $this->validator->create($request);
 
-        if ($validated instanceof JsonResponse) {
-            return $validated;
+        if ($this->isJsonResponse($postData)) {
+            return $postData;
         }
 
-        /** @var \App\Models\User $user */
-        $validated['author'] = Auth::user()->id;
+        $postData['author_id'] = Auth::id();
 
-        if (!$post = $this->repo->create($validated)) {
-            return JsonResponseHelper::error(null, 'Create post failed');
-        }
+        $result = $this->repo->create($postData);
 
-        return JsonResponseHelper::success($post, 'Create post successfully');
+        return $this->repoResponse($result, 'Create post successfully');
     }
 
     /**
@@ -54,17 +58,15 @@ class PostController extends Controller
      */
     public function getPostById(int $id): JsonResponse
     {
-        $validated = $this->validator::getById($id);
+        $validated = $this->validator->getById($id, $this->user);
 
-        if ($validated instanceof JsonResponse) {
+        if ($this->isJsonResponse( $validated)) {
             return $validated;
         }
 
-        if (!$post = $this->repo->getById($validated)) {
-            return JsonResponseHelper::notFound('Post not found');
-        }
+        $result = $this->repo->getById($validated);
 
-        return JsonResponseHelper::success($post, 'Get post successfully');
+        return $this->repoResponse($result, 'Get post successfully');
     }
 
     /**
@@ -78,17 +80,15 @@ class PostController extends Controller
      */
     public function update(Request $request, int $id): JsonResponse
     {
-        $validated = $this->validator::update($request, $id);
+        $validated = $this->validator->update($request, $id, $this->user);
 
-        if ($validated instanceof JsonResponse) {
+        if ($this->isJsonResponse($validated)) {
             return $validated;
         }
 
-        if (!$post = $this->repo->update($validated, $id)) {
-            return JsonResponseHelper::error(null, 'Update post failed');
-        }
+        $result = $this->repo->update($validated, $id);
 
-        return JsonResponseHelper::success($post, 'Update post successfully');
+        return $this->repoResponse($result, 'Update post successfully');
     }
 
     /**
@@ -101,16 +101,14 @@ class PostController extends Controller
      */
     public function delete(int $id): JsonResponse
     {
-        $validated = $this->validator::delete($id);
+        $validated = $this->validator->delete($id, $this->user);
 
-        if ($validated instanceof JsonResponse) {
+        if ($this->isJsonResponse($validated)) {
             return $validated;
         }
 
-        if (!$post = $this->repo->delete($id)) {
-            return JsonResponseHelper::notFound('Post not found');
-        }
+        $result = $this->repo->delete($validated);
 
-        return JsonResponseHelper::success($post, 'Delete post successfully');
+        return $this->repoResponse($result, 'Delete post successfully');
     }
 }
