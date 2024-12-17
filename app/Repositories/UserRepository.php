@@ -10,9 +10,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
-class UserRepository extends Repository
+class UserRepository extends BaseRepository
 {
-    private $model;
+    protected $model;
 
     public function __construct(User $model)
     {
@@ -22,14 +22,14 @@ class UserRepository extends Repository
     /**
      * Change the user's password.
      *
-     * @param User|null $user the user to update.
+     * @param User $user the user to update.
      * @param string $password the current password.
      * @param string $newPassword the new password.
      *
      * @return User|JsonResponse if the password is changed successfully, the user object will be returned.
      * Otherwise, a JsonResponse with the error message will be returned.
      */
-    public function changePassword(User|null $user, string $password, string $newPassword): User|JsonResponse
+    public function changePassword(User $user, string $password, string $newPassword): User|JsonResponse
     {
         if (!$user) {
             return JsonResponseHelper::notFound('User not found');
@@ -60,13 +60,13 @@ class UserRepository extends Repository
     /**
      * Update the user's profile information.
      *
-     * @param User|null $user The user whose profile is to be updated.
+     * @param User $user The user whose profile is to be updated.
      * @param array $profile An associative array containing the profile data to update.
      *
      * @return User|JsonResponse Returns the updated user object on success,
      * or a JsonResponse with an error message on failure.
      */
-    public function updateProfile(User|null $user, array $profile): User|JsonResponse
+    public function updateProfile(User $user, array $profile): User|JsonResponse
     {
         if (!$user) {
             return JsonResponseHelper::notFound('User not found');
@@ -93,12 +93,12 @@ class UserRepository extends Repository
      * Depending on the filter provided, this method retrieves all posts, trashed posts, drafts, or published posts.
      * Results are ordered accordingly and, if 'all' is specified, grouped by publish status.
      *
-     * @param User|null $user The user whose posts are to be retrieved.
+     * @param User $user The user whose posts are to be retrieved.
      * @param string $filter The filter to apply. Can be 'all', 'trashed', 'draft', or 'published'.
      *
      * @return array|JsonResponse An array of posts or a JsonResponse in case of error or if the user is not found.
      */
-    public function getPosts(User|null $user, string $filter = 'published'): array|JsonResponse
+    public function getPosts(User $user, string $filter = 'published'): array|JsonResponse
     {
         if (!$user) {
             return JsonResponseHelper::notFound('User not found');

@@ -4,15 +4,14 @@ namespace App\Repositories;
 
 use App\Helper\JsonResponseHelper;
 use App\Models\Post;
-use App\Repositories\Repository;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Arr;
 
-class PostRepository extends Repository
+class PostRepository extends BaseRepository
 {
-    private $model;
+    protected $model;
 
     public function __construct(Post $model)
     {
@@ -37,31 +36,47 @@ class PostRepository extends Repository
     public function create(array $data): Post|JsonResponse
     {
         try {
+            $result = null;
+
             DB::transaction(function () use ($data, &$result) {
-                return $this->model->create($data);
+                $result = $this->model->create(Arr::except($data, ['slug', 'tag_ids', 'category_ids']));
+
+                if (array_key_exists('tag_ids', $data) && count($data['tag_ids'])) {
+                    $result->tags()->sync($data['tag_ids']);
+                }
+
+                if (array_key_exists('category_ids', $data) && count($data['category_ids'])) {
+                    $result->categories()->sync($data['category_ids']);
+                }
             });
+
+            return $result;
         } catch (\Exception $e) {
-            Log::error('Create post failed', ['message' => $e->getMessage()]);
+            Log::error('Create post failed', [
+                'data' => $data,
+                'message' => $e->getMessage(),
+            ]);
             return JsonResponseHelper::error(null, 'Create post failed');
         }
     }
 
+
     /**
-     * Retrieve a post by its ID.
+     * Get a post by its ID
      *
-     * This method attempts to retrieve a post from the database using the provided ID.
-     * If the post is found, it is returned along with its author details.
-     * If an error occurs during the operation, a JSON error response is returned.
+     * Retrieves a post by its ID from the database.
+     * The result is an array containing the post data or a JsonResponse in case of error.
      *
-     * @param array $validated An array containing the validated ID of the post to retrieve.
-     * @return Collection|JsonResponse The post with its author details or a JSON error response.
+     * @param array $validated The validated data, containing the ID of the post to retrieve.
+     * @return array|JsonResponse An array containing the post data or a JsonResponse in case of error.
      */
-    public function getById(array $validated): Collection|JsonResponse
+    public function getById(array $validated): array|JsonResponse
     {
         $id = $validated['id'];
         try {
             return $this->model::with('author')
-            ->find($id);
+            ->find($id)
+            ->toArray();
         } catch (\Exception $e) {
             Log::error('Failed to get post by ID', [
                 'id' => $id,
@@ -79,26 +94,43 @@ class PostRepository extends Repository
      * error occurs, an error response is returned.
      *
      * @param array $data The data to update the post with.
-     * @param int $id The ID of the post to update.
+     * @param int $postId The ID of the post to update.
      * @return Post|JsonResponse The updated post or an error response.
      */
-    public function update(array $data, int $id): Post|JsonResponse
+    public function update(array $data, int $postId): Post|JsonResponse
     {
         try {
             $result = null;
 
-            DB::transaction(function () use ($data, $id, &$result) {
-                $result = tap($this->model::with('author')->find($id))
-                ->update($data);
+            DB::transaction(function () use ($data, $postId, &$result) {
+                $result = $this->model::find($postId);
+
+                $updates = Arr::except($data, ['slug', 'tag_ids', 'category_ids']);
+
+                if (count($updates)) {
+                    $result->update($updates);
+                }
+
+                if (array_key_exists('tag_ids', $data) && count($data['tag_ids'])) {
+                    $result->tags()->sync($data['tag_ids']);
+                }
+
+                if (array_key_exists('category_ids', $data) && count($data['category_ids'])) {
+                    $result->categories()->sync($data['category_ids']);
+                }
+
+                $result->touch();
             });
 
             return $result;
         } catch (\Exception $e) {
-            Log::error('Update post failed', [
-                'id' => $id,
+            Log::error('Failed to update post', [
+                'id' => $postId,
+                'data' => $data,
                 'message' => $e->getMessage()
             ]);
-            return JsonResponseHelper::error(null, 'Update post failed');
+
+            return JsonResponseHelper::error(null, 'Failed to update post');
         }
     }
 

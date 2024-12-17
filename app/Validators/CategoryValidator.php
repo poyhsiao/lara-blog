@@ -9,9 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
-class CategoryValidator extends Validator
+class CategoryValidator extends BaseValidator
 {
-    private $model;
+    protected $model;
 
     public function __construct(Category $model)
     {

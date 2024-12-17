@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Helper\JsonResponseHelper;
 use App\Repositories\TagRepository;
 use App\Validators\TagValidator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TagController extends Controller
 {
@@ -14,10 +14,13 @@ class TagController extends Controller
 
     private $validator;
 
+    private $user;
+
     public function __construct(TagRepository $repo, TagValidator $validator)
     {
         $this->repo = $repo;
         $this->validator = $validator;
+        $this->user = Auth::user();
     }
 
     /**
@@ -106,5 +109,51 @@ class TagController extends Controller
         $result = $this->repo->update($validated['id'], $validated);
 
         return $this->repoResponse($result, 'Update tag successfully');
+    }
+
+    /**
+     * Delete a tag.
+     *
+     * Validates the request using the TagValidator. If validation fails, returns a JsonResponse with the validation errors.
+     * Otherwise, attempts to delete the tag using the TagRepository. If the deletion fails, returns an error response.
+     * Otherwise, returns a success response with the deleted tag.
+     *
+     * @param int $id The ID of the tag to delete.
+     * @return \Illuminate\Http\JsonResponse A JSON response containing the result of the operation.
+     */
+    public function delete(int $id): JsonResponse
+    {
+        $validated = $this->validator->delete($id, $this->user);
+
+        if ($this->isJsonResponse($validated)) {
+            return $validated;
+        }
+
+        $result = $this->repo->delete($validated['id']);
+
+        return $this->repoResponse($result, 'Delete tag successfully');
+    }
+
+    /**
+     * Restore a deleted tag.
+     *
+     * Validates the request using the TagValidator. If validation fails, returns a JsonResponse with the validation errors.
+     * Otherwise, attempts to restore the tag using the TagRepository. If the restore fails, returns an error response.
+     * Otherwise, returns a success response with the restored tag.
+     *
+     * @param int $id The ID of the tag to restore.
+     * @return JsonResponse A JSON response containing the result of the operation.
+     */
+    public function restore(int $id): JsonResponse
+    {
+        $validated = $this->validator->restore($id, $this->user);
+
+        if ($this->isJsonResponse($validated)) {
+            return $validated;
+        }
+
+        $result = $this->repo->restore($validated['id']);
+
+        return $this->repoResponse($result, 'Restore tag successfully');
     }
 }

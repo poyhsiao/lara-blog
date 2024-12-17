@@ -4,16 +4,16 @@ namespace App\Repositories;
 
 use Illuminate\Database\Eloquent\Model;
 
-abstract class Repository
+abstract class BaseRepository
 {
-    private $model;
+    protected $model;
 
     public function __construct(Model $model)
     {
         $this->model = $model;
     }
 
-    public function getModel(): Model
+    protected function getModel(): Model
     {
         return $this->model;
     }

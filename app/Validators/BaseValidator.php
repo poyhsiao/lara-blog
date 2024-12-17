@@ -4,9 +4,9 @@ namespace App\Validators;
 
 use Illuminate\Database\Eloquent\Model;
 
-abstract class Validator
+abstract class BaseValidator
 {
-    private $model;
+    protected $model;
 
     public function __construct(Model $model)
     {

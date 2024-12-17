@@ -3,14 +3,14 @@
 namespace App\Repositories\Admin;
 
 use App\Models\User;
-use App\Repositories\Repository;
+use App\Repositories\BaseRepository;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
-class AdminUserRepository extends Repository
+class AdminUserRepository extends BaseRepository
 {
-    private $model;
+    protected $model;
 
     public function __construct(User $model)
     {

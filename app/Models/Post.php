@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 
 class Post extends Model
 {
@@ -33,6 +34,15 @@ class Post extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function (Post $post) {
+            $post->slug = self::generateUniqueSlug($post->title);
+        });
+    }
 
     /**
      * Get the human-readable publish status for the post.
@@ -64,17 +74,20 @@ class Post extends Model
 
     public function comments(): BelongsToMany
     {
-        return $this->belongsToMany(Comment::class);
+        return $this->belongsToMany(Comment::class)
+        ->withTimestamps();
     }
 
     public function tags(): BelongsToMany
     {
-        return $this->belongsToMany(Tag::class);
+        return $this->belongsToMany(Tag::class)
+        ->withTimestamps();
     }
 
-    public function category(): BelongsToMany
+    public function categories(): BelongsToMany
     {
-        return $this->belongsToMany(Category::class);
+        return $this->belongsToMany(Category::class)
+        ->withTimestamps();
     }
 
     /**
@@ -85,5 +98,19 @@ class Post extends Model
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'author', 'id');
+    }
+
+    private static function generateUniqueSlug(string $title): string
+    {
+        $slug = Str::substr(Str::slug($title), 0, 250);
+
+        $i = 1;
+
+        while (self::where('slug', $slug)->exists()) {
+            $slug = "{$slug}-{$i}";
+            $i++;
+        }
+
+        return $slug;
     }
 }

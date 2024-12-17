@@ -144,4 +144,16 @@ Route::group(['prefix' => 'tag', 'name' => 'tag.'], function () {
      */
     Route::post('', [App\Http\Controllers\TagController::class, 'create'])
       ->name('create');
+
+    /**
+     * Delete a tag
+     */
+    Route::delete('/id/{id}', [App\Http\Controllers\TagController::class, 'delete'])
+      ->name('delete');
+
+    /**
+     * Restore a deleted tag
+     */
+    Route::patch('restore/{id}', [App\Http\Controllers\TagController::class, 'restore'])
+      ->name('restore');
 });

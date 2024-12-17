@@ -8,9 +8,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class TagRepository extends Repository
+class TagRepository extends BaseRepository
 {
-    private $model;
+    protected $model;
 
     public function __construct(Tag $model)
     {
@@ -132,6 +132,73 @@ class TagRepository extends Repository
             ]);
 
             return JsonResponseHelper::error(null, 'Fail to update tag');
+        }
+    }
+
+    /**
+     * Delete a tag
+     *
+     * Deletes a tag with the given ID from the database.
+     * If the deletion is successful, the deleted tag is returned. If an exception occurs, an error response is returned.
+     *
+     * @param int $id The ID of the tag to delete
+     * @return Tag|JsonResponse The deleted tag, or an error response if the tag is not found or if an error occurs
+     */
+    public function delete(int $id): Tag|JsonResponse
+    {
+        try {
+            $tag = $this->model::find($id);
+
+            if (!$tag) {
+                return JsonResponseHelper::error(null, 'Tag not found');
+            }
+
+            DB::transaction(function () use ($tag) {
+                $tag->delete();
+            });
+
+            return $tag;
+        } catch (\Exception $e) {
+            Log::error('Failed to delete tag', [
+                'id' => $id,
+                'message' => $e->getMessage(),
+            ]);
+
+            return JsonResponseHelper::error(null, 'Failed to delete tag');
+        }
+    }
+
+    /**
+     * Restore a soft-deleted tag.
+     *
+     * Attempts to restore a tag with the given ID from the database. If the tag
+     * is successfully restored, it returns the restored tag. If the tag is not found
+     * or an exception occurs, an error response is returned.
+     *
+     * @param int $id The ID of the tag to restore.
+     * @return Tag|JsonResponse The restored tag, or an error response if the tag is not found or if an error occurs.
+     */
+    public function restore(int $id): Tag|JsonResponse
+    {
+        try {
+            $tag = $this->model::onlyTrashed()->find($id);
+
+            if (!$tag) {
+                return JsonResponseHelper::error(null, 'Tag not found');
+            }
+
+            DB::transaction(function () use ($tag) {
+                $tag->restore();
+            });
+
+            return $tag;
+        } catch (\Exception $e) {
+            Log::error('Failed to restore tag', [
+                'id' => $id,
+                'message' => $e->getMessage(),
+            ]);
+
+            return JsonResponseHelper::error(null, 'Failed to restore tag');
         }
     }
 }

@@ -9,9 +9,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class CategoryRepository extends Repository
+class CategoryRepository extends BaseRepository
 {
-    private $model;
+    protected $model;
 
     public function __construct(Category $model)
     {
