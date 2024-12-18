@@ -4,89 +4,47 @@ namespace App\Swaggers;
 
 use OpenApi\Annotations as OA;
 
-class PostControllerAnnotation extends ControllerAnnotation
+class TagControllerAnnotation extends ControllerAnnotation
 {
     /**
-     * @OA\Post(
-     *     path="/api/v1/post",
-     *     operationId="PostCreate",
-     *     tags={"Post"},
-     *     summary="Create a new post",
-     *     description="Create a new post",
+     * @OA\Get(
+     *     path="/api/v1/tag",
+     *     summary="Get all tags",
+     *     tags={"Tag"},
+     *     operationId="TagIndex",
      *     security={{"bearerAuth": {}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(
-     *                 property="title",
-     *                 type="string",
-     *                 example="the title",
-     *             ),
-     *             @OA\Property(
-     *                 property="slug",
-     *                 type="string",
-     *                 example="the-slug",
-     *             ),
-     *             @OA\Property(
-     *                 property="content",
-     *                 type="string",
-     *                 example="the content",
-     *             ),
-     *             @OA\Property(
-     *                 property="publish_status",
-     *                 type="integer",
-     *                 example=1,
-     *             ),
-     *         ),
-     *     ),
      *     @OA\Response(
-     *         response="200",
+     *         response=200,
      *         description="Success",
      *         @OA\JsonContent(
      *             @OA\Property(
      *                 property="status_code",
      *                 type="integer",
-     *                 example=200
+     *                 example=200,
      *             ),
      *             @OA\Property(
      *                 property="data",
      *                 type="object",
      *                 @OA\Property(
-     *                     property="title",
-     *                     type="string",
-     *                     example="the title",
-     *                 ),
-     *                 @OA\Property(
-     *                     property="slug",
-     *                     type="string",
-     *                     example="the-slug",
-     *                 ),
-     *                 @OA\Property(
-     *                     property="content",
-     *                     type="string",
-     *                     example="the content",
-     *                 ),
-     *                 @OA\Property(
-     *                     property="publish_status",
+     *                     property="id",
      *                     type="integer",
      *                     example=1,
      *                 ),
      *                 @OA\Property(
-     *                     property="author",
-     *                     type="integer",
-     *                     example=1,
+     *                     property="name",
+     *                     type="string",
+     *                     example="Tag 1",
      *                 ),
      *                 @OA\Property(
-     *                     property="created_at",
+     *                     property="description",
      *                     type="string",
-     *                     example="2020-01-01 00:00:00",
+     *                     example="Description 1",
      *                 ),
-     *                 @OA\Property(
-     *                     property="updated_at",
-     *                     type="string",
-     *                     example="2020-01-01 00:00:00",
-     *                 ),
+     *            ),
+     *            @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 example=null,
      *             ),
      *         ),
      *     ),
@@ -167,17 +125,15 @@ class PostControllerAnnotation extends ControllerAnnotation
      *     ),
      * )
      */
-    public function create()
-    {
-    }
+    public function index() {}
 
     /**
      * @OA\Get(
-     *     path="/api/v1/post/id/{id}",
-     *     operationId="getPostById",
-     *     tags={"Post"},
-     *     summary="Get a post by ID",
-     *     description="Get a post by ID",
+     *     path="/api/v1/tag/id/{id}",
+     *     operationId="getTagById",
+     *     tags={"Tag"},
+     *     summary="Get a tag by ID",
+     *     description="Get a tag by ID",
      *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
@@ -185,9 +141,131 @@ class PostControllerAnnotation extends ControllerAnnotation
      *         required=true,
      *         @OA\Schema(
      *             type="integer",
-     *             example="1"
+     *             example=1,
      *         ),
      *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=200
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="id",
+     *                     type="integer",
+     *                     example=1,
+     *                 ),
+     *                 @OA\Property(
+     *                     property="name",
+     *                     type="string",
+     *                     example="Tag 1",
+     *                 ),
+     *                 @OA\Property(
+     *                     property="description",
+     *                     type="string",
+     *                     example="Description 1",
+     *                 ),
+     *            ),
+     *            @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="Bad Request",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=400
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     example="Invalid data"
+     *                 ),
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="401",
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=401
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     example="Unauthorized"
+     *                 ),
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Not Found",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=404
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     example="Post not found"
+     *                 ),
+     *             ),
+     *         ),
+     *     ),
+     * )
+     */
+    public function getById() {}
+
+    /**
+     * @OA\Get(
+     *     path="/api/v1/tag/trashed",
+     *     operationId="getTrashedTags",
+     *     tags={"Tag"},
+     *     summary="Get trashed tags",
+     *     description="Get trashed tags",
+     *     security={{"bearerAuth": {}}},
      *     @OA\Response(
      *         response="200",
      *         description="Success",
@@ -206,76 +284,17 @@ class PostControllerAnnotation extends ControllerAnnotation
      *                     example=1,
      *                 ),
      *                 @OA\Property(
-     *                     property="title",
+     *                     property="name",
      *                     type="string",
-     *                     example="the title",
+     *                     example="Tag 1",
      *                 ),
      *                 @OA\Property(
-     *                     property="slug",
+     *                     property="description",
      *                     type="string",
-     *                     example="the-slug",
+     *                     example="Description 1",
      *                 ),
-     *                 @OA\Property(
-     *                     property="content",
-     *                     type="string",
-     *                     example="the content",
-     *                 ),
-     *                 @OA\Property(
-     *                     property="publish_status",
-     *                     type="string",
-     *                     example="published",
-     *                 ),
-     *                 @OA\Property(
-     *                     property="author",
-     *                     type="object",
-     *                     @OA\Property(
-     *                         property="id",
-     *                         type="integer",
-     *                         example=1,
-     *                     ),
-     *                     @OA\Property(
-     *                         property="name",
-     *                         type="string",
-     *                         example="John Doe",
-     *                     ),
-     *                     @OA\Property(
-     *                         property="email",
-     *                         type="string",
-     *                         example="x5Oo2@example.com",
-     *                     ),
-     *                     @OA\Property(
-     *                         property="display_name",
-     *                         type="string",
-     *                         example="John Doe",
-     *                     ),
-     *                     @OA\Property(
-     *                         property="gender",
-     *                         type="integer",
-     *                         example=1,
-     *                     ),
-     *                     @OA\Property(
-     *                         property="active",
-     *                         type="integer",
-     *                         example=1,
-     *                     ),
-     *                     @OA\Property(
-     *                         property="role",
-     *                         type="integer",
-     *                         example=1,
-     *                     ),
-     *                 ),
-     *                 @OA\Property(
-     *                     property="created_at",
-     *                     type="string",
-     *                     example="2020-01-01 00:00:00",
-     *                 ),
-     *                 @OA\Property(
-     *                     property="updated_at",
-     *                     type="string",
-     *                     example="2020-01-01 00:00:00",
-     *                 ),
-     *             ),
-     *             @OA\Property(
+     *            ),
+     *            @OA\Property(
      *                 property="error",
      *                 type="object",
      *                 example=null,
@@ -359,259 +378,32 @@ class PostControllerAnnotation extends ControllerAnnotation
      *     ),
      * )
      */
-    public function getPostById()
+    public function trashed()
     {
     }
 
     /**
-     * @OA\Patch(
-     *     path="/api/v1/post/{id}",
-     *     operationId="PostUpdate",
-     *     tags={"Post"},
-     *     summary="Update a post",
-     *     description="Update a post",
-     *     security={{"bearerAuth": {}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(
-     *             type="integer",
-     *             example=1
-     *         ),
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(
-     *                 property="title",
-     *                 type="string",
-     *                 example="New title",
-     *             ),
-     *             @OA\Property(
-     *                 property="slug",
-     *                 type="string",
-     *                 example="new-slug",
-     *             ),
-     *             @OA\Property(
-     *                 property="content",
-     *                 type="string",
-     *                 example="New content",
-     *             ),
-     *             @OA\Property(
-     *                 property="publish_status",
-     *                 type="integer",
-     *                 example=1,
-     *             ),
-     *         ),
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Success",
-     *         @OA\JsonContent(
-     *             @OA\Property(
-     *                 property="status_code",
-     *                 type="integer",
-     *                 example=200
-     *             ),
-     *             @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     *                 @OA\Property(
-     *                     property="id",
-     *                     type="integer",
-     *                     example=1
-     *                 ),
-     *                 @OA\Property(
-     *                     property="title",
-     *                     type="string",
-     *                     example="New title"
-     *                 ),
-     *                 @OA\Property(
-     *                     property="slug",
-     *                     type="string",
-     *                     example="new-slug"
-     *                 ),
-     *                 @OA\Property(
-     *                     property="content",
-     *                     type="string",
-     *                     example="New content"
-     *                 ),
-     *                 @OA\Property(
-     *                     property="publish_status",
-     *                     type="string",
-     *                     example="published"
-     *                 ),
-     *                 @OA\Property(
-     *                     property="author",
-     *                     type="object",
-     *                     @OA\Property(
-     *                         property="id",
-     *                         type="integer",
-     *                         example=1
-     *                     ),
-     *                     @OA\Property(
-     *                         property="name",
-     *                         type="string",
-     *                         example="John Doe"
-     *                     ),
-     *                     @OA\Property(
-     *                         property="email",
-     *                         type="string",
-     *                         example="n2o3F@example.com"
-     *                     ),
-     *                     @OA\Property(
-     *                         property="display_name",
-     *                         type="string",
-     *                         example="John Doe"
-     *                     ),
-     *                     @OA\Property(
-     *                         property="gender",
-     *                         type="integer",
-     *                         example=1
-     *                     ),
-     *                     @OA\Property(
-     *                         property="active",
-     *                         type="integer",
-     *                         example=1
-     *                     ),
-     *                     @OA\Property(
-     *                         property="role",
-     *                         type="integer",
-     *                         example=1
-     *                     ),
-     *                 ),
-     *                 @OA\Property(
-     *                     property="created_at",
-     *                     type="string",
-     *                     example="2022-01-01 00:00:00"
-     *                 ),
-     *                 @OA\Property(
-     *                     property="updated_at",
-     *                     type="string",
-     *                     example="2022-01-01 00:00:00"
-     *                 ),
-     *             ),
-     *             @OA\Property(
-     *                 property="message",
-     *                 type="object",
-     *                 example=null,
-     *             ),
-     *         ),
-     *     ),
-     *     @OA\Response(
-     *         response="400",
-     *         description="Bad Request",
-     *         @OA\JsonContent(
-     *             @OA\Property(
-     *                 property="status_code",
-     *                 type="integer",
-     *                 example=400
-     *             ),
-     *             @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     *                 example=null,
-     *             ),
-     *             @OA\Property(
-     *                 property="error",
-     *                 type="object",
-     *                 @OA\Property(
-     *                     property="message",
-     *                     type="string",
-     *                     example="Invalid data"
-     *                 ),
-     *             ),
-     *         ),
-     *     ),
-     *     @OA\Response(
-     *         response="401",
-     *         description="Unauthorized",
-     *         @OA\JsonContent(
-     *             @OA\Property(
-     *                 property="status_code",
-     *                 type="integer",
-     *                 example=401
-     *             ),
-     *             @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     *                 example=null,
-     *             ),
-     *             @OA\Property(
-     *                 property="error",
-     *                 type="object",
-     *                 @OA\Property(
-     *                     property="message",
-     *                     type="string",
-     *                     example="Unauthorized"
-     *                 ),
-     *             ),
-     *         ),
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Not Found",
-     *         @OA\JsonContent(
-     *             @OA\Property(
-     *                 property="status_code",
-     *                 type="integer",
-     *                 example=404
-     *             ),
-     *             @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     *                 example=null,
-     *             ),
-     *             @OA\Property(
-     *                 property="error",
-     *                 type="object",
-     *                 @OA\Property(
-     *                     property="message",
-     *                     type="string",
-     *                     example="Post not found"
-     *                 ),
-     *             ),
-     *         ),
-     *     ),
-     *  )
-     */
-    public function update()
-    {
-    }
-
-    /**
-     * @OA\Delete(
-     *     path="/api/v1/delete",
-     *     operationId="PostDelete",
-     *     tags={"Post"},
-     *     summary="Delete a new post",
-     *     description="Delete a new post",
+     * @OA\Post(
+     *     path="/api/v1/tag",
+     *     operationId="TagCreate",
+     *     tags={"Tag"},
+     *     summary="Create a new tag",
+     *     description="Create a new tag",
      *     security={{"bearerAuth": {}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
      *             type="object",
+     *             required={"name"},
      *             @OA\Property(
-     *                 property="title",
+     *                 property="name",
      *                 type="string",
-     *                 example="the title",
+     *                 example="Tag 1",
      *             ),
      *             @OA\Property(
-     *                 property="slug",
+     *                 property="description",
      *                 type="string",
-     *                 example="the-slug",
-     *             ),
-     *             @OA\Property(
-     *                 property="content",
-     *                 type="string",
-     *                 example="the content",
-     *             ),
-     *             @OA\Property(
-     *                 property="publish_status",
-     *                 type="integer",
-     *                 example=1,
+     *                 example="Description 1",
      *             ),
      *         ),
      *     ),
@@ -628,40 +420,25 @@ class PostControllerAnnotation extends ControllerAnnotation
      *                 property="data",
      *                 type="object",
      *                 @OA\Property(
-     *                     property="title",
-     *                     type="string",
-     *                     example="the title",
-     *                 ),
-     *                 @OA\Property(
-     *                     property="slug",
-     *                     type="string",
-     *                     example="the-slug",
-     *                 ),
-     *                 @OA\Property(
-     *                     property="content",
-     *                     type="string",
-     *                     example="the content",
-     *                 ),
-     *                 @OA\Property(
-     *                     property="publish_status",
+     *                     property="id",
      *                     type="integer",
      *                     example=1,
      *                 ),
      *                 @OA\Property(
-     *                     property="author",
-     *                     type="integer",
-     *                     example=1,
+     *                     property="name",
+     *                     type="string",
+     *                     example="Tag 1",
      *                 ),
      *                 @OA\Property(
-     *                     property="created_at",
+     *                     property="description",
      *                     type="string",
-     *                     example="2020-01-01 00:00:00",
+     *                     example="Description 1",
      *                 ),
-     *                 @OA\Property(
-     *                     property="updated_at",
-     *                     type="string",
-     *                     example="2020-01-01 00:00:00",
-     *                 ),
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 example=null,
      *             ),
      *         ),
      *     ),
@@ -742,7 +519,406 @@ class PostControllerAnnotation extends ControllerAnnotation
      *     ),
      * )
      */
-    public function delete()
-    {
-    }
+    public function create() {}
+
+    /**
+     * @OA\Patch(
+     *     path="/api/v1/tag/id/{id}",
+     *     operationId="TagUpdate",
+     *     tags={"Tag"},
+     *     summary="Update a tag",
+     *     description="Update a tag",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *             example=1,
+     *         ),
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="name",
+     *                 type="string",
+     *                 example="Tag 1",
+     *             ),
+     *             @OA\Property(
+     *                 property="description",
+     *                 type="string",
+     *                 example="Description 1",
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=200
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="id",
+     *                     type="integer",
+     *                     example=1,
+     *                 ),
+     *                 @OA\Property(
+     *                     property="name",
+     *                     type="string",
+     *                     example="Tag 1",
+     *                 ),
+     *                 @OA\Property(
+     *                     property="description",
+     *                     type="string",
+     *                     example="Description 1",
+     *                 ),
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="Bad Request",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=400
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     example="Invalid data"
+     *                 ),
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="401",
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=401
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     example="Unauthorized"
+     *                 ),
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Not Found",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=404
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     example="Post not found"
+     *                 ),
+     *             ),
+     *         ),
+     *     ),
+     * )
+     */
+    public function update() {}
+
+    /**
+     * @OA\Delete(
+     *     path="/api/v1/tag/id/{id}",
+     *     operationId="TagDelete",
+     *     tags={"Tag"},
+     *     summary="Delete a tag",
+     *     description="Delete a tag",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=200
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="id",
+     *                     type="integer",
+     *                     example=1,
+     *                 ),
+     *                 @OA\Property(
+     *                     property="name",
+     *                     type="string",
+     *                     example="Tag 1",
+     *                 ),
+     *                 @OA\Property(
+     *                     property="description",
+     *                     type="string",
+     *                     example="Description 1",
+     *                 ),
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="Bad Request",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=400
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     example="Invalid data"
+     *                 ),
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="401",
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=401
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     example="Unauthorized"
+     *                 ),
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Not Found",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=404
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     example="Post not found"
+     *                 ),
+     *             ),
+     *         ),
+     *     ),
+     * )
+     */
+    public function delete() {}
+
+    /**
+     * @OA\Patch(
+     *     path="/api/v1/tag/restore/{id}",
+     *     operationId="TagRestore",
+     *     tags={"Tag"},
+     *     summary="Restore a tag",
+     *     description="Restore a tag",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=200
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="id",
+     *                     type="integer",
+     *                     example=1,
+     *                 ),
+     *                 @OA\Property(
+     *                     property="name",
+     *                     type="string",
+     *                     example="Tag 1",
+     *                 ),
+     *                 @OA\Property(
+     *                     property="description",
+     *                     type="string",
+     *                     example="Description 1",
+     *                 ),
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="Bad Request",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=400
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     example="Invalid data"
+     *                 ),
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="401",
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=401
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     example="Unauthorized"
+     *                 ),
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Not Found",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=404
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     example="Post not found"
+     *                 ),
+     *             ),
+     *         ),
+     *     ),
+     * )
+     */
+    public function restore() {}
 }

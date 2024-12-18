@@ -8,7 +8,6 @@ use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
@@ -83,12 +82,16 @@ class TagValidator extends BaseValidator
      * @param int $id The ID of the tag to update.
      * @return array|JsonResponse The validated data or a JsonResponse with validation errors.
      */
-    public function update(Request $request, int $id): array|JsonResponse
+    public function update(Request $request, int $id, User|Authenticatable $user): array|JsonResponse
     {
-        $theId = self::id($id);
+        $theId = $this->id($id);
 
         if ($theId instanceof JsonResponse) {
             return $theId;
+        }
+
+        if (!$user->isAdmin()) {
+            return JsonResponseHelper::notAcceptable('You are not allowed to update this tag');
         }
 
         $validated = Validator::make($request->all(), [
@@ -125,10 +128,8 @@ class TagValidator extends BaseValidator
      * @param ?User $user The user performing the action. If not provided, the authenticated user is used.
      * @return array|JsonResponse The validated ID as an integer or a JsonResponse with validation errors.
      */
-    public function delete(int $tagId, User|Authenticatable|null $user = null): array|JsonResponse
+    public function delete(int $tagId, User|Authenticatable $user): array|JsonResponse
     {
-        $user ??= Auth::user();
-
         $validator = Validator::make(['id' => $tagId], [
             'id' => 'required|numeric|exists:tags,id',
         ]);
@@ -157,10 +158,8 @@ class TagValidator extends BaseValidator
      * @param ?User $user The user performing the action. If not provided, the authenticated user is used.
      * @return array|JsonResponse The validated ID as an array or a JsonResponse with validation errors.
      */
-    public function restore(int $tagId, User|Authenticatable|null $user = null): array|JsonResponse
+    public function restore(int $tagId, User|Authenticatable $user): array|JsonResponse
     {
-        $user ??= Auth::user();
-
         $validator = Validator::make(['id' => $tagId], [
             'id' => 'required|numeric|exists:tags,id',
         ]);

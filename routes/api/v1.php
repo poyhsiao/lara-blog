@@ -83,7 +83,7 @@ Route::group(['prefix' => 'category', 'name' => 'category.'], function () {
     /**
      * Get a category by ID
      */
-    Route::get('{id}', [App\Http\Controllers\CategoryController::class, 'getById'])
+    Route::get('id/{id}', [App\Http\Controllers\CategoryController::class, 'getById'])
     ->name('getById');
 
     /**
@@ -145,6 +145,12 @@ Route::group(['prefix' => 'tag', 'name' => 'tag.'], function () {
     Route::post('', [App\Http\Controllers\TagController::class, 'create'])
       ->name('create');
 
+      /**
+       * Update a tag
+       */
+    Route::patch('id/{id}', [App\Http\Controllers\TagController::class, 'update'])
+      ->name('update');
+
     /**
      * Delete a tag
      */
@@ -156,4 +162,51 @@ Route::group(['prefix' => 'tag', 'name' => 'tag.'], function () {
      */
     Route::patch('restore/{id}', [App\Http\Controllers\TagController::class, 'restore'])
       ->name('restore');
+});
+
+/**
+ * Comment
+ */
+Route::group(['prefix' => 'comment', 'name' => 'comment.'], function () {
+    /**
+     * Get all comments
+     */
+    Route::get('', [App\Http\Controllers\CommentController::class, 'index'])
+        ->name('index');
+
+    /**
+     * Get a comment by ID
+     */
+    Route::get('/id/{id}', [App\Http\Controllers\CommentController::class,'getById'])
+        ->name('getById');
+
+    /**
+     * Create a new comment
+     */
+    Route::post('', [App\Http\Controllers\CommentController::class, 'create'])
+        ->name('create');
+
+    /**
+     * Update a comment
+     */
+    Route::patch('id/{id}', [App\Http\Controllers\CommentController::class, 'update'])
+        ->name('update');
+
+    /**
+     * Delete a comment
+     */
+    Route::delete('id/{id}', [App\Http\Controllers\CommentController::class, 'delete'])
+        ->name('delete');
+
+    /**
+     * Restore a deleted comment
+     */
+    Route::patch('restore/{id}', [App\Http\Controllers\CommentController::class, 'restore'])
+        ->name('restore');
+
+    /**
+     * Force delete a comment
+     */
+    Route::delete('force/{id}', [App\Http\Controllers\CommentController::class, 'forceDelete'])
+        ->name('forceDelete');
 });

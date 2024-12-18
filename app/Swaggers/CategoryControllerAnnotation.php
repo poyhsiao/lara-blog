@@ -174,7 +174,7 @@ class CategoryControllerAnnotation extends ControllerAnnotation
 
     /**
      * @OA\Get(
-     *     path="/api/v1/category/{id}",
+     *     path="/api/v1/category/id/{id}",
      *     operationId="getCategoryById",
      *     tags={"Category"},
      *     summary="Get a category by ID",

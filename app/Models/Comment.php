@@ -18,24 +18,30 @@ class Comment extends Model
 
     protected $fillable = [
         'content',
-        'type',
+        'user_id',
+        'post_id',
         'replyable',
-        'parent',
-        'likes',
-        'dislikes',
+        'parent_id',
     ];
 
     protected $hidden = [
+        'user_id',
+        'post_id',
+        'parent_id',
         'deleted_at',
     ];
 
     protected $casts = [
-        'parent' => 'integer',
         'likes' => 'integer',
         'dislikes' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function post(): BelongsTo
     {

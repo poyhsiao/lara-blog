@@ -98,9 +98,19 @@ class TagController extends Controller
         return $this->repoResponse($result, 'Create tag successfully');
     }
 
+    /**
+     * Update a tag.
+     *
+     * Validates the request data using the TagValidator. If validation fails, it returns a JsonResponse with the validation errors.
+     * Otherwise, it attempts to update the tag using the TagRepository. If the update is successful, it returns a success response with the updated tag.
+     *
+     * @param \Illuminate\Http\Request $request The request containing tag data to update.
+     * @param int $id The ID of the tag to update.
+     * @return \Illuminate\Http\JsonResponse A JSON response containing the result of the operation.
+     */
     public function update(Request $request, int $id): JsonResponse
     {
-        $validated = $this->validator->update($request, $id);
+        $validated = $this->validator->update($request, $id, $this->user);
 
         if ($this->isJsonResponse($validated)) {
             return $validated;
