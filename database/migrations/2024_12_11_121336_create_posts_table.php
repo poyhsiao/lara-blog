@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('slug')->unique()->comment('post slug');
             $table->mediumText('content')->comment('post content');
             $table->unsignedTinyInteger('publish_status')->default(1)->comment('0: trashed, 1: draft, 2: published');
-            $table->foreignId('author')
+            $table->foreignId('user_id')
             ->constrained('users', 'id', 'posts_user_id')
             ->onUpdate('cascade')
             ->onDelete('cascade')

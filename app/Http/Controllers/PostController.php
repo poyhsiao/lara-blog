@@ -41,7 +41,7 @@ class PostController extends Controller
             return $postData;
         }
 
-        $postData['author'] = Auth::id();
+        $postData['user_id'] = Auth::id();
 
         $result = $this->repo->create($postData);
 

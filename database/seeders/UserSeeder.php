@@ -23,6 +23,7 @@ class UserSeeder extends Seeder
                 'gender' => 1,
                 'active' => 1,
                 'role' => 2,
+                'deleted_at' => null,
             ]);
 
         User::factory()

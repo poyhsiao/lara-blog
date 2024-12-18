@@ -15,7 +15,7 @@ class TagSeeder extends Seeder
     {
         Tag::factory()
             ->create([
-                'name' => Fake()->unique()->sentence(3),
+                'name' => Fake()->unique()->word(),
                 'description' => Fake()->unique()->sentence(3),
                 'deleted_at' =>Fake()->boolean() ? now() : null,
             ]);

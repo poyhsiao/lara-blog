@@ -92,7 +92,7 @@ class User extends Authenticatable implements JWTSubject
     public function scopeCanLogin(Builder|User $query): Builder
     {
         return $query->where('active', 1)
-            ->where('email_validated_at', '!=', null);
+            ->where('email_verified_at', '!=', null);
     }
 
     public function isAdmin(): bool

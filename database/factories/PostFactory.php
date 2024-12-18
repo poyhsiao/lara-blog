@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Post;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -19,10 +20,9 @@ class PostFactory extends Factory
     {
         return [
             'title' => $this->generateTitle(),
-            'slug'=> $this->generateSlug(),
             'content' => $this->faker->paragraph(),
             'publish_status' => $this->faker->randomElement([0, 1, 2]),
-            'author' => 1,
+            'user_id' => $this->generateAuthor(),
             'deleted_at' => fake()->boolean() ? now() : null,
         ];
     }
@@ -36,12 +36,8 @@ class PostFactory extends Factory
         return $title;
     }
 
-    private function generateSlug(): string
+    private function generateAuthor(): int
     {
-        do {
-            $slug = fake()->unique()->slug;
-        } while (Post::where('slug', $slug)->exists());
-
-        return $slug;
+        return User::canLogin()->get('id')->random()->id;
     }
 }

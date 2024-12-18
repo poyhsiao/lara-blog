@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
@@ -22,7 +24,7 @@ class Post extends Model
         'slug',
         'content',
         'publish_status',
-        'author',
+        'user_id',
     ];
 
     protected $hidden = [
@@ -72,10 +74,15 @@ class Post extends Model
         );
     }
 
-    public function comments(): BelongsToMany
+    public function scopeAvailable(Builder|Post $query): Builder
     {
-        return $this->belongsToMany(Comment::class)
-        ->withTimestamps();
+        return $query->where('publish_status', 2)
+            ->where('deleted_at', null);
+    }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
     }
 
     public function tags(): BelongsToMany
@@ -97,7 +104,7 @@ class Post extends Model
      */
     public function author(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'author', 'id');
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
     private static function generateUniqueSlug(string $title): string

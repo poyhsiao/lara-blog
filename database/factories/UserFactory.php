@@ -31,7 +31,7 @@ class UserFactory extends Factory
             'password' => static::$password ??= Hash::make('password'),
             'display_name' => $this->generateDisplayName(),
             'remember_token' => Str::random(10),
-            'gender' => fake()->randomElement([-1, 0, 1]),
+            'gender' => fake()->randomElement([-1, 0, 1, 2]),
             'active' => fake()->randomElement([0, 1]),
             'role' => fake()->randomElement([0, 1, 2]),
             'deleted_at' => fake()->boolean() ? now() : null,
