@@ -81,6 +81,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasManyThrough(Emotion::class, Emotionable::class, 'user_id', 'id', 'id', 'emotion_id');
     }
 
+    public function emotionUsers(): MorphToMany
+    {
+        return $this->morphToMany(User::class, 'emotionable');
+    }
+
     public function scopeAdmin(Builder|User $query): Builder
     {
         return $query->where('role', '>', 0);

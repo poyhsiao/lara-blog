@@ -807,6 +807,10 @@ class TagControllerAnnotation extends ControllerAnnotation
      *         name="id",
      *         in="path",
      *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *             example=1,
+     *         ),
      *     ),
      *     @OA\Response(
      *         response="200",

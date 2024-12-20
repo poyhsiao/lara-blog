@@ -4,57 +4,47 @@ namespace App\Swaggers;
 
 use OpenApi\Annotations as OA;
 
-class CommentControllerAnnotation extends ControllerAnnotation
+class EmotionControlllerAnnotation extends ControllerAnnotation
 {
     /**
      * @OA\Get(
-     *     path="/api/v1/comment",
-     *     operationId="commentIndex",
-     *     tags={"Comment"},
-     *     summary="Get all comments",
-     *     description="Get all comments",
+     *     path="/api/v1/emotion",
+     *     operationId="emotionIndex",
+     *     tags={"Emotion"},
+     *     summary="Get all emotions",
+     *     description="Get all emotions",
      *     security={{"bearerAuth": {}}},
      *     @OA\Response(
-     *         response="200",
+     *         response=200,
      *         description="Success",
      *         @OA\JsonContent(
      *             @OA\Property(
      *                 property="status_code",
      *                 type="integer",
-     *                 example=200,
+     *                 example=200
      *             ),
      *             @OA\Property(
      *                 property="data",
-     *                 type="array",
-     *                 @OA\Items(
-     *                     @OA\Property(
-     *                         type="object",
-     *                         @OA\Property(
-     *                             property="id",
-     *                             type="integer",
-     *                             example=1,
-     *                         ),
-     *                         @OA\Property(
-     *                             property="content",
-     *                             type="string",
-     *                             example="Comment 1",
-     *                         ),
-     *                         @OA\Property(
-     *                             property="replyable",
-     *                             type="integer",
-     *                             example=1,
-     *                         ),
-     *                         @OA\Property(
-     *                             property="created_at",
-     *                             type="string",
-     *                             example="2021-01-01 00:00:00",
-     *                         ),
-     *                         @OA\Property(
-     *                             property="updated_at",
-     *                             type="string",
-     *                             example="2021-01-01 00:00:00",
-     *                         ),
-     *                    ),
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="id",
+     *                     type="integer",
+     *                     example=1,
+     *                 ),
+     *                 @OA\Property(
+     *                     property="name",
+     *                     type="string",
+     *                     example="Like",
+     *                 ),
+     *                 @OA\Property(
+     *                     property="description",
+     *                     type="string",
+     *                     example="Like",
+     *                 ),
+     *                 @OA\Property(
+     *                     property="avatar",
+     *                     type="string",
+     *                     example="http://www.example.com/avatar.jpg",
      *                 ),
      *             ),
      *             @OA\Property(
@@ -146,18 +136,34 @@ class CommentControllerAnnotation extends ControllerAnnotation
     }
 
     /**
-     * @OA\Get(
-     *     path="/api/v1/comment/id/{id}",
-     *     operationId="commentGetById",
-     *     tags={"Comment"},
-     *     summary="Get a comment by ID",
-     *     description="Get a comment by ID",
+     * @OA\Post(
+     *     path="/api/v1/emotion",
+     *     operationId="emotionStore",
+     *     tags={"Emotion"},
+     *     summary="Create a new emotion",
+     *     description="Create a new emotion",
      *     security={{"bearerAuth": {}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
+     *     @OA\RequestBody(
      *         required=true,
-     *         description="ID of the comment to retrieve",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             required={"name"},
+     *             @OA\Property(
+     *                 property="name",
+     *                 type="string",
+     *                 example="Like",
+     *             ),
+     *             @OA\Property(
+     *                 property="description",
+     *                 type="string",
+     *                 example="Like",
+     *             ),
+     *             @OA\Property(
+     *                 property="avatar",
+     *                 type="string",
+     *                 example="http://www.example.com/avatar.jpg",
+     *             ),
+     *         ),
      *     ),
      *     @OA\Response(
      *         response="200",
@@ -166,6 +172,7 @@ class CommentControllerAnnotation extends ControllerAnnotation
      *             @OA\Property(
      *                 property="status_code",
      *                 type="integer",
+     *                 example=200
      *             ),
      *             @OA\Property(
      *                 property="data",
@@ -176,26 +183,159 @@ class CommentControllerAnnotation extends ControllerAnnotation
      *                     example=1,
      *                 ),
      *                 @OA\Property(
-     *                     property="content",
+     *                     property="name",
      *                     type="string",
-     *                     example="Comment 1",
+     *                     example="Like",
      *                 ),
      *                 @OA\Property(
-     *                     property="replyable",
+     *                     property="description",
+     *                     type="string",
+     *                     example="Like",
+     *                 ),
+     *                 @OA\Property(
+     *                     property="avatar",
+     *                     type="string",
+     *                     example="http://www.example.com/avatar.jpg",
+     *                 ),
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="Bad Request",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=400
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     example="Invalid data"
+     *                 ),
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="401",
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=401
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     example="Unauthorized"
+     *                 ),
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Not Found",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=404
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     example="Post not found"
+     *                 ),
+     *             ),
+     *         ),
+     *     ),
+     * )
+     */
+    public function store()
+    {
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/v1/emotion/id/{id}",
+     *     operationId="emotionGetById",
+     *     tags={"Emotion"},
+     *     summary="Get a emotion by ID",
+     *     description="Get a emotion by ID",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *             example=1,
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=200
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="id",
      *                     type="integer",
      *                     example=1,
      *                 ),
      *                 @OA\Property(
-     *                     property="created_at",
+     *                     property="name",
      *                     type="string",
-     *                     example="2021-01-01 00:00:00",
+     *                     example="Like",
      *                 ),
      *                 @OA\Property(
-     *                     property="updated_at",
+     *                     property="description",
      *                     type="string",
-     *                     example="2021-01-01 00:00:00",
+     *                     example="Like",
      *                 ),
-     *            ),
+     *                 @OA\Property(
+     *                     property="avatar",
+     *                     type="string",
+     *                     example="http://www.example.com/avatar.jpg",
+     *                 ),
+     *             ),
      *             @OA\Property(
      *                 property="error",
      *                 type="object",
@@ -285,183 +425,42 @@ class CommentControllerAnnotation extends ControllerAnnotation
     }
 
     /**
-     * @OA\Post(
-     *     path="/api/v1/comment",
-     *     operationId="commentCreate",
-     *     tags={"Comment"},
-     *     summary="Create a new comment",
-     *     description="Create a new comment",
-     *     security={{"bearerAuth": {}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"content", "replyable"},
-     *             @OA\Property(
-     *                 property="content",
-     *                 type="string",
-     *                 example="Comment 1",
-     *             ),
-     *             @OA\Property(
-     *                 property="replyable",
-     *                 type="integer",
-     *                 example=1,
-     *             ),
-     *         ),
-     *     ),
-     *     @OA\Response(
-     *         response="200",
-     *         description="Success",
-     *         @OA\JsonContent(
-     *             @OA\Property(
-     *                 property="status_code",
-     *                 type="integer",
-     *                 example=200,
-     *             ),
-     *             @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     *                 @OA\Property(
-     *                     property="id",
-     *                     type="integer",
-     *                     example=1,
-     *                 ),
-     *                 @OA\Property(
-     *                     property="content",
-     *                     type="string",
-     *                     example="Comment 1",
-     *                 ),
-     *                 @OA\Property(
-     *                     property="replyable",
-     *                     type="integer",
-     *                     example=1,
-     *                 ),
-     *                 @OA\Property(
-     *                     property="created_at",
-     *                     type="string",
-     *                     example="2021-01-01 00:00:00",
-     *                 ),
-     *                 @OA\Property(
-     *                     property="updated_at",
-     *                     type="string",
-     *                     example="2021-01-01 00:00:00",
-     *                 ),
-     *            ),
-     *            @OA\Property(
-     *                 property="error",
-     *                 type="object",
-     *                 example=null,
-     *             ),
-     *         ),
-     *     ),
-     *     @OA\Response(
-     *         response="400",
-     *         description="Bad Request",
-     *         @OA\JsonContent(
-     *             @OA\Property(
-     *                 property="status_code",
-     *                 type="integer",
-     *                 example=400
-     *             ),
-     *             @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     *                 example=null,
-     *             ),
-     *             @OA\Property(
-     *                 property="error",
-     *                 type="object",
-     *                 @OA\Property(
-     *                     property="message",
-     *                     type="string",
-     *                     example="Invalid data"
-     *                 ),
-     *             ),
-     *         ),
-     *     ),
-     *     @OA\Response(
-     *         response="401",
-     *         description="Unauthorized",
-     *         @OA\JsonContent(
-     *             @OA\Property(
-     *                 property="status_code",
-     *                 type="integer",
-     *                 example=401
-     *             ),
-     *             @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     *                 example=null,
-     *             ),
-     *             @OA\Property(
-     *                 property="error",
-     *                 type="object",
-     *                 @OA\Property(
-     *                     property="message",
-     *                     type="string",
-     *                     example="Unauthorized"
-     *                 ),
-     *             ),
-     *         ),
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Not Found",
-     *         @OA\JsonContent(
-     *             @OA\Property(
-     *                 property="status_code",
-     *                 type="integer",
-     *                 example=404
-     *             ),
-     *             @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     *                 example=null,
-     *             ),
-     *             @OA\Property(
-     *                 property="error",
-     *                 type="object",
-     *                 @OA\Property(
-     *                     property="message",
-     *                     type="string",
-     *                     example="Post not found"
-     *                 ),
-     *             ),
-     *         ),
-     *     ),
-     * )
-     */
-    public function create()
-    {
-    }
-
-    /**
-     * @OA\Patch(
-     *     path="/api/v1/comment/id/{id}",
-     *     operationId="commentUpdate",
-     *     tags={"Comment"},
-     *     summary="Update a comment",
-     *     description="Update a comment",
+     * @OA\Put(
+     *     path="/api/v1/emotion/id/{id}",
+     *     operationId="emotionUpdate",
+     *     tags={"Emotion"},
+     *     summary="Update a emotion",
+     *     description="Update a emotion",
      *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
-     *         description="Comment id",
      *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *             example=1,
+     *         ),
      *     ),
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
+     *             type="object",
      *             @OA\Property(
-     *                 property="content",
+     *                 property="name",
      *                 type="string",
-     *                 example="Comment 1",
+     *                 example="Like",
      *             ),
      *             @OA\Property(
-     *                 property="replyable",
-     *                 type="integer",
-     *                 example=1,
+     *                 property="description",
+     *                 type="string",
+     *                 example="Like",
      *             ),
-     *         ),
+     *             @OA\Property(
+     *                 property="avatar",
+     *                 type="string",
+     *                 example="http://www.example.com/avatar.jpg",
+     *            ),
+     *        ),
      *     ),
      *     @OA\Response(
      *         response="200",
@@ -481,27 +480,22 @@ class CommentControllerAnnotation extends ControllerAnnotation
      *                     example=1,
      *                 ),
      *                 @OA\Property(
-     *                     property="content",
+     *                     property="name",
      *                     type="string",
-     *                     example="Comment 1",
+     *                     example="Like",
      *                 ),
      *                 @OA\Property(
-     *                     property="replyable",
-     *                     type="integer",
-     *                     example=1,
+     *                     property="description",
+     *                     type="string",
+     *                     example="Like",
      *                 ),
      *                 @OA\Property(
-     *                     property="created_at",
+     *                     property="avatar",
      *                     type="string",
-     *                     example="2021-01-01 00:00:00",
+     *                     example="http://www.example.com/avatar.jpg",
      *                 ),
-     *                 @OA\Property(
-     *                     property="updated_at",
-     *                     type="string",
-     *                     example="2021-01-01 00:00:00",
-     *                 ),
-     *            ),
-     *            @OA\Property(
+     *             ),
+     *             @OA\Property(
      *                 property="error",
      *                 type="object",
      *                 example=null,
@@ -578,31 +572,31 @@ class CommentControllerAnnotation extends ControllerAnnotation
      *                 @OA\Property(
      *                     property="message",
      *                     type="string",
-     *                     example="Post not found"
+     *                     example="Post not found",
      *                 ),
      *             ),
      *         ),
      *     ),
-     * )
+     *  )
      */
     public function update()
-    {}
+    {
+    }
 
     /**
      * @OA\Delete(
-     *     path="/api/v1/comment/id/{id}",
-     *     summary="Delete a comment",
-     *     operationId="commentDelete",
-     *     tags={"Comment"},
-     *     security={{"sanctum": {}}},
+     *     path="/api/v1/emotion/id/{id}",
+     *     operationId="emotionDelete",
+     *     tags={"Emotion"},
+     *     summary="Delete an emotion",
+     *     description="Delete an emotion",
+     *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
-     *         description="Comment id",
      *         required=true,
      *         @OA\Schema(
      *             type="integer",
-     *             format="int",
      *             example=1,
      *         ),
      *     ),
@@ -619,27 +613,27 @@ class CommentControllerAnnotation extends ControllerAnnotation
      *                 property="data",
      *                 type="object",
      *                 @OA\Property(
-     *                     property="content",
-     *                     type="string",
-     *                     example="Comment 1",
-     *                 ),
-     *                 @OA\Property(
-     *                     property="replyable",
+     *                     property="id",
      *                     type="integer",
      *                     example=1,
      *                 ),
      *                 @OA\Property(
-     *                     property="created_at",
+     *                     property="name",
      *                     type="string",
-     *                     example="2021-01-01 00:00:00",
+     *                     example="Like",
      *                 ),
      *                 @OA\Property(
-     *                     property="updated_at",
+     *                     property="description",
      *                     type="string",
-     *                     example="2021-01-01 00:00:00",
+     *                     example="Like",
      *                 ),
-     *            ),
-     *            @OA\Property(
+     *                 @OA\Property(
+     *                     property="avatar",
+     *                     type="string",
+     *                     example="http://www.example.com/avatar.jpg",
+     *                 ),
+     *             ),
+     *             @OA\Property(
      *                 property="error",
      *                 type="object",
      *                 example=null,
@@ -724,24 +718,23 @@ class CommentControllerAnnotation extends ControllerAnnotation
      * )
      */
     public function delete()
-    {}
+    {
+    }
 
     /**
      * @OA\Patch(
-     *     path="/api/v1/comment/restore/{id}",
-     *     operationId="commentRestore",
-     *     tags={"Comment"},
-     *     summary="Restore a comment",
-     *     description="Restore a comment",
+     *     path="/api/v1/emotion/restore/{id}",
+     *     operationId="emotionRestore",
+     *     tags={"Emotion"},
+     *     summary="Restore an emotion",
+     *     description="Restore an emotion",
      *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
-     *         description="Comment id",
      *         required=true,
      *         @OA\Schema(
      *             type="integer",
-     *             format="int",
      *             example=1,
      *         ),
      *     ),
@@ -758,27 +751,27 @@ class CommentControllerAnnotation extends ControllerAnnotation
      *                 property="data",
      *                 type="object",
      *                 @OA\Property(
-     *                     property="content",
-     *                     type="string",
-     *                     example="Comment 1",
-     *                 ),
-     *                 @OA\Property(
-     *                     property="replyable",
-     *                     type="string",
+     *                     property="id",
+     *                     type="integer",
      *                     example=1,
      *                 ),
      *                 @OA\Property(
-     *                     property="created_at",
+     *                     property="name",
      *                     type="string",
-     *                     example="2021-01-01 00:00:00",
+     *                     example="Like",
      *                 ),
      *                 @OA\Property(
-     *                     property="updated_at",
+     *                     property="description",
      *                     type="string",
-     *                     example="2021-01-01 00:00:00",
+     *                     example="Like",
      *                 ),
-     *            ),
-     *            @OA\Property(
+     *                 @OA\Property(
+     *                     property="avatar",
+     *                     type="string",
+     *                     example="http://www.example.com/avatar.jpg",
+     *                 ),
+     *             ),
+     *             @OA\Property(
      *                 property="error",
      *                 type="object",
      *                 example=null,
@@ -863,5 +856,306 @@ class CommentControllerAnnotation extends ControllerAnnotation
      * )
      */
     public function restore()
-    {}
+    {
+    }
+
+    /**
+     * @OA\Delete(
+     *     path="/api/v1/emotion/force/{id}",
+     *     operationId="emotionForceDelete",
+     *     tags={"Emotion"},
+     *     summary="Force delete an emotion",
+     *     description="Force delete an emotion",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *             example=1,
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=200,
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="id",
+     *                     type="integer",
+     *                     example=1,
+     *                 ),
+     *                 @OA\Property(
+     *                     property="name",
+     *                     type="string",
+     *                     example="Like",
+     *                 ),
+     *                 @OA\Property(
+     *                     property="description",
+     *                     type="string",
+     *                     example="Like",
+     *                 ),
+     *                 @OA\Property(
+     *                     property="avatar",
+     *                     type="string",
+     *                     example="http://www.example.com/avatar.jpg",
+     *                 ),
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="Bad Request",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=400
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     example="Invalid data"
+     *                 ),
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="401",
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=401
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     example="Unauthorized"
+     *                 ),
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Not Found",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=404
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     example="Post not found"
+     *                 ),
+     *             ),
+     *         ),
+     *     ),
+     * )
+     */
+    public function forceDelete()
+    {
+    }
+
+    /**
+     * @OA\Patch(
+     *     path="/api/v1/emotion/toggle/{id}",
+     *     operationId="emotionToggleEmotion",
+     *     tags={"Emotion"},
+     *     summary="Toggle an emotion",
+     *     description="Toggle an emotion",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *             example=1,
+     *         ),
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="type",
+     *                 type="string",
+     *                 description="The type of emotion to toggle",
+     *                 example="like",
+     *                 enum={"posts", "comments", "users"},
+     *             ),
+     *             @OA\Property(
+     *                 property="id",
+     *                 type="integer",
+     *                 description="The ID of the type to toggle",
+     *                 example=1,
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=200
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="id",
+     *                     type="integer",
+     *                     example=1,
+     *                 ),
+     *                 @OA\Property(
+     *                     property="user_id",
+     *                     type="integer",
+     *                     example=1,
+     *                 ),
+     *                 @OA\Property(
+     *                     property="emotionable_id",
+     *                     type="integer",
+     *                     example=1,
+     *                 ),
+     *                 @OA\Property(
+     *                     property="emotionable_type",
+     *                     type="string",
+     *                     example="posts",
+     *                 ),
+     *                 @OA\Property(
+     *                     property="emotion_id",
+     *                     type="integer",
+     *                     example=1,
+     *                 ),
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="Bad Request",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=400
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     example="Invalid data"
+     *                 ),
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="401",
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=401
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     example="Unauthorized"
+     *                 ),
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Not Found",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=404
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     example="Post not found"
+     *                 ),
+     *             ),
+     *         ),
+     *     ),
+     * )
+     */
+    public function toggleEmotion()
+    {
+    }
 }
