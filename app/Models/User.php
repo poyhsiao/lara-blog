@@ -6,6 +6,8 @@ use Illuminate\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -72,6 +74,11 @@ class User extends Authenticatable implements JWTSubject
     public function posts(): HasMany
     {
         return $this->hasMany(Post::class, 'author', 'id');
+    }
+
+    public function emotions(): HasManyThrough
+    {
+        return $this->hasManyThrough(Emotion::class, Emotionable::class, 'user_id', 'id', 'id', 'emotion_id');
     }
 
     public function scopeAdmin(Builder|User $query): Builder

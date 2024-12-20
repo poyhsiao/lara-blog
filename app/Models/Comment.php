@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 
@@ -57,6 +58,16 @@ class Comment extends Model
     public function parentComment(): BelongsTo
     {
         return $this->belongsTo(Comment::class, 'parent', 'id');
+    }
+
+    public function emotionEmotions(): MorphToMany
+    {
+        return $this->morphToMany(Emotion::class, 'emotionable');
+    }
+
+    public function emotionUsers(): MorphToMany
+    {
+        return $this->morphToMany(User::class, 'emotionable');
     }
 
     public function scopeAvailable(Builder|Comment $query): Builder

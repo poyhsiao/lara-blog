@@ -19,8 +19,8 @@ class PostRelativeSeeder extends Seeder
             ->count(50)
             ->create()
             ->each(function (Post $post) {
-                $post->tags()->sync(Tag::available()->pluck("id")->random(3)->toArray());
-                $post->categories()->sync(Category::available()->pluck("id")->random(3)->toArray());
+                $post->tags()->sync(Tag::available()->pluck('id')->random(3)->toArray());
+                $post->categories()->sync(Category::available()->pluck('id')->random(3)->toArray());
                 Comment::whereIn('id', Comment::available()->pluck('id')->random(3)->toArray())
                 ->update(['post_id' => $post->id]);
             });

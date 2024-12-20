@@ -51,12 +51,12 @@ return new class extends Migration
             $table->foreignId('category_id')
             ->constrained('categories', 'id', 'categories_post_id')
             ->onUpdate('cascade')
-            ->onDelete('cascade');
+            ->onDelete('set null');
 
             $table->foreignId('post_id')
             ->constrained('posts', 'id', 'posts_category_id')
             ->onUpdate('cascade')
-            ->onDelete('cascade');
+            ->onDelete('set null');
 
             $table->timestamps();
             $table->primary(['category_id','post_id']);
@@ -71,7 +71,7 @@ return new class extends Migration
             $table->foreignId('tag_id')
             ->constrained('tags', 'id', 'tags_post_id')
             ->onUpdate('cascade')
-            ->onDelete('cascade');
+            ->onDelete('set null');
 
             $table->timestamps();
             $table->primary(['post_id','tag_id']);

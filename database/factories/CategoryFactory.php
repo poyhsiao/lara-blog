@@ -20,8 +20,9 @@ class CategoryFactory extends Factory
         return [
             'name' => $this->generateName(),
             'slug'=> $this->generateSlug(),
-            'description'=> $this->faker->sentence,
-            'parent' => $this->faker->boolean ? 1 : 0,
+            'description'=> $this->faker->sentence(),
+            'parent' => $this->faker->boolean() ? 1 : 0,
+            'deleted_at' => $this->faker->boolean() ? now() : null,
         ];
     }
 

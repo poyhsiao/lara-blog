@@ -25,8 +25,6 @@ class CommentFactory extends Factory
             'user_id' => $this->generateUserId(),
             'post_id' => $this->generatePostId(),
             'parent_id' => $this->generateParentId(),
-            'likes' => $this->faker->randomNumber(2),
-            'dislikes' => $this->faker->randomNumber(2),
             'deleted_at' => fake()->boolean() ? now() : null,
         ];
     }

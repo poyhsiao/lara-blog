@@ -210,3 +210,56 @@ Route::group(['prefix' => 'comment', 'name' => 'comment.'], function () {
     Route::delete('force/{id}', [App\Http\Controllers\CommentController::class, 'forceDelete'])
         ->name('forceDelete');
 });
+
+/**
+ * Emotion
+ */
+Route::group(['prefix'=> 'emotion', 'name'=> 'emotion.'], function () {
+    /**
+     * Get all emotions
+     */
+    Route::get('', [App\Http\Controllers\EmotionController::class, 'index'])
+        ->name('index');
+
+    /**
+     * Create a new emotion
+     */
+    Route::post('', [App\Http\Controllers\EmotionController::class, 'store'])
+        ->name('create');
+
+    /**
+     * Get a emotion by ID
+     */
+    Route::get('id/{id}', [App\Http\Controllers\EmotionController::class, 'getById'])
+        ->name('getById');
+
+    /**
+     * Update the specified resource in storage.
+     */
+    Route::patch('id/{id}', [App\Http\Controllers\EmotionController::class, 'update'])
+        ->name('update');
+
+    /**
+     * Delete the specified resource from storage.
+     */
+    Route::delete('id/{id}', [App\Http\Controllers\EmotionController::class, 'delete'])
+        ->name('delete');
+
+    /**
+     * Restore a soft-deleted emotion.
+     */
+    Route::patch('restore/{id}', [App\Http\Controllers\EmotionController::class, 'restore'])
+        ->name('restore');
+
+    /**
+     * Force delete an emotion.
+     */
+    Route::delete('force/{id}', [App\Http\Controllers\EmotionController::class, 'forceDelete'])
+        ->name('forceDelete');
+
+    /**
+     * Toggle the specified resource in emotion
+     */
+    Route::patch('toggle/{id}', [App\Http\Controllers\EmotionController::class, 'toggleEmotion'])
+        ->name('toggleEmotion');
+});

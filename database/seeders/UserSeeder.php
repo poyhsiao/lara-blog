@@ -18,6 +18,8 @@ class UserSeeder extends Seeder
             ->create([
                 'name' => 'kimhsiao',
                 'email' => 'white.shopping@gmail.com',
+                'display_name' => 'kimhsiao',
+                'email_verified_at' => now(),
                 'password' => Hash::make('password'),
                 'remember_token' => Str::random(10),
                 'gender' => 1,

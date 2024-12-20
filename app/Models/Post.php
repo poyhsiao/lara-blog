@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
@@ -105,6 +106,16 @@ class Post extends Model
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    public function emotionEmotions(): MorphToMany
+    {
+        return $this->morphToMany(Emotion::class, 'emotionable');
+    }
+
+    public function emotionUsers(): MorphToMany
+    {
+        return $this->morphToMany(User::class, 'emotionable');
     }
 
     private static function generateUniqueSlug(string $title): string
