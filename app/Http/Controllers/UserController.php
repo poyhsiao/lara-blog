@@ -15,10 +15,13 @@ class UserController extends Controller
 
     protected $validator;
 
+    protected $user;
+
     public function __construct(UserRepository $repo, UserValidator $validator)
     {
         $this->repo = $repo;
         $this->validator = $validator;
+        $this->user = Auth::user();
     }
 
     /**
@@ -28,9 +31,7 @@ class UserController extends Controller
      */
     public function me(): JsonResponse
     {
-        $user = Auth::user();
-
-        return JsonResponseHelper::success($user, 'Get myself information successfully');
+        return JsonResponseHelper::success($this->user, 'Get myself information successfully');
     }
 
     /**
@@ -66,21 +67,28 @@ class UserController extends Controller
      */
     public function updateProfile(Request $request)
     {
-        if (!Auth::user()) {
-            return JsonResponseHelper::notFound('User not found');
-        }
-
-        $user = Auth::user();
-
-        $validate = $this->validator->updateProfileValidate($request, $user->id);
+        $validate = $this->validator->updateProfileValidate($request, $this->user->id);
 
         if ($this->isJsonResponse($validate)) {
             return $validate;
         }
 
-        $user = $this->repo->updateProfile($user, $validate);
+        $user = $this->repo->updateProfile($this->user, $validate);
 
         return $this->repoResponse($user, 'Update profile successfully');
+    }
+
+    public function getById(Request $request, int $userId): JsonResponse
+    {
+        $validator = $this->validator->getById($request, $userId, $this->user);
+
+        if ($this->isJsonResponse($validator)) {
+            return $validator;
+        }
+
+        $result = $this->repo->getById($validator);
+
+        return $this->repoResponse($result, 'Get user by id successfully');
     }
 
     /**
@@ -94,16 +102,50 @@ class UserController extends Controller
      */
     public function getPosts(Request $request): JsonResponse
     {
-        $user = Auth::user();
-
         $validated = $this->validator->getPosts($request);
 
         if ($this->isJsonResponse($validated)) {
             return $validated;
         }
 
-        $posts = $this->repo->getPosts($user, $validated['filter'] ?? 'published');
+        $posts = $this->repo->getPosts($this->user, $validated['filter'] ?? 'published');
 
         return $this->repoResponse($posts, 'Get ' . ($validated['filter'] ?? 'published') . ' posts successfully');
+    }
+
+    /**
+     * Retrieve all comments associated with the authenticated user.
+     *
+     * @return \Illuminate\Http\JsonResponse A JSON response containing the result of the operation.
+     */
+    public function getComments(): JsonResponse
+    {
+        $result = $this->repo->getComments($this->user);
+
+        return $this->repoResponse($result, 'Get comments successfully');
+    }
+
+    /**
+     * Retrieve all emotions associated with the authenticated user.
+     *
+     * @return \Illuminate\Http\JsonResponse A JSON response containing the result of the operation.
+     */
+    public function getEmotions(): JsonResponse
+    {
+        $result = $this->repo->getEmotions($this->user);
+
+        return $this->repoResponse($result, 'Get emotions successfully');
+    }
+
+    /**
+     * Retrieve all emotions associated with the authenticated user that the user has received.
+     *
+     * @return \Illuminate\Http\JsonResponse A JSON response containing the result of the operation.
+     */
+    public function getEmotionsToMe(): JsonResponse
+    {
+        $result = $this->repo->getEmotionsToMe($this->user);
+
+        return $this->repoResponse($result, 'Get emotions to me successfully');
     }
 }

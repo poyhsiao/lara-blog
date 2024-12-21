@@ -4,6 +4,8 @@ namespace App\Repositories;
 
 use App\Helper\JsonResponseHelper;
 use App\Models\Post;
+use App\Models\User;
+use Illuminate\Auth\Authenticatable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -60,7 +62,6 @@ class PostRepository extends BaseRepository
         }
     }
 
-
     /**
      * Get a post by its ID
      *
@@ -83,6 +84,19 @@ class PostRepository extends BaseRepository
                 'message' => $e->getMessage()
             ]);
             return JsonResponseHelper::error(null, 'Failed to get post by ID');
+        }
+    }
+
+    public function trashed(User|Authenticatable $user): array|JsonResponse
+    {
+        try {
+            return $this->model::onlyTrashed()->get()->toArray();
+        } catch (\Exception $e) {
+            Log::error('Failed to get trashed posts', [
+                'user_id' => $user->id,
+                'message' => $e->getMessage(),
+            ]);
+            return JsonResponseHelper::error(null, 'Failed to get trashed posts');
         }
     }
 

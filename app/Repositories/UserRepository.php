@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -91,6 +92,48 @@ class UserRepository extends BaseRepository
     }
 
     /**
+     * Retrieve a user by their ID, with optional relationships.
+     *
+     * Retrieve a user by their ID, optionally including any of the following relationships:
+     *     - posts
+     *     - comments
+     *     - receivedEmotions
+     *     - givenEmotions
+     *
+     * @param array $validated An associative array containing the user ID and any
+     *     optional relationships to include, with each relation name as a key and
+     *     a value of 1 to include the relation.
+     * @return array|JsonResponse Returns an associative array containing the user data,
+     *     or a JSON response with an error message on failure.
+     */
+    public function getById(array $validated): array|JsonResponse
+    {
+        try {
+            $userId = $validated['user_id'];
+            $user = $this->model::find($userId);
+            $relations = [];
+
+            $includeRelations = Arr::except($validated, ['user_id']);
+            foreach ($includeRelations as $relation => $shouldLoad) {
+                if ($shouldLoad === 1) {
+                    $relations[] = $relation;
+                }
+            }
+
+            $user->load($relations);
+
+            return $user->toArray();
+        } catch (\Exception $exception) {
+            Log::error('Failed to retrieve user by ID', [
+                'user_id' => $userId,
+                'data' => $validated,
+                'error' => $exception->getMessage(),
+            ]);
+            return JsonResponseHelper::error(null, 'Failed to retrieve user by ID');
+        }
+    }
+
+    /**
      * Retrieve the posts associated with a specific user, filtered by the specified status.
      *
      * Depending on the filter provided, this method retrieves all posts, trashed posts, drafts, or published posts.
@@ -103,10 +146,6 @@ class UserRepository extends BaseRepository
      */
     public function getPosts(User|Authenticatable $user, string $filter = 'published'): array|JsonResponse
     {
-        if (!$user) {
-            return JsonResponseHelper::notFound('User not found');
-        }
-
         try {
             $result = $user::with([
                 'posts' => function (HasMany $query) use ($filter) {
@@ -125,6 +164,8 @@ class UserRepository extends BaseRepository
             if ('all' === $filter) {
                 $result['posts'] = collect($result['posts'])->groupBy('publish_status')->toArray();
             }
+
+            return $result;
         } catch (\Exception $e) {
             Log::error('Get posts failed', [
                 'id' => $user->id,
@@ -132,8 +173,72 @@ class UserRepository extends BaseRepository
             ]);
             return JsonResponseHelper::error(null, 'Get posts failed');
         }
+    }
 
-        return $result;
+    /**
+     * Retrieve all comments made by the given user.
+     *
+     * If the user is not found or an error occurs, returns a JsonResponse with the error message.
+     * Otherwise, returns an array of comments made by the user.
+     *
+     * @param User|Authenticatable $user The user whose comments are to be retrieved.
+     * @return array|JsonResponse An array of comments or a JsonResponse in case of error.
+     */
+    public function getComments(User|Authenticatable $user): array|JsonResponse
+    {
+        try {
+            return $user->load('comments')->toArray();
+        } catch (\Exception $e) {
+            Log::error('Get comments failed', [
+                'id' => $user->id,
+                'message' => $e->getMessage()
+            ]);
+            return JsonResponseHelper::error(null, 'Get comments failed');
+        }
+    }
+
+    /**
+     * Retrieve all emotions liked by the given user.
+     *
+     * If the user is not found or an error occurs, returns a JsonResponse with the error message.
+     * Otherwise, returns an array of emotions liked by the user.
+     *
+     * @param User|Authenticatable $user The user whose emotions are to be retrieved.
+     * @return array|JsonResponse An array of emotions liked by the user or a JsonResponse in case of error.
+     */
+    public function getEmotions(User|Authenticatable $user): array|JsonResponse
+    {
+        try {
+            return $user->load('emotions')->toArray();
+        } catch (\Exception $e) {
+            Log::error('Get emotions failed', [
+                'id' => $user->id,
+                'message' => $e->getMessage()
+            ]);
+            return JsonResponseHelper::error(null, 'Get emotions failed');
+        }
+    }
+
+    /**
+     * Retrieve all emotions associated with the given user that the user has received.
+     *
+     * If the user is not found or an error occurs, returns a JsonResponse with the error message.
+     * Otherwise, returns an array of emotions associated with the user that the user has received.
+     *
+     * @param User|Authenticatable $user The user whose received emotions are to be retrieved.
+     * @return array|JsonResponse An array of received emotions or a JsonResponse in case of error.
+     */
+    public function getEmotionsToMe(User|Authenticatable $user): array|JsonResponse
+    {
+        try {
+            return $user->load('emotionUsers')->toArray();
+        } catch (\Exception $e) {
+            Log::error('Get emotions to me failed', [
+                'id' => $user->id,
+                'message' => $e->getMessage()
+            ]);
+            return JsonResponseHelper::error(null, 'Get emotions to me failed');
+        }
     }
 
     /**

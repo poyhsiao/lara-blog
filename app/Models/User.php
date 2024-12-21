@@ -73,7 +73,12 @@ class User extends Authenticatable implements JWTSubject
      */
     public function posts(): HasMany
     {
-        return $this->hasMany(Post::class, 'author', 'id');
+        return $this->hasMany(Post::class, 'user_id', 'id');
+    }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class, 'user_id', 'id');
     }
 
     public function emotions(): HasManyThrough

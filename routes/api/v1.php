@@ -43,8 +43,35 @@ Route::group(['prefix' => 'user', 'name' => 'user.'], function () {
     Route::patch('profile', [App\Http\Controllers\UserController::class, 'updateProfile'])
       ->name('updateProfile');
 
+    /**
+     * Get all posts of the authenticated user
+     */
     Route::get('posts', [App\Http\Controllers\UserController::class, 'getPosts'])
       ->name('getPosts');
+
+    /**
+     * Get a user by ID with filter (posts, comments, emotions, emotionUsers)
+     */
+    Route::get('id/{id}', [App\Http\Controllers\UserController::class, 'getById'])
+      ->name('getById');
+
+    /**
+     * Get all comments of the authenticated user
+     */
+    Route::get('comments', [App\Http\Controllers\UserController::class, 'getComments'])
+    ->name('getComments');
+
+    /**
+     * Get all emotions of the authenticated user
+     */
+    Route::get('emotions', [App\Http\Controllers\UserController::class, 'getEmotions'])
+    ->name('getEmotions');
+
+    /**
+     * Get all emotions of the authenticated user that the user has received
+     */
+    Route::get('emotions/me', [App\Http\Controllers\UserController::class, 'getEmotionsToMe'])
+    ->name('getEmotionsToMe');
 });
 
 /**
@@ -52,20 +79,44 @@ Route::group(['prefix' => 'user', 'name' => 'user.'], function () {
  */
 Route::group(['prefix' => 'post', 'name' => 'post.'], function () {
     /**
+     * Get all posts
+     */
+    Route::get('', [App\Http\Controllers\PostController::class, 'index'])
+    ->name('index');
+
+    /**
      * Create a new post
      */
     Route::post('', [App\Http\Controllers\PostController::class, 'create'])
     ->name('create');
 
+    /**
+     * Get a post by ID
+     */
     Route::get('/id/{id}', [App\Http\Controllers\PostController::class, 'getPostById'])
     ->name('getPostById');
 
+    /**
+     * Get all soft-deleted posts
+     */
+    Route::get('trashed', [App\Http\Controllers\PostController::class, 'trashed'])
+      ->name('trashed');
+
+    /**
+     * Get a post by name
+     */
     Route::get('name/{name}', [App\Http\Controllers\PostController::class, 'getPostByName'])
     ->name('getPostByName');
 
+    /**
+     * Update a post
+     */
     Route::patch('{id}', [App\Http\Controllers\PostController::class, 'update'])
     ->name('update');
 
+    /**
+     * Delete a post
+     */
     Route::delete('{id}', [App\Http\Controllers\PostController::class, 'delete'])
     ->name('delete');
 });
@@ -145,9 +196,9 @@ Route::group(['prefix' => 'tag', 'name' => 'tag.'], function () {
     Route::post('', [App\Http\Controllers\TagController::class, 'create'])
       ->name('create');
 
-      /**
-       * Update a tag
-       */
+    /**
+     * Update a tag
+     */
     Route::patch('id/{id}', [App\Http\Controllers\TagController::class, 'update'])
       ->name('update');
 
@@ -177,7 +228,7 @@ Route::group(['prefix' => 'comment', 'name' => 'comment.'], function () {
     /**
      * Get a comment by ID
      */
-    Route::get('/id/{id}', [App\Http\Controllers\CommentController::class,'getById'])
+    Route::get('/id/{id}', [App\Http\Controllers\CommentController::class, 'getById'])
         ->name('getById');
 
     /**
@@ -214,7 +265,7 @@ Route::group(['prefix' => 'comment', 'name' => 'comment.'], function () {
 /**
  * Emotion
  */
-Route::group(['prefix'=> 'emotion', 'name'=> 'emotion.'], function () {
+Route::group(['prefix' => 'emotion', 'name' => 'emotion.'], function () {
     /**
      * Get all emotions
      */

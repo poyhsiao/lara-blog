@@ -69,11 +69,30 @@ class PostValidator extends BaseValidator
             return JsonResponseHelper::notAcceptable('Get post failed', $validator->errors());
         }
 
-        if (!$user->isAdmin() && $user->id !== $this->model::find($postId)->author) {
+        if (!$user->isAdmin() && $user->id !== $this->model::find($postId)->user_id) {
             return JsonResponseHelper::unauthorized('You are not authorized to perform this action');
         }
 
         return $validator->validated();
+    }
+
+    /**
+     * Check if the user is authorized to view trashed posts.
+     *
+     * This method checks if the provided user is an admin. If the user is not an admin,
+     * it returns an unauthorized JsonResponse. Otherwise, it returns true indicating
+     * the user is authorized to perform the action.
+     *
+     * @param \App\Models\User|\Illuminate\Contracts\Auth\Authenticatable $user The user attempting to perform the action.
+     * @return bool|JsonResponse True if authorized, or a JsonResponse if unauthorized.
+     */
+    public function trashed(User|Authenticatable $user): bool|JsonResponse
+    {
+        if (!$user->isAdmin()) {
+            return JsonResponseHelper::unauthorized('You are not authorized to perform this action');
+        }
+
+        return true;
     }
 
     /**

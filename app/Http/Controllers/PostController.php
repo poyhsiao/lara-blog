@@ -24,6 +24,20 @@ class PostController extends Controller
     }
 
     /**
+     * Get all posts.
+     *
+     * Retrieves all posts from the database using the PostRepository. The result is a JSON response containing all posts or an error message.
+     *
+     * @return \Illuminate\Http\JsonResponse The response containing all posts or an error message.
+     */
+    public function index(): JsonResponse
+    {
+        $result = $this->repo->getAll();
+
+        return $this->repoResponse($result, 'Get all posts successfully');
+    }
+
+    /**
      * Create a new post.
      *
      * Validates the request using the PostValidator. If validation fails, returns a JsonResponse with the validation errors.
@@ -60,13 +74,34 @@ class PostController extends Controller
     {
         $validated = $this->validator->getById($id, $this->user);
 
-        if ($this->isJsonResponse( $validated)) {
+        if ($this->isJsonResponse($validated)) {
             return $validated;
         }
 
         $result = $this->repo->getById($validated);
 
         return $this->repoResponse($result, 'Get post successfully');
+    }
+
+    /**
+     * Get all soft-deleted posts.
+     *
+     * Validates the request using the PostValidator. If validation fails, returns a JsonResponse with the validation errors.
+     * Otherwise, attempts to retrieve all soft-deleted posts using the PostRepository. If the retrieval fails, returns an error response. Otherwise, returns a success response with the retrieved posts.
+     *
+     * @return \Illuminate\Http\JsonResponse A JSON response containing the result of the operation.
+     */
+    public function trashed(): JsonResponse
+    {
+        $validated = $this->validator->trashed($this->user);
+
+        if ($this->isJsonResponse($validated)) {
+            return $validated;
+        }
+
+        $result = $this->repo->trashed($this->user);
+
+        return $this->repoResponse($result, 'Get trashed posts successfully');
     }
 
     /**
