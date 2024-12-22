@@ -50,7 +50,7 @@ class EmotionController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $this->validator->store($request, $this->user);
+        $validated = $this->validator->store($request);
 
         if ($validated instanceof JsonResponse) {
             return $validated;
@@ -73,7 +73,7 @@ class EmotionController extends Controller
      */
     public function getById(int $emotionId)
     {
-        $validated = $this->validator->getById($emotionId, $this->user);
+        $validated = $this->validator->getById($emotionId);
 
         if ($validated instanceof JsonResponse) {
             return $validated;
@@ -89,7 +89,7 @@ class EmotionController extends Controller
      */
     public function update(Request $request, int $emotionId): JsonResponse
     {
-        $validated = $this->validator->update($request, $emotionId, $this->user);
+        $validated = $this->validator->update($request, $emotionId);
 
         if ($validated instanceof JsonResponse) {
             return $validated;
@@ -112,7 +112,7 @@ class EmotionController extends Controller
      */
     public function delete(int $emotionId): JsonResponse
     {
-        $validated = $this->validator->delete($emotionId, $this->user);
+        $validated = $this->validator->delete($emotionId);
 
         if ($validated instanceof JsonResponse) {
             return $validated;
@@ -135,7 +135,7 @@ class EmotionController extends Controller
      */
     public function restore(int $emotionId): JsonResponse
     {
-        $validated = $this->validator->restore($emotionId, $this->user);
+        $validated = $this->validator->restore($emotionId);
 
         if ($validated instanceof JsonResponse) {
             return $validated;
@@ -158,7 +158,7 @@ class EmotionController extends Controller
      */
     public function forceDelete(int $emotionId): JsonResponse
     {
-        $validated = $this->validator->forceDelete($emotionId, $this->user);
+        $validated = $this->validator->forceDelete($emotionId);
 
         if ($validated instanceof JsonResponse) {
             return $validated;

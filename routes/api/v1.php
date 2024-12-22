@@ -24,7 +24,7 @@ Route::group([], function () {
 /**
  * User
  */
-Route::group(['prefix' => 'user', 'name' => 'user.'], function () {
+Route::group(['prefix' => 'user', 'name' => 'user.', 'middleware' => ['jwt', 'verified']], function () {
     /**
      * Get myself information
      */
@@ -77,7 +77,7 @@ Route::group(['prefix' => 'user', 'name' => 'user.'], function () {
 /**
  * Post
  */
-Route::group(['prefix' => 'post', 'name' => 'post.'], function () {
+Route::group(['prefix' => 'post', 'name' => 'post.', 'middleware' => ['jwt', 'verified']], function () {
     /**
      * Get all posts
      */
@@ -97,10 +97,11 @@ Route::group(['prefix' => 'post', 'name' => 'post.'], function () {
     ->name('getPostById');
 
     /**
-     * Get all soft-deleted posts
+     * Get all soft-deleted posts (admin required)
      */
     Route::get('trashed', [App\Http\Controllers\PostController::class, 'trashed'])
-      ->name('trashed');
+        ->middleware('jwt-admin')
+        ->name('trashed');
 
     /**
      * Get a post by name
@@ -119,12 +120,26 @@ Route::group(['prefix' => 'post', 'name' => 'post.'], function () {
      */
     Route::delete('{id}', [App\Http\Controllers\PostController::class, 'delete'])
     ->name('delete');
+
+    /**
+     * Restore a deleted post (admin required)
+     */
+    Route::patch('restore/{id}', [App\Http\Controllers\PostController::class, 'restore'])
+        ->middleware('jwt-admin')
+        ->name('restore');
+
+    /**
+     * Force delete a post (admin required)
+     */
+    Route::delete('force/{id}', [App\Http\Controllers\PostController::class, 'forceDelete'])
+        ->middleware('jwt-admin')
+        ->name('forceDelete');
 });
 
 /**
  * Category
  */
-Route::group(['prefix' => 'category', 'name' => 'category.'], function () {
+Route::group(['prefix' => 'category', 'name' => 'category.', 'middleware' => ['jwt', 'verified']], function () {
     /**
      * Get all categories
      */
@@ -138,40 +153,45 @@ Route::group(['prefix' => 'category', 'name' => 'category.'], function () {
     ->name('getById');
 
     /**
-     * Get all trashed categories
+     * Get all trashed categories (admin required)
      */
     Route::get('trashed', [App\Http\Controllers\CategoryController::class, 'indexTrashed'])
-    ->name('getTrashed');
+        ->middleware('jwt-admin')
+        ->name('getTrashed');
 
     /**
-     * Create a new category
+     * Create a new category (admin required)
      */
     Route::post('', [App\Http\Controllers\CategoryController::class, 'create'])
-    ->name('create');
+        ->middleware('jwt-admin')
+        ->name('create');
 
     /**
-     * Update a category
+     * Update a category (admin required)
      */
     Route::patch('{id}', [App\Http\Controllers\CategoryController::class, 'update'])
-    ->name('update');
+        ->middleware('jwt-admin')
+        ->name('update');
 
     /**
-     * Delete a category
+     * Delete a category (admin required)
      */
     Route::delete('{id}', [App\Http\Controllers\CategoryController::class, 'delete'])
-    ->name('delete');
+        ->middleware('jwt-admin')
+        ->name('delete');
 
     /**
-     * Restore a deleted category
+     * Restore a deleted category (admin required)
      */
     Route::patch('/restore/{id}', [App\Http\Controllers\CategoryController::class, 'restore'])
-    ->name('restore');
+        ->middleware('jwt-admin')
+        ->name('restore');
 });
 
 /**
  * Tag
  */
-Route::group(['prefix' => 'tag', 'name' => 'tag.'], function () {
+Route::group(['prefix' => 'tag', 'name' => 'tag.', 'middleware' => ['jwt', 'verified']], function () {
     /**
      * Get all tags
      */
@@ -197,28 +217,31 @@ Route::group(['prefix' => 'tag', 'name' => 'tag.'], function () {
       ->name('create');
 
     /**
-     * Update a tag
+     * Update a tag (admin required)
      */
     Route::patch('id/{id}', [App\Http\Controllers\TagController::class, 'update'])
-      ->name('update');
+        ->middleware('jwt-admin')
+        ->name('update');
 
     /**
-     * Delete a tag
+     * Delete a tag (admin required)
      */
     Route::delete('/id/{id}', [App\Http\Controllers\TagController::class, 'delete'])
-      ->name('delete');
+        ->middleware('jwt-admin')
+        ->name('delete');
 
     /**
-     * Restore a deleted tag
+     * Restore a deleted tag (admin required)
      */
     Route::patch('restore/{id}', [App\Http\Controllers\TagController::class, 'restore'])
-      ->name('restore');
+        ->middleware('jwt-admin')
+        ->name('restore');
 });
 
 /**
  * Comment
  */
-Route::group(['prefix' => 'comment', 'name' => 'comment.'], function () {
+Route::group(['prefix' => 'comment', 'name' => 'comment.', 'middleware' => ['jwt', 'verified']], function () {
     /**
      * Get all comments
      */
@@ -250,22 +273,24 @@ Route::group(['prefix' => 'comment', 'name' => 'comment.'], function () {
         ->name('delete');
 
     /**
-     * Restore a deleted comment
+     * Restore a deleted comment (admin required)
      */
     Route::patch('restore/{id}', [App\Http\Controllers\CommentController::class, 'restore'])
+        ->middleware('jwt-admin')
         ->name('restore');
 
     /**
-     * Force delete a comment
+     * Force delete a comment (admin required)
      */
     Route::delete('force/{id}', [App\Http\Controllers\CommentController::class, 'forceDelete'])
+        ->middleware('jwt-admin')
         ->name('forceDelete');
 });
 
 /**
  * Emotion
  */
-Route::group(['prefix' => 'emotion', 'name' => 'emotion.'], function () {
+Route::group(['prefix' => 'emotion', 'name' => 'emotion.', 'middleware' => ['jwt', 'verified']], function () {
     /**
      * Get all emotions
      */
@@ -273,39 +298,45 @@ Route::group(['prefix' => 'emotion', 'name' => 'emotion.'], function () {
         ->name('index');
 
     /**
-     * Create a new emotion
+     * Create a new emotion (admin required)
      */
     Route::post('', [App\Http\Controllers\EmotionController::class, 'store'])
+        ->middleware('jwt-admin')
         ->name('create');
 
     /**
-     * Get a emotion by ID
+     * Get a emotion by ID (admin required)
      */
     Route::get('id/{id}', [App\Http\Controllers\EmotionController::class, 'getById'])
+        ->middleware('jwt-admin')
         ->name('getById');
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified resource in storage. (admin required)
      */
     Route::patch('id/{id}', [App\Http\Controllers\EmotionController::class, 'update'])
+        ->middleware('jwt-admin')
         ->name('update');
 
     /**
-     * Delete the specified resource from storage.
+     * Delete the specified resource from storage. (admin required)
      */
     Route::delete('id/{id}', [App\Http\Controllers\EmotionController::class, 'delete'])
+        ->middleware('jwt-admin')
         ->name('delete');
 
     /**
-     * Restore a soft-deleted emotion.
+     * Restore a soft-deleted emotion. (admin required)
      */
     Route::patch('restore/{id}', [App\Http\Controllers\EmotionController::class, 'restore'])
+        ->middleware('jwt-admin')
         ->name('restore');
 
     /**
-     * Force delete an emotion.
+     * Force delete an emotion. (admin required)
      */
     Route::delete('force/{id}', [App\Http\Controllers\EmotionController::class, 'forceDelete'])
+        ->middleware('jwt-admin')
         ->name('forceDelete');
 
     /**

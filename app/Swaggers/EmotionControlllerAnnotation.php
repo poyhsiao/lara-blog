@@ -139,7 +139,7 @@ class EmotionControlllerAnnotation extends ControllerAnnotation
      * @OA\Post(
      *     path="/api/v1/emotion",
      *     operationId="emotionStore",
-     *     tags={"Emotion"},
+     *     tags={"Admin/Emotion"},
      *     summary="Create a new emotion",
      *     description="Create a new emotion",
      *     security={{"bearerAuth": {}}},
@@ -290,7 +290,7 @@ class EmotionControlllerAnnotation extends ControllerAnnotation
      * @OA\Get(
      *     path="/api/v1/emotion/id/{id}",
      *     operationId="emotionGetById",
-     *     tags={"Emotion"},
+     *     tags={"Admin/Emotion"},
      *     summary="Get a emotion by ID",
      *     description="Get a emotion by ID",
      *     security={{"bearerAuth": {}}},
@@ -425,10 +425,10 @@ class EmotionControlllerAnnotation extends ControllerAnnotation
     }
 
     /**
-     * @OA\Put(
+     * @OA\Patch(
      *     path="/api/v1/emotion/id/{id}",
      *     operationId="emotionUpdate",
-     *     tags={"Emotion"},
+     *     tags={"Admin/Emotion"},
      *     summary="Update a emotion",
      *     description="Update a emotion",
      *     security={{"bearerAuth": {}}},
@@ -587,7 +587,7 @@ class EmotionControlllerAnnotation extends ControllerAnnotation
      * @OA\Delete(
      *     path="/api/v1/emotion/id/{id}",
      *     operationId="emotionDelete",
-     *     tags={"Emotion"},
+     *     tags={"Admin/Emotion"},
      *     summary="Delete an emotion",
      *     description="Delete an emotion",
      *     security={{"bearerAuth": {}}},
@@ -725,7 +725,7 @@ class EmotionControlllerAnnotation extends ControllerAnnotation
      * @OA\Patch(
      *     path="/api/v1/emotion/restore/{id}",
      *     operationId="emotionRestore",
-     *     tags={"Emotion"},
+     *     tags={"Admin/Emotion"},
      *     summary="Restore an emotion",
      *     description="Restore an emotion",
      *     security={{"bearerAuth": {}}},
@@ -863,7 +863,7 @@ class EmotionControlllerAnnotation extends ControllerAnnotation
      * @OA\Delete(
      *     path="/api/v1/emotion/force/{id}",
      *     operationId="emotionForceDelete",
-     *     tags={"Emotion"},
+     *     tags={"Admin/Emotion"},
      *     summary="Force delete an emotion",
      *     description="Force delete an emotion",
      *     security={{"bearerAuth": {}}},

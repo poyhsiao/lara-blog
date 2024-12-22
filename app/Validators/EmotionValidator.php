@@ -26,15 +26,17 @@ class EmotionValidator extends BaseValidator
     /**
      * Validate create emotion request.
      *
-     * Validates the provided data using the EmotionValidator. If validation fails, returns a JsonResponse with the validation errors.
-     * Otherwise, checks if the user is an admin. If the user is not an admin, returns an unauthorized response.
-     * Otherwise, returns a success response with the validated data.
+     * Validates the request data for creating an emotion. It ensures:
+     * - 'name' is required, a string, between 2 and 255 characters, and unique among emotions.
+     * - 'description' is a string and between 2 and 255 characters.
+     * - 'avatar' is a string and a valid URL.
+     * If validation fails, returns a JsonResponse with the validation errors.
+     * Otherwise, returns the validated data.
      *
      * @param \Illuminate\Http\Request $request The request object containing emotion data to create.
-     * @param \App\Models\User|Authenticatable $user The user performing the action.
-     * @return array|JsonResponse A JSON response containing the result of the operation.
+     * @return array|JsonResponse The validated data or a JsonResponse with validation errors.
      */
-    public function store(Request $request, User|Authenticatable $user): array|JsonResponse
+    public function store(Request $request): array|JsonResponse
     {
         $validated = Validator::make($request->all(), [
             'name' => 'required|string|between:2,255|unique:emotions,name',
@@ -46,25 +48,20 @@ class EmotionValidator extends BaseValidator
             return JsonResponseHelper::notAcceptable('Create emotion failed', $validated->errors());
         }
 
-        if (!$user->isAdmin()) {
-            return JsonResponseHelper::unauthorized('You are not authorized to perform this action');
-        }
-
         return $validated->validated();
     }
 
     /**
-     * Validate get emotion by ID request.
+     * Validate retrieval of an emotion by ID.
      *
-     * Validates the provided ID and checks if the user is authorized to get the emotion.
+     * Validates the provided emotion ID to ensure that it is an integer and exists in the emotions table.
      * If validation fails, returns a JsonResponse with the validation errors.
      * Otherwise, returns the validated data.
      *
      * @param int $emotionId The ID of the emotion to retrieve.
-     * @param \App\Models\User|Authenticatable $user The user attempting to get the emotion.
-     * @return array|JsonResponse The validated data or a JsonResponse with validation errors or unauthorized response.
+     * @return array|JsonResponse The validated data or a JsonResponse with validation errors.
      */
-    public function getById(int $emotionId, User|Authenticatable $user): array|JsonResponse
+    public function getById(int $emotionId): array|JsonResponse
     {
         $validated = Validator::make(['id' => $emotionId], [
             'id' => 'required|integer|exists:emotions,id',
@@ -74,28 +71,24 @@ class EmotionValidator extends BaseValidator
             return JsonResponseHelper::notAcceptable('Get emotion failed', $validated->errors());
         }
 
-        if (!$user->isAdmin()) {
-            return JsonResponseHelper::unauthorized('You are not authorized to perform this action');
-        }
-
         return $validated->validated();
     }
 
     /**
      * Validate update emotion request.
      *
-     * Validates the provided emotion update data to ensure the name is a string, between 2 and 255 characters, and unique among emotions,
-     * the description is a string, between 2 and 255 characters, the avatar is a string, between 2 and 255 characters, and a valid URL.
-     * If validation fails, it returns a JsonResponse with the validation errors.
-     * Otherwise, it checks if the user is authorized to update the emotion.
-     * If the user is not an admin, it returns an unauthorized response.
-     * Otherwise, it returns the validated data as an array.
-     * @param Request $request The request object containing emotion data to update.
+     * Validates the request data for updating an emotion. It ensures:
+     * - 'name' is a string, between 2 and 255 characters, and unique among emotions (ignoring the emotion being updated).
+     * - 'description' is a string and between 2 and 255 characters.
+     * - 'avatar' is a string and a valid URL.
+     * If validation fails, returns a JsonResponse with the validation errors.
+     * Otherwise, returns the validated data.
+     *
+     * @param \Illuminate\Http\Request $request The request object containing emotion data to update.
      * @param int $emotionId The ID of the emotion to update.
-     * @param \App\Models\User|Authenticatable $user The user attempting the update.
-     * @return array|JsonResponse The validated data as an array or a JsonResponse with validation errors or unauthorized response.
+     * @return array|JsonResponse The validated data or a JsonResponse with validation errors.
      */
-    public function update(Request $request, int $emotionId, User|Authenticatable $user): array|JsonResponse
+    public function update(Request $request, int $emotionId): array|JsonResponse
     {
         $theId = $this->validateId($emotionId);
 
@@ -117,30 +110,23 @@ class EmotionValidator extends BaseValidator
             return JsonResponseHelper::notAcceptable('Update emotion failed', $validated->errors());
         }
 
-        if (!$user->isAdmin()) {
-            return JsonResponseHelper::unauthorized('You are not authorized to perform this action');
-        }
-
         return $validated->validated();
     }
 
     /**
-     * Validate and authorize deletion of an emotion.
+     * Validate delete emotion request.
      *
-     * This method checks if the provided emotion ID is valid and exists in the emotions table.
-     * If validation fails, it returns a JsonResponse with the validation errors.
-     * It also checks if the user performing the action is an admin.
-     * If not, it returns a not authorized response.
-     * If validation and authorization succeed, it returns the validated ID as an array.
+     * Validates the emotion ID to delete. It ensures the ID is a valid emotion ID.
+     * If validation fails, returns a JsonResponse with the validation errors.
+     * Otherwise, returns the validated ID.
      *
      * @param int $emotionId The ID of the emotion to delete.
-     * @param \App\Models\User|Authenticatable $user The user attempting to delete the emotion.
-     * @return array|JsonResponse The validated ID as an array or a JsonResponse with validation errors or unauthorized response.
+     * @return array|JsonResponse The validated ID or a JsonResponse with validation errors.
      */
-    public function delete(int $emotionId, User|Authenticatable $user): array|JsonResponse
+    public function delete(int $emotionId): array|JsonResponse
     {
-        $validated = Validator::make(['id'=> $emotionId], [
-            'id'=> [
+        $validated = Validator::make(['id' => $emotionId], [
+            'id' => [
                 'required',
                 'integer',
                 new IdAvailable('emotions', 'id', 'Emotion not found'),
@@ -151,29 +137,22 @@ class EmotionValidator extends BaseValidator
             return JsonResponseHelper::notAcceptable('Delete emotion failed', $validated->errors());
         }
 
-        if (!$user->isAdmin()) {
-            return JsonResponseHelper::unauthorized('You are not authorized to perform this action');
-        }
-
         return $validated->validated();
     }
 
     /**
-     * Validate and authorize restoration of an emotion.
+     * Validate restore emotion request.
      *
-     * This method checks if the provided emotion ID is valid and exists in the emotions table with the trashed status.
-     * If validation fails, it returns a JsonResponse with the validation errors.
-     * It also checks if the user performing the action is an admin.
-     * If not, it returns a not authorized response.
-     * If validation and authorization succeed, it returns the validated ID as an array.
+     * Validates the emotion ID to restore. It ensures the ID is a valid emotion ID that is soft deleted.
+     * If validation fails, returns a JsonResponse with the validation errors.
+     * Otherwise, returns the validated ID.
      *
      * @param int $emotionId The ID of the emotion to restore.
-     * @param \App\Models\User|Authenticatable $user The user attempting to restore the emotion.
-     * @return array|JsonResponse The validated ID as an array or a JsonResponse with validation errors or unauthorized response.
+     * @return array|JsonResponse The validated ID or a JsonResponse with validation errors.
      */
-    public function restore(int $emotionId, User|Authenticatable $user): array|JsonResponse
+    public function restore(int $emotionId): array|JsonResponse
     {
-        $validated = Validator::make(['id'=> $emotionId], [
+        $validated = Validator::make(['id' => $emotionId], [
             'id' => [
                 'required',
                 'integer',
@@ -185,36 +164,25 @@ class EmotionValidator extends BaseValidator
             return JsonResponseHelper::notAcceptable('Restore emotion failed', $validated->errors());
         }
 
-        if (!$user->isAdmin()) {
-            return JsonResponseHelper::unauthorized('You are not authorized to perform this action');
-        }
-
         return $validated->validated();
     }
 
     /**
-     * Validate and authorize force deletion of an emotion.
+     * Validate force delete emotion request.
      *
-     * This method checks if the provided emotion ID is valid and exists in the emotions table.
-     * If validation fails, it returns a JsonResponse with the validation errors.
-     * It also checks if the user performing the action is an admin.
-     * If not, it returns a not authorized response.
-     * If validation and authorization succeed, it returns the validated ID as an array.
+     * Validates the emotion ID to force delete. It ensures the ID is a valid emotion ID.
+     * If validation fails, returns a JsonResponse with the validation errors.
+     * Otherwise, returns the validated ID.
      *
      * @param int $emotionId The ID of the emotion to force delete.
-     * @param \App\Models\User|Authenticatable $user The user attempting to force delete the emotion.
-     * @return array|JsonResponse The validated ID as an array or a JsonResponse with validation errors or unauthorized response.
+     * @return array|JsonResponse The validated ID or a JsonResponse with validation errors.
      */
-    public function forceDelete(int $emotionId, User|Authenticatable $user): array|JsonResponse
+    public function forceDelete(int $emotionId): array|JsonResponse
     {
         $validated = $this->validateId($emotionId);
 
         if ($validated instanceof JsonResponse) {
             return $validated;
-        }
-
-        if (!$user->isAdmin()) {
-            return JsonResponseHelper::unauthorized('You are not authorized to perform this action');
         }
 
         return $validated;
@@ -271,8 +239,8 @@ class EmotionValidator extends BaseValidator
      */
     public function validateId(int $emotionId): array|JsonResponse
     {
-        $validated = Validator::make(['id'=> $emotionId], [
-            'id'=> 'required|integer|exists:emotions,id',
+        $validated = Validator::make(['id' => $emotionId], [
+            'id' => 'required|integer|exists:emotions,id',
         ]);
 
         if ($validated->fails()) {

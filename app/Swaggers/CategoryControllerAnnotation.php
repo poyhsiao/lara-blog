@@ -351,7 +351,7 @@ class CategoryControllerAnnotation extends ControllerAnnotation
      * @OA\Get(
      *     path="/api/v1/category/trashed",
      *     operationId="getTrashedCategories",
-     *     tags={"Category"},
+     *     tags={"Admin/Category"},
      *     summary="Get all trashed categories",
      *     description="Get all trashed categories",
      *     security={{"bearerAuth": {}}},
@@ -516,7 +516,7 @@ class CategoryControllerAnnotation extends ControllerAnnotation
      * @OA\Post(
      *     path="/api/v1/category",
      *     operationId="CategoryCreate",
-     *     tags={"Category"},
+     *     tags={"Admin/Category"},
      *     summary="Create a new category",
      *     description="Create a new category",
      *     security={{"bearerAuth": {}}},
@@ -677,7 +677,7 @@ class CategoryControllerAnnotation extends ControllerAnnotation
      * @OA\Patch(
      *     path="/api/v1/category/{id}",
      *     operationId="CategoryUpdate",
-     *     tags={"Category"},
+     *     tags={"Admin/Category"},
      *     summary="Update a new category",
      *     description="Update a new category",
      *     security={{"bearerAuth": {}}},
@@ -847,7 +847,7 @@ class CategoryControllerAnnotation extends ControllerAnnotation
      * @OA\Delete(
      *     path="/api/v1/category/{id}",
      *     operationId="CategoryDelete",
-     *     tags={"Category"},
+     *     tags={"Admin/Category"},
      *     summary="Delete a new category",
      *     description="Delete a new category",
      *     security={{"bearerAuth": {}}},

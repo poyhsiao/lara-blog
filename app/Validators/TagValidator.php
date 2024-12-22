@@ -72,9 +72,9 @@ class TagValidator extends BaseValidator
      *
      * This method first validates the provided tag ID to ensure it exists.
      * If the ID validation fails, it returns a JsonResponse with the validation errors.
-     * Then, it validates the tag update data from the request to ensure:
-     * - the 'name' is required, a string, between 2 and 255 characters, and unique among tags.
-     * - the 'description' is a string and between 2 and 255 characters.
+     * It then validates the tag update data from the request to ensure:
+     * - the 'name' is a string, between 2 and 255 characters, and unique among tags.
+     * - the 'description' is a string between 2 and 255 characters.
      * If any validation fails, it returns a JsonResponse with the errors.
      * Otherwise, it returns the validated data.
      *
@@ -82,16 +82,12 @@ class TagValidator extends BaseValidator
      * @param int $id The ID of the tag to update.
      * @return array|JsonResponse The validated data or a JsonResponse with validation errors.
      */
-    public function update(Request $request, int $id, User|Authenticatable $user): array|JsonResponse
+    public function update(Request $request, int $id): array|JsonResponse
     {
         $theId = $this->id($id);
 
         if ($theId instanceof JsonResponse) {
             return $theId;
-        }
-
-        if (!$user->isAdmin()) {
-            return JsonResponseHelper::notAcceptable('You are not allowed to update this tag');
         }
 
         $validated = Validator::make($request->all(), [
@@ -116,19 +112,16 @@ class TagValidator extends BaseValidator
     }
 
     /**
-     * Validate and authorize deletion of a tag.
+     * Validate delete tag request.
      *
-     * This method checks if the provided tag ID is valid and exists in the tags table.
-     * If validation fails, it returns a JsonResponse with validation errors.
-     * It also checks if the user performing the action is an admin.
-     * If not, it returns a not authorized response.
-     * If validation and authorization succeed, it returns the validated ID.
+     * This method validates the provided tag ID to ensure it exists in the tags table
+     * and is a valid numeric value. If validation fails, it returns a JsonResponse
+     * with the validation errors. Otherwise, it returns the validated ID.
      *
      * @param int $tagId The ID of the tag to delete.
-     * @param ?User $user The user performing the action. If not provided, the authenticated user is used.
-     * @return array|JsonResponse The validated ID as an integer or a JsonResponse with validation errors.
+     * @return array|JsonResponse The validated ID as an array or a JsonResponse with validation errors.
      */
-    public function delete(int $tagId, User|Authenticatable $user): array|JsonResponse
+    public function delete(int $tagId): array|JsonResponse
     {
         $validator = Validator::make(['id' => $tagId], [
             'id' => 'required|numeric|exists:tags,id',
@@ -138,10 +131,6 @@ class TagValidator extends BaseValidator
             return JsonResponseHelper::notAcceptable('Delete tag failed', $validator->errors());
         }
 
-        if (!$user->isAdmin()) {
-            return JsonResponseHelper::notAcceptable('You are not allowed to delete this tag');
-        }
-
         return $validator->validated();
     }
 
@@ -149,16 +138,15 @@ class TagValidator extends BaseValidator
      * Validate and authorize restoration of a tag.
      *
      * This method checks if the provided tag ID is valid and exists in the tags table.
-     * If validation fails, it returns a JsonResponse with validation errors.
+     * If validation fails, it returns a JsonResponse with the validation errors.
      * It also checks if the user performing the action is an admin.
-     * If the user is not an admin, it returns a not authorized response.
-     * If validation and authorization succeed, it returns the validated ID.
+     * If not, it returns a not authorized response.
+     * If validation and authorization succeed, it returns the validated ID as an array.
      *
      * @param int $tagId The ID of the tag to restore.
-     * @param ?User $user The user performing the action. If not provided, the authenticated user is used.
-     * @return array|JsonResponse The validated ID as an array or a JsonResponse with validation errors.
+     * @return array|JsonResponse The validated ID as an array or a JsonResponse with validation errors or unauthorized response.
      */
-    public function restore(int $tagId, User|Authenticatable $user): array|JsonResponse
+    public function restore(int $tagId): array|JsonResponse
     {
         $validator = Validator::make(['id' => $tagId], [
             'id' => 'required|numeric|exists:tags,id',

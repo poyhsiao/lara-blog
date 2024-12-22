@@ -69,30 +69,11 @@ class PostValidator extends BaseValidator
             return JsonResponseHelper::notAcceptable('Get post failed', $validator->errors());
         }
 
-        if (!$user->isAdmin() && $user->id !== $this->model::find($postId)->user_id) {
+        if (!$this->isUserAuthorized($user, $this->model::find($postId))) {
             return JsonResponseHelper::unauthorized('You are not authorized to perform this action');
         }
 
         return $validator->validated();
-    }
-
-    /**
-     * Check if the user is authorized to view trashed posts.
-     *
-     * This method checks if the provided user is an admin. If the user is not an admin,
-     * it returns an unauthorized JsonResponse. Otherwise, it returns true indicating
-     * the user is authorized to perform the action.
-     *
-     * @param \App\Models\User|\Illuminate\Contracts\Auth\Authenticatable $user The user attempting to perform the action.
-     * @return bool|JsonResponse True if authorized, or a JsonResponse if unauthorized.
-     */
-    public function trashed(User|Authenticatable $user): bool|JsonResponse
-    {
-        if (!$user->isAdmin()) {
-            return JsonResponseHelper::unauthorized('You are not authorized to perform this action');
-        }
-
-        return true;
     }
 
     /**
@@ -129,9 +110,7 @@ class PostValidator extends BaseValidator
             return JsonResponseHelper::notAcceptable('Update post failed', $idValidation->errors());
         }
 
-        $post = $this->model::find($postId);
-
-        if (!$user->isAdmin() && $user->id !== $post->author) {
+        if (!$this->isUserAuthorized($user, $this->model::find($postId))) {
             return JsonResponseHelper::unauthorized('You are not authorized to perform this action');
         }
 
@@ -183,12 +162,68 @@ class PostValidator extends BaseValidator
             return JsonResponseHelper::notAcceptable('Delete post failed', $validation->errors());
         }
 
-        $post = $this->model::find($postId);
-
-        if (!$user->isAdmin() && $post->author !== $user->id) {
+        if (!$this->isUserAuthorized($user, $this->model::find($postId))) {
             return JsonResponseHelper::unauthorized('You are not authorized to perform this action');
         }
 
         return $validation->validated();
+    }
+
+    /**
+     * Validate restore post request.
+     *
+     * This method validates the provided post ID to ensure it exists.
+     * If the ID validation fails, it returns a JsonResponse with the validation errors.
+     * Otherwise, it returns the validated data.
+     *
+     * @param int $postId The ID of the post to restore.
+     * @return array|JsonResponse The validated data or a JsonResponse with validation errors.
+     */
+    public function restore(int $postId): array|JsonResponse
+    {
+        $validation = Validator::make(['id' => $postId], [
+            'id' => 'required|numeric|exists:posts,id',
+        ]);
+
+        if ($validation->fails()) {
+            return JsonResponseHelper::notAcceptable('Restore post failed', $validation->errors());
+        }
+
+        return $validation->validated();
+    }
+
+    /**
+     * Validate force delete post request.
+     *
+     * This method validates the provided post ID to ensure it exists.
+     * If the ID validation fails, it returns a JsonResponse with the validation errors.
+     * Otherwise, it returns the validated data.
+     *
+     * @param int $postId The ID of the post to force delete.
+     * @return array|JsonResponse The validated data or a JsonResponse with validation errors.
+     */
+    public function forceDelete(int $postId): array|JsonResponse
+    {
+        $validation = Validator::make(['id' => $postId], [
+            'id' => 'required|numeric|exists:posts,id',
+        ]);
+
+        if ($validation->fails()) {
+            return JsonResponseHelper::notAcceptable('Force delete post failed', $validation->errors());
+        }
+
+        return $validation->validated();
+    }
+
+    /**
+     * Verify if the user is authorized to perform an action on a post.
+     *
+     * @param  User|Authenticatable  $user  The user attempting to perform the action.
+     * @param  Post  $post  The post on which the action is being performed.
+     * @return bool True if authorized, false otherwise.
+     */
+    private function isUserAuthorized(User|Authenticatable $user, Post $post): bool
+    {
+        return $user->isAdmin() || $post->user_id === $user->id;
     }
 }

@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
 
 class PostRepository extends BaseRepository
 {
@@ -175,6 +176,72 @@ class PostRepository extends BaseRepository
                 'message' => $e->getMessage()
             ]);
             return JsonResponseHelper::error(null, 'Delete post failed');
+        }
+    }
+
+    /**
+     * Restore a soft-deleted post by its validated ID.
+     *
+     * Attempts to restore a post with the given ID from the database.
+     * If the post is successfully restored, it returns the restored Post object.
+     * If an error occurs or the post is not found, it logs the error and returns a JsonResponse with an error message.
+     *
+     * @param array $validated The validated data containing the post ID.
+     * @return Post|JsonResponse The restored Post object or a JsonResponse in case of an error.
+     */
+    public function restore(array $validated): Post|JsonResponse
+    {
+        try {
+            $id = $validated['id'];
+            $result = null;
+
+            DB::transaction(function () use ($id, &$result) {
+                $result = tap($this->model::onlyTrashed()->with('author')->find($id))->restore();
+            });
+
+            return $result;
+        } catch (\Exception $e) {
+            Log::error('Restore post failed', [
+                'id' => $id,
+                'message' => $e->getMessage()
+            ]);
+            return JsonResponseHelper::error(null, 'Restore post failed');
+        }
+    }
+
+    /**
+     * Force delete a post by its validated ID.
+     *
+     * This method attempts to force delete a post from the database using the provided validated ID.
+     * If the post is successfully force deleted, it returns the deleted Post object.
+     * If an error occurs during the force deletion process, it logs the error and returns a JsonResponse with an error message.
+     *
+     * @param array $validated The validated data containing the post ID.
+     * @return Post|JsonResponse The deleted Post object or a JsonResponse in case of an error.
+     */
+    public function forceDelete(array $validated): Post|JsonResponse
+    {
+        try {
+            $id = $validated['id'];
+            $result = null;
+
+            DB::transaction(callback: function () use ($id, &$result) {
+                $result = tap($this->model::with('author')->find($id))->delete();
+            });
+
+            Log::info('Force delete post', [
+                'id' => $id,
+                'user_id' => Auth::id(),
+                'date' => now(),
+            ]);
+
+            return $result;
+        } catch (\Exception $e) {
+            Log::error('Force delete post failed', [
+                'id' => $id,
+                'message' => $e->getMessage()
+            ]);
+            return JsonResponseHelper::error(null, 'Force delete post failed');
         }
     }
 }

@@ -149,7 +149,7 @@ class CommentController extends Controller
      */
     public function restore(int $id): JsonResponse
     {
-        $validated = $this->validator->restore($id, $this->user);
+        $validated = $this->validator->restore($id);
 
         if ($this->isJsonResponse($validated)) {
             return $validated;
@@ -173,7 +173,7 @@ class CommentController extends Controller
 
     public function forceDelete(int $id): JsonResponse
     {
-        $validated = $this->validator->forceDelete($id, $this->user);
+        $validated = $this->validator->forceDelete($id);
 
         if ($this->isJsonResponse($validated)) {
             return $validated;

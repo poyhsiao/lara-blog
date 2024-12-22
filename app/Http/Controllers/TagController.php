@@ -101,16 +101,17 @@ class TagController extends Controller
     /**
      * Update a tag.
      *
-     * Validates the request data using the TagValidator. If validation fails, it returns a JsonResponse with the validation errors.
-     * Otherwise, it attempts to update the tag using the TagRepository. If the update is successful, it returns a success response with the updated tag.
+     * Validates the request using the TagValidator. If validation fails, returns a JsonResponse with the validation errors.
+     * Otherwise, attempts to update the tag using the TagRepository. If the update fails, returns an error response.
+     * Otherwise, returns a success response with the updated tag.
      *
-     * @param \Illuminate\Http\Request $request The request containing tag data to update.
+     * @param \Illuminate\Http\Request $request The request object containing tag data.
      * @param int $id The ID of the tag to update.
      * @return \Illuminate\Http\JsonResponse A JSON response containing the result of the operation.
      */
     public function update(Request $request, int $id): JsonResponse
     {
-        $validated = $this->validator->update($request, $id, $this->user);
+        $validated = $this->validator->update($request, $id);
 
         if ($this->isJsonResponse($validated)) {
             return $validated;
@@ -124,8 +125,8 @@ class TagController extends Controller
     /**
      * Delete a tag.
      *
-     * Validates the request using the TagValidator. If validation fails, returns a JsonResponse with the validation errors.
-     * Otherwise, attempts to delete the tag using the TagRepository. If the deletion fails, returns an error response.
+     * Validates the provided ID using the TagValidator. If validation fails, returns a JsonResponse with the validation errors.
+     * Otherwise, attempts to delete the tag using the TagRepository. If the tag is not found, returns an error response.
      * Otherwise, returns a success response with the deleted tag.
      *
      * @param int $id The ID of the tag to delete.
@@ -133,7 +134,7 @@ class TagController extends Controller
      */
     public function delete(int $id): JsonResponse
     {
-        $validated = $this->validator->delete($id, $this->user);
+        $validated = $this->validator->delete($id);
 
         if ($this->isJsonResponse($validated)) {
             return $validated;
@@ -147,16 +148,16 @@ class TagController extends Controller
     /**
      * Restore a deleted tag.
      *
-     * Validates the request using the TagValidator. If validation fails, returns a JsonResponse with the validation errors.
-     * Otherwise, attempts to restore the tag using the TagRepository. If the restore fails, returns an error response.
+     * Validates the provided ID using the TagValidator. If validation fails, returns a JsonResponse with the validation errors.
+     * Otherwise, attempts to restore the tag using the TagRepository. If restoration fails, returns an error response.
      * Otherwise, returns a success response with the restored tag.
      *
      * @param int $id The ID of the tag to restore.
-     * @return JsonResponse A JSON response containing the result of the operation.
+     * @return \Illuminate\Http\JsonResponse A JSON response containing the result of the operation.
      */
     public function restore(int $id): JsonResponse
     {
-        $validated = $this->validator->restore($id, $this->user);
+        $validated = $this->validator->restore($id);
 
         if ($this->isJsonResponse($validated)) {
             return $validated;

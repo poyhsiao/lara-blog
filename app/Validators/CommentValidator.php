@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Rules\IdAvailable;
 use App\Rules\IdTrashedRule;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -65,9 +66,7 @@ class CommentValidator extends BaseValidator
         }
 
         try {
-            $theComment = $this->model::find($validator['id']);
-
-            if (!$user->isAdmin() && $theComment->user_id !== $user->id) {
+            if (!$this->isUserAuthorized($user, $ $this->model::find($validator['id']))) {
                 return JsonResponseHelper::notAcceptable('You are not allowed to get this comment');
             }
         } catch (\Exception $e) {
@@ -123,7 +122,7 @@ class CommentValidator extends BaseValidator
             return $theId;
         }
 
-        if (!$user->isAdmin() && $theId['id'] !== $user->id) {
+        if (!$this->isUserAuthorized($user, $this->model::find($theId['id']))) {
             return JsonResponseHelper::unauthorized('You are not allowed to update this comment');
         }
 
@@ -169,16 +168,26 @@ class CommentValidator extends BaseValidator
             return JsonResponseHelper::notAcceptable('Delete comment failed', ['message' => $validated->errors()]);
         }
 
-        if (!$user->isAdmin() && Comment::find($commentId)->user_id !== $user->id) {
+        if (!$this->isUserAuthorized($user, $this->model::find($commentId))) {
             return JsonResponseHelper::unauthorized('You are not allowed to update this comment');
         }
 
         return $validated->validated();
     }
 
-    public function restore(int $commentId, User|Authenticatable $user): array|JsonResponse
+    /**
+     * Validate restore comment request.
+     *
+     * This method checks if the provided comment ID is valid and exists in the comments table.
+     * If validation fails, it returns a JsonResponse with the validation errors.
+     * Otherwise, it checks if the comment is soft-deleted. If the comment is not soft-deleted, returns an error response.
+     * Otherwise, it returns the validated ID as an integer.
+     * @param int $commentId The ID of the comment to restore.
+     * @return array|JsonResponse The validated ID as an integer or a JsonResponse with validation errors or error response.
+     */
+    public function restore(int $commentId): array|JsonResponse
     {
-        $validated = Validator::make(['id'=> $commentId], [
+        $validated = Validator::make(['id' => $commentId], [
             'id' => [
                 'required',
                 'integer',
@@ -191,26 +200,19 @@ class CommentValidator extends BaseValidator
             return JsonResponseHelper::notAcceptable('Restore comment failed', ['message' => $validated->errors()]);
         }
 
-        if (!$user->isAdmin()) {
-            return JsonResponseHelper::notAcceptable('You do not have permission to restore this comment');
-        }
-
         return $validated->validated();
     }
 
     /**
      * Validate force delete comment request.
      *
-     * This method checks if the provided comment ID is valid and if the user is authorized to force delete the comment.
-     * If validation fails, it returns a JsonResponse with the validation errors or unauthorized response.
-     * Otherwise, it returns the validated ID as an integer.
-     *
+     * Validates the provided ID and checks if the comment exists in the comments table.
+     * If validation fails, returns a JsonResponse with the validation errors.
+     * Otherwise, returns the validated ID as an array.
      * @param int $commentId The ID of the comment to force delete.
-     * @param User|Authenticatable $user The user attempting to force delete the comment.
-     * @return array|JsonResponse The validated ID as an integer or a JsonResponse with validation errors or unauthorized response.
+     * @return array|JsonResponse The validated ID as an array or a JsonResponse with validation errors.
      */
-
-    public function forceDelete(int $commentId, User|Authenticatable $user): array|JsonResponse
+    public function forceDelete(int $commentId): array|JsonResponse
     {
         $theId = $this->validateId($commentId);
 
@@ -218,11 +220,18 @@ class CommentValidator extends BaseValidator
             return $theId;
         }
 
-        if (!$user->isAdmin()) {
-            return JsonResponseHelper::notAcceptable('You do not have permission to delete this comment');
-        }
-
         return $theId;
+    }
 
+    /**
+     * Verify if the user is authorized to perform an action on a comment.
+     *
+     * @param User|Authenticatable $user The user attempting to perform the action.
+     * @param Comment $comment The comment on which the action is being performed.
+     * @return bool True if authorized, false otherwise.
+     */
+    private function isUserAuthorized(User|Authenticatable $user, Comment|Collection $comment): bool
+    {
+        return $user->isAdmin() || $comment->user_id === $user->id;
     }
 }

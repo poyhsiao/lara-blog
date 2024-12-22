@@ -525,7 +525,7 @@ class TagControllerAnnotation extends ControllerAnnotation
      * @OA\Patch(
      *     path="/api/v1/tag/id/{id}",
      *     operationId="TagUpdate",
-     *     tags={"Tag"},
+     *     tags={"Admin/Tag"},
      *     summary="Update a tag",
      *     description="Update a tag",
      *     security={{"bearerAuth": {}}},
@@ -672,7 +672,7 @@ class TagControllerAnnotation extends ControllerAnnotation
      * @OA\Delete(
      *     path="/api/v1/tag/id/{id}",
      *     operationId="TagDelete",
-     *     tags={"Tag"},
+     *     tags={"Admin/Tag"},
      *     summary="Delete a tag",
      *     description="Delete a tag",
      *     security={{"bearerAuth": {}}},
@@ -799,7 +799,7 @@ class TagControllerAnnotation extends ControllerAnnotation
      * @OA\Patch(
      *     path="/api/v1/tag/restore/{id}",
      *     operationId="TagRestore",
-     *     tags={"Tag"},
+     *     tags={"Admin/Tag"},
      *     summary="Restore a tag",
      *     description="Restore a tag",
      *     security={{"bearerAuth": {}}},
@@ -925,4 +925,135 @@ class TagControllerAnnotation extends ControllerAnnotation
      * )
      */
     public function restore() {}
+
+    /**
+     * @OA\Delete(
+     *     path="/api/v1/tag/force-delete/{id}",
+     *     operationId="TagForceDelete",
+     *     tags={"Admin/Tag"},
+     *     summary="Force delete a tag",
+     *     description="Force delete a tag",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *             example=1,
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=200
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="id",
+     *                     type="integer",
+     *                     example=1,
+     *                 ),
+     *                 @OA\Property(
+     *                     property="name",
+     *                     type="string",
+     *                     example="Tag 1",
+     *                 ),
+     *                 @OA\Property(
+     *                     property="description",
+     *                     type="string",
+     *                     example="Description 1",
+     *                 ),
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="Bad Request",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=400
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     example="Invalid data"
+     *                 ),
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="401",
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=401
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     example="Unauthorized"
+     *                 ),
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Not Found",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=404
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="message",
+     *                     type="string",
+     *                     example="Post not found"
+     *                 ),
+     *             ),
+     *         ),
+     *     ),
+     * )
+     */
+    public function forceDelete() {}
 }

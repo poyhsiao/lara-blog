@@ -93,12 +93,6 @@ class PostController extends Controller
      */
     public function trashed(): JsonResponse
     {
-        $validated = $this->validator->trashed($this->user);
-
-        if ($this->isJsonResponse($validated)) {
-            return $validated;
-        }
-
         $result = $this->repo->trashed($this->user);
 
         return $this->repoResponse($result, 'Get trashed posts successfully');
@@ -145,5 +139,49 @@ class PostController extends Controller
         $result = $this->repo->delete($validated);
 
         return $this->repoResponse($result, 'Delete post successfully');
+    }
+
+    /**
+     * Restore a deleted post.
+     *
+     * Validates the provided ID using the PostValidator. If validation fails, returns a JsonResponse with the validation errors. Otherwise, attempts to restore the post using the PostRepository. If the post is not found, returns a not found response. Otherwise, returns a success response with the restored post.
+     *
+     * @param int $id The ID of the post to restore.
+     * @return \Illuminate\Http\JsonResponse A JSON response containing the result of the operation.
+     */
+    public function restore(int $id): JsonResponse
+    {
+        $validated = $this->validator->restore($id);
+
+        if ($this->isJsonResponse($validated)) {
+            return $validated;
+        }
+
+        $result = $this->repo->restore($validated['id']);
+
+        return $this->repoResponse($result, 'Restore post successfully');
+    }
+
+    /**
+     * Force delete a post.
+     *
+     * Validates the provided ID using the PostValidator. If validation fails, returns a JsonResponse with the validation errors.
+     * Otherwise, attempts to force delete the post using the PostRepository. If the post is not found, returns a not found response.
+     * Otherwise, returns a success response with the result of the force deletion.
+     *
+     * @param int $id The ID of the post to force delete.
+     * @return \Illuminate\Http\JsonResponse A JSON response containing the result of the operation.
+     */
+    public function forceDelete(int $id): JsonResponse
+    {
+        $validated = $this->validator->forceDelete($id);
+
+        if ($this->isJsonResponse($validated)) {
+            return $validated;
+        }
+
+        $result = $this->repo->forceDelete($validated);
+
+        return $this->repoResponse($result, 'Force delete post successfully');
     }
 }
