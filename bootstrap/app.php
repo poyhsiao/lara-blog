@@ -9,7 +9,6 @@ use Illuminate\Foundation\Http\Middleware\TrimStrings;
 use Illuminate\Http\Middleware\HandleCors;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Lottery;
 use Psr\Log\LogLevel;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -50,7 +49,6 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->throttle(function (Throwable $e) {
             return match (true) {
                 $e instanceof BroadcastException => Limit::perMinute(300),
-                $e instanceof ApiMonitoringException => Lottery::odds(1, 1000),
                 default => Limit::none(),
             };
         });

@@ -156,10 +156,6 @@ class TagValidator extends BaseValidator
             return JsonResponseHelper::notAcceptable('Restore tag failed', $validator->errors());
         }
 
-        if (!$user->isAdmin()) {
-            return JsonResponseHelper::notAcceptable('You do not have permission to restore this tag');
-        }
-
         return $validator->validated();
     }
 }
