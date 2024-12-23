@@ -66,7 +66,7 @@ class CommentValidator extends BaseValidator
         }
 
         try {
-            if (!$this->isUserAuthorized($user, $ $this->model::find($validator['id']))) {
+            if (!$this->isUserAuthorized($user, $this->model::find($validator['id']))) {
                 return JsonResponseHelper::notAcceptable('You are not allowed to get this comment');
             }
         } catch (\Exception $e) {
