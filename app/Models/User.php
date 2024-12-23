@@ -3,7 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -60,6 +64,72 @@ class User extends Authenticatable implements JWTSubject
             'active' => 'integer',
             'role' => 'integer',
         ];
+    }
+
+    /**
+     * Get the posts created by the user
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function posts(): HasMany
+    {
+        return $this->hasMany(Post::class, 'user_id', 'id');
+    }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class, 'user_id', 'id');
+    }
+
+    public function emotions(): HasManyThrough
+    {
+        return $this->hasManyThrough(Emotion::class, Emotionable::class, 'user_id', 'id', 'id', 'emotion_id');
+    }
+
+    public function emotionUsers(): MorphToMany
+    {
+        return $this->morphToMany(User::class, 'emotionable');
+    }
+
+    public function scopeAdmin(Builder|User $query): Builder
+    {
+        return $query->where('role', '>', 0);
+    }
+
+    public function scopeSuperAdmin(Builder|user $query): Builder
+    {
+        return $query->where('role', 2);
+    }
+
+    public function scopeActive(Builder|User $query): Builder
+    {
+        return $query->where('active', 1);
+    }
+
+    public function scopeCanLogin(Builder|User $query): Builder
+    {
+        return $query->where('active', 1)
+            ->where('email_verified_at', '!=', null);
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role > 0;
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === 2;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->active === 1;
+    }
+
+    public function isValidated(): bool
+    {
+        return $this->email_verified_at !== null && $this->active === 1;
     }
 
     /**

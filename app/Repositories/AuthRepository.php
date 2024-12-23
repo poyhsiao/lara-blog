@@ -5,8 +5,10 @@ namespace App\Repositories;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
-class AuthRepository extends Repository
+class AuthRepository extends BaseRepository
 {
+    protected $model;
+
     public function __construct(User $model)
     {
         $this->model = $model;

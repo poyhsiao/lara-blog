@@ -9,7 +9,6 @@ use Illuminate\Foundation\Http\Middleware\TrimStrings;
 use Illuminate\Http\Middleware\HandleCors;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Lottery;
 use Psr\Log\LogLevel;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -23,7 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->name('api.v1.')
                 ->group(base_path('routes/api/v1.php'));
 
-            Route::middleware(['api', 'jwt', 'jwt-admin'])
+            Route::middleware(['api', 'jwt', 'verified', 'active', 'jwt-admin'])
                 ->prefix('api/admin')
                 ->name('api.admin.')
                 ->group(base_path('routes/api/admin.php'));
@@ -38,6 +37,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->alias([
+            'active' => App\Http\Middleware\ActiveMiddleware::class,
             'jwt' => App\Http\Middleware\JwtAuthMiddleware::class,
             'jwt-admin' => App\Http\Middleware\JwtAdminMiddleware::class,
             'jwt-super' => App\Http\Middleware\JwtSuperMiddleware::class,
@@ -50,7 +50,6 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->throttle(function (Throwable $e) {
             return match (true) {
                 $e instanceof BroadcastException => Limit::perMinute(300),
-                $e instanceof ApiMonitoringException => Lottery::odds(1, 1000),
                 default => Limit::none(),
             };
         });
