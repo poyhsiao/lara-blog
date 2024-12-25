@@ -4,8 +4,6 @@ namespace App\Validators;
 
 use App\Helper\JsonResponseHelper;
 use App\Models\Tag;
-use App\Models\User;
-use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
