@@ -12,6 +12,9 @@ Route::group([], function () {
     Route::post('/login', [App\Http\Controllers\JWTAuthController::class, 'login'])
       ->name('login');
 
+    Route::get('verify-email', [App\Http\Controllers\JWTAuthController::class,'emailVerifycationRequest'])
+      ->name('verify-email');
+
     Route::middleware(['jwt', 'verified'])->group(function () {
         Route::get('/me', [App\Http\Controllers\JWTAuthController::class, 'getMe'])
           ->name('me');

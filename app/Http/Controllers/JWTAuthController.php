@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helper\JsonResponseHelper;
 use App\Repositories\AuthRepository;
+use App\Rules\HashIdCheckRule;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,6 +20,7 @@ class JWTAuthController extends Controller
         $this->repo = $repo;
     }
 
+    // TODO: separate the validate and repository
 
     /**
      * User register
@@ -41,7 +43,7 @@ class JWTAuthController extends Controller
         }
 
         if (!$user = $this->repo->create($request->all())) {
-            return JsonResponseHelper::error('Register failed', $user);
+            return JsonResponseHelper::error(null, 'Register failed');
         }
 
         $token = JWTAuth::fromUser($user);
@@ -133,5 +135,31 @@ class JWTAuthController extends Controller
         } catch (\Exception $e) {
             return JsonResponseHelper::error(null, 'Logout failed');
         }
+    }
+
+    public function emailVerifycationRequest(Request $request): JsonResponse
+    {
+        $validated = Validator::make($request->all(), [
+            'u' => [
+                'required',
+                'string',
+                'min:10',
+                new HashIdCheckRule('email-validate', 'user', 'The user is not found'),
+            ],
+            'p' => [
+                'required',
+                'string',
+                'min:10',
+                new HashIdCheckRule('email-validate', 'expired_at', 'The validate time is expired'),
+            ],
+        ]);
+
+        if ($validated->fails()) {
+            return JsonResponseHelper::error(null, 'Invalid data');
+        }
+
+        $result = $this->repo->emailVerification($validated->validated());
+
+        return $this->repoRedirect($result, 'Email verification successfully', 'email_verified');
     }
 }

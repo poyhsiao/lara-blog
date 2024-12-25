@@ -127,6 +127,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->active === 1;
     }
 
+    public function isVerified(): bool
+    {
+        return $this->email_verified_at !== null;
+    }
+
     public function isValidated(): bool
     {
         return $this->email_verified_at !== null && $this->active === 1;

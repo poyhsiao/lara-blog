@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helper\JsonResponseHelper;
+use Illuminate\Http\Client\Response;
 use Illuminate\Http\JsonResponse;
 
 abstract class Controller
@@ -41,5 +42,14 @@ abstract class Controller
             $transformer ? $transformer($response) : $response,
             $message
         );
+    }
+
+    protected function repoRedirect(mixed $response, string $message = 'success', string $redirectType = 'email_verified'): JsonResponse
+    {
+        if ($this->isJsonResponse($response)) {
+            return $response;
+        }
+
+        return Response::redirectTo(config('misc.redirect')[$redirectType]);
     }
 }

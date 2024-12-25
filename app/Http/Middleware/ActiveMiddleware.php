@@ -19,7 +19,7 @@ class ActiveMiddleware
     {
         $user = Auth::user();
 
-        if (is_null($user) || !$user->isVerified() || !$user->isActived()) {
+        if (is_null($user) || !$user->isValidated()) {
             return JsonResponseHelper::unauthorized('Unauthorized');
         }
 

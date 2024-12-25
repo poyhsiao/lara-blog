@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 
 return [
@@ -147,25 +148,49 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
+            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_') . '_database_'),
+            // for phpredis only
+            'serializer' => ('phpredis' === env('REDIS_CLIENT') && env('REDIS_SERIALIZER', false)) ? Redis::SERIALIZER_MSGPACK : null,
+            'compression' => ('phpredis' === env('REDIS_CLIENT') && env('REDIS_COMPRESSION', false)) ? Redis::COMPRESSION_LZ4 : null,
         ],
 
         'default' => [
-            'url' => env('REDIS_URL'),
-            'host' => env('REDIS_HOST', '127.0.0.1'),
-            'username' => env('REDIS_USERNAME'),
-            'password' => env('REDIS_PASSWORD'),
-            'port' => env('REDIS_PORT', '6379'),
-            'database' => env('REDIS_DB', '0'),
+            'url' => env('DEFAULT_REDIS_URL'),
+            'host' => env('DEFAULT_REDIS_HOST', '127.0.0.1'),
+            'username' => env('DEFAULT_REDIS_USERNAME'),
+            'password' => env('DEFAULT_REDIS_PASSWORD'),
+            'port' => env('DEFAULT_REDIS_PORT', '6379'),
+            'database' => env('DEFAULT_REDIS_DB', '0'),
+            'read_timeout' => env('DEFAULT_REDIS_READ_TIMEOUT', 60),
+            'persistent' => env('DEFAULT_REDIS_PERSISTENT', false),
+            'retry_interval' => env('DEFAULT_REDIS_RETRY_INTERVAL', 1000),
+            'timeout' => env('DEFAULT_REDIS_TIMEOUT', 1000),
         ],
 
         'cache' => [
-            'url' => env('REDIS_URL'),
-            'host' => env('REDIS_HOST', '127.0.0.1'),
-            'username' => env('REDIS_USERNAME'),
-            'password' => env('REDIS_PASSWORD'),
-            'port' => env('REDIS_PORT', '6379'),
-            'database' => env('REDIS_CACHE_DB', '1'),
+            'url' => env('CACHE_REDIS_URL'),
+            'host' => env('CACHE_REDIS_HOST', '127.0.0.1'),
+            'username' => env('CACHE_REDIS_USERNAME'),
+            'password' => env('CACHE_REDIS_PASSWORD'),
+            'port' => env('CACHE_REDIS_PORT', '6379'),
+            'database' => env('CACHE_REDIS_DB', '1'),
+            'read_timeout' => env('CACHE_REDIS_READ_TIMEOUT', 60),
+            'persistent' => env('CACHE_REDIS_PERSISTENT', false),
+            'retry_interval' => env('CACHE_REDIS_RETRY_INTERVAL', 1000),
+            'timeout' => env('CACHE_REDIS_TIMEOUT', 1000),
+        ],
+
+        'queue' => [
+            'url' => env('QUEUE_REDIS_URL'),
+            'host' => env('QUEUE_REDIS_HOST', '127.0.0.1'),
+            'username' => env('QUEUE_REDIS_USERNAME'),
+            'password' => env('QUEUE_REDIS_PASSWORD'),
+            'port' => env('QUEUE_REDIS_PORT', '6379'),
+            'database' => env('QUEUE_REDIS_DB', '2'),
+            'read_timeout' => env('QUEUE_REDIS_READ_TIMEOUT', 60),
+            'persistent' => env('QUEUE_REDIS_PERSISTENT', false),
+            'retry_interval' => env('QUEUE_REDIS_RETRY_INTERVAL', 1000),
+            'timeout' => env('QUEUE_REDIS_TIMEOUT', 1000),
         ],
 
     ],
