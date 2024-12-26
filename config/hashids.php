@@ -62,28 +62,25 @@ return [
         ],
 
         'default_set' => env('HASH_DEFAULT_SET', 'base62'),
-
-        'alphabet_set' => [
-            'uppercase' => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
-
-            'lowercase' => 'abcdefghijklmnopqrstuvwxyz',
-
-            'sn' => 'abcdefghijklmnopqrstuvwxyz1234567890',
-
-            'base64url' => 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789._-',
-
-            'base62' => '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
-
-            'base58btc' => '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz',
-
-            'base32hex' => '0123456789abcdefghjkmnpqrstuvwxyz',
-
-            'base32' => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567',
-
-            'base16hex' => '0123456789abcdef',
-
-            'base8' => '01234567',
-        ],
     ],
 
+    'alphabet_set' => [
+        'uppercase' => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+
+        'lowercase' => 'abcdefghijklmnopqrstuvwxyz',
+
+        'sn' => 'abcdefghijklmnopqrstuvwxyz1234567890',
+
+        'base64url' => 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789._-',
+
+        'base62' => '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+
+        'base58btc' => '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz',
+
+        'base32hex' => '0123456789abcdefghjkmnpqrstuvwxyz',
+
+        'base32' => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567',
+
+        'base16hex' => '0123456789abcdef',
+    ],
 ];

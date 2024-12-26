@@ -15,6 +15,9 @@ Route::group([], function () {
     Route::get('verify-email', [App\Http\Controllers\JWTAuthController::class,'emailVerifycationRequest'])
       ->name('verify-email');
 
+    Route::patch('forget-password', [App\Http\Controllers\JWTAuthController::class, 'forgetPassword'])
+      ->name('forget-password');
+
     Route::middleware(['jwt', 'verified'])->group(function () {
         Route::get('/me', [App\Http\Controllers\JWTAuthController::class, 'getMe'])
           ->name('me');

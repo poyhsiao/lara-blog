@@ -5,18 +5,20 @@ namespace App\Http\Controllers;
 use App\Helper\JsonResponseHelper;
 use App\Repositories\AuthRepository;
 use App\Rules\HashIdCheckRule;
+use App\Validators\JWTAuthValidator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class JWTAuthController extends Controller
 {
+    private $validator;
     private $repo;
 
-    public function __construct(AuthRepository $repo)
+    public function __construct(JWTAuthValidator $validator, AuthRepository $repo)
     {
+        $this->validator = $validator;
         $this->repo = $repo;
     }
 
@@ -30,26 +32,15 @@ class JWTAuthController extends Controller
      */
     public function register(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255|unique:users,name',
-            'email' => 'required|email|max:255|unique:users,email',
-            'display_name' => 'string|max:255|unique:users,display_name',
-            'password' => 'required|string|min:8',
-            'gender' => 'required|in:0,1,2',
-        ]);
+        $validated = $this->validator->register($request);
 
-        if ($validator->fails()) {
-            return JsonResponseHelper::error('Invalid data', $validator->errors());
+        if ($validated instanceof JsonResponse) {
+            return $validated;
         }
 
-        if (!$user = $this->repo->create($request->all())) {
-            return JsonResponseHelper::error(null, 'Register failed');
-        }
+        $result = $this->repo->register($validated);
 
-        $token = JWTAuth::fromUser($user);
-        $type = 'Bearer';
-
-        return JsonResponseHelper::success(compact('user', 'token', 'type'), 'Register successfully');
+        return $this->repoResponse($result, 'Register successfully');
     }
 
     /**
@@ -60,47 +51,28 @@ class JWTAuthController extends Controller
      */
     public function login(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'user' => 'required|string',
-            'password' => 'required|string',
-        ]);
+        $validated = $this->validator->login($request);
 
-        if ($validator->fails()) {
-            return JsonResponseHelper::error('Invalid data', $validator->errors());
+        if ($validated instanceof JsonResponse) {
+            return $validated;
         }
 
-        try {
-            if (!$token = JWTAuth::attempt([
-                'email' => $request->user,
-                'password' => $request->password,
-            ])) {
-                $token = JWTAuth::attempt([
-                    'name' => $request->user,
-                    'password' => $request->password,
-                ]);
-            }
+        $result = $this->repo->login($validated);
 
-            /**
-             * User name/email or password is incorrect
-             */
-            if (!$token) {
-                return JsonResponseHelper::error(['data' => 'Invalid username or password'], 'Login failed');
-            }
+        return $this->repoResponse($result, 'Login successfully');
+    }
 
-            $user = Auth::user();
-            $type = 'Bearer';
+    public function forgetPassword(Request $request): JsonResponse
+    {
+        $validated = $this->validator->forgetPassword($request);
 
-            /**
-             * User is not active or email is not verified
-             */
-            if ($user->active === 0 || $user->email_verified_at === null) {
-                return JsonResponseHelper::unauthorized('The user is not active or email is not verified');
-            }
-
-            return JsonResponseHelper::success(compact('user', 'token', 'type'), 'Login successfully');
-        } catch (\Exception $e) {
-            return JsonResponseHelper::error(['data' => $e->getMessage()], 'Login failed');
+        if ($this->isJsonResponse($validated)) {
+            return $validated;
         }
+
+        $result = $this->repo->forgetPassword($validated);
+
+        return $this->repoResponse($result, 'Reset password successfully');
     }
 
     /**
