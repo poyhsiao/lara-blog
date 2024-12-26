@@ -6448,6 +6448,313 @@
                 ]
             }
         },
+        "/api/v1/forget-password": {
+            "patch": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Forget Password",
+                "description": "Forget Password",
+                "operationId": "forgetPassword",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "user"
+                                ],
+                                "properties": {
+                                    "user": {
+                                        "type": "string",
+                                        "example": "johndoe@example.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "url": {
+                                                    "type": "string",
+                                                    "example": "https://example.com/reset-password?u=johndoe@example.com&p=xxxxxxxxx"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "error": {
+                                            "type": "object",
+                                            "example": null
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 400
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": null
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Invalid data"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 401
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": null
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Unauthorized"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 404
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": null
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Post not found"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/email-verify": {
+            "patch": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Email Verification Request",
+                "description": "Email Verification Request",
+                "operationId": "emailVerifycationRequest",
+                "parameters": [
+                    {
+                        "name": "u",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "xxxxxxxxx"
+                        }
+                    },
+                    {
+                        "name": "p",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "xxxxxxxxx"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "John Doe"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "johndoe@example.com"
+                                                },
+                                                "display_name": {
+                                                    "type": "string",
+                                                    "example": "John Doe"
+                                                },
+                                                "gender": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "error": {
+                                            "type": "object",
+                                            "example": null
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 400
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": null
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Invalid data"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 401
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": null
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Unauthorized"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 404
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": null
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Post not found"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/post": {
             "post": {
                 "tags": [
