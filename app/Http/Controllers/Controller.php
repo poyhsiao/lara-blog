@@ -5,18 +5,19 @@ namespace App\Http\Controllers;
 use App\Helper\JsonResponseHelper;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 
 abstract class Controller
 {
     /**
-     * Determine if the provided instance is a JsonResponse.
+     * Check if the given instance is a JsonResponse.
      *
-     * @param mixed $object The object to evaluate.
+     * @param mixed $instance The instance to evaluate.
      * @return bool Returns true if the instance is a JsonResponse, otherwise false.
      */
-    protected function isJsonResponse(mixed $object): bool
+    protected function isJsonResponse(mixed $instance): bool
     {
-        return $object instanceof JsonResponse;
+        return $instance instanceof JsonResponse;
     }
 
     /**
@@ -27,29 +28,40 @@ abstract class Controller
      * If a callable is provided, it is called with the repository response as an argument
      * to transform the response into the desired format.
      *
-     * @param mixed $response The response from the repository
+     * @param mixed $repoResponse The response from the repository
      * @param string $message The message to include in the success response
      * @param callable|null $transformer An optional callable to transform the repository response
      * @return JsonResponse The response to return
      */
-    protected function repoResponse(mixed $response, string $message = 'success', callable|null $transformer = null): JsonResponse
+    protected function repoResponse(mixed $repoResponse, string $message = 'success', callable|null $transformer = null): JsonResponse
     {
-        if ($this->isJsonResponse($response)) {
-            return $response;
+        if ($this->isJsonResponse($repoResponse)) {
+            return $repoResponse;
         }
 
-        return JsonResponseHelper::success(
-            $transformer ? $transformer($response) : $response,
-            $message
-        );
+        $data = $transformer ? $transformer($repoResponse) : $repoResponse;
+
+        return JsonResponseHelper::success($data, $message);
     }
 
-    protected function repoRedirect(mixed $response, string $message = 'success', string $redirectType = 'email_verified'): JsonResponse
+    /**
+     * Return a RedirectResponse based on the repository response
+     *
+     * If the repository response is a JsonResponse, it is returned as is.
+     * Otherwise, a redirect response is created using JsonResponseHelper::redirectTo.
+     * The redirect URL is determined by the given redirectType, which is used to
+     * look up the URL in the config.misc.redirect array.
+     *
+     * @param mixed $repoResponse The response from the repository
+     * @param string $redirectType The type of redirect to perform
+     * @return RedirectResponse The response to return
+     */
+    protected function repoRedirect(mixed $repoResponse, string $redirectType = 'email_verified'): RedirectResponse
     {
-        if ($this->isJsonResponse($response)) {
-            return $response;
+        if ($this->isJsonResponse($repoResponse)) {
+            return $repoResponse;
         }
 
-        return Response::redirectTo(config('misc.redirect')[$redirectType]);
+        return JsonResponseHelper::redirectTo(config('misc.redirect')[$redirectType]);
     }
 }

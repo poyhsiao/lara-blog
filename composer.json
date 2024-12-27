@@ -13,10 +13,13 @@
         "darkaonline/l5-swagger": "^8.6",
         "giauphan/laravel-qr-code": "^1.0",
         "hashids/hashids": "^5.0",
+        "http-interop/http-factory-guzzle": "^1.2",
         "laravel/framework": "^11.31",
         "laravel/octane": "^2.6",
         "laravel/sanctum": "^4.0",
+        "laravel/scout": "^10.11",
         "laravel/tinker": "^2.9",
+        "meilisearch/meilisearch-php": "^1.12",
         "tymon/jwt-auth": "^2.1"
     },
     "require-dev": {
