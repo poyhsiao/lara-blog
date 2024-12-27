@@ -3,7 +3,9 @@
 namespace App\Helper;
 
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Redirect;
 
 class JsonResponseHelper
 {
@@ -120,5 +122,17 @@ class JsonResponseHelper
                 'data' => $data,
             ],
         ], Response::HTTP_NOT_ACCEPTABLE);
+    }
+
+    /**
+     * Redirect to a specified URL with an optional status code.
+     *
+     * @param string $url The target URL for redirection.
+     * @param int $statusCode The HTTP status code to use for the redirect.
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public static function redirectTo(string $url, int $statusCode = 302): RedirectResponse
+    {
+        return Redirect::to($url, $statusCode);
     }
 }

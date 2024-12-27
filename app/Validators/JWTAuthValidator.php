@@ -4,6 +4,7 @@ namespace App\Validators;
 
 use App\Helper\JsonResponseHelper;
 use App\Models\User;
+use App\Rules\HashIdCheckRule;
 use App\Validators\BaseValidator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -75,6 +76,36 @@ class JWTAuthValidator extends BaseValidator
 
         if ($validated->fails()) {
             return JsonResponseHelper::error('Invalid data', $validated->errors());
+        }
+
+        return $validated->validated();
+    }
+
+    /**
+     * Validate email verification request.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return array|JsonResponse
+     */
+    public function emailVerificationRequest(Request $request): array|JsonResponse
+    {
+        $validated = Validator::make($request->all(), [
+            'u' => [
+                'required',
+                'string',
+                'min:10',
+                new HashIdCheckRule('email-validate', 'user', 'The user is not found'),
+            ],
+            'p' => [
+                'required',
+                'string',
+                'min:10',
+                new HashIdCheckRule('email-validate', 'expired_at', 'The validate time is expired'),
+            ],
+        ]);
+
+        if ($validated->fails()) {
+            return JsonResponseHelper::error(null, 'Invalid data');
         }
 
         return $validated->validated();

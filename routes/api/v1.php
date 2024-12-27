@@ -12,7 +12,7 @@ Route::group([], function () {
     Route::post('/login', [App\Http\Controllers\JWTAuthController::class, 'login'])
       ->name('login');
 
-    Route::get('verify-email', [App\Http\Controllers\JWTAuthController::class,'emailVerifycationRequest'])
+    Route::get('verify-email', [App\Http\Controllers\JWTAuthController::class,'emailVerificationRequest'])
       ->name('verify-email');
 
     Route::patch('forget-password', [App\Http\Controllers\JWTAuthController::class, 'forgetPassword'])

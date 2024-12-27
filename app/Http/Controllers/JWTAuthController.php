@@ -4,16 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Helper\JsonResponseHelper;
 use App\Repositories\AuthRepository;
-use App\Rules\HashIdCheckRule;
 use App\Validators\JWTAuthValidator;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class JWTAuthController extends Controller
 {
     private $validator;
+
     private $repo;
 
     public function __construct(JWTAuthValidator $validator, AuthRepository $repo)
@@ -21,8 +21,6 @@ class JWTAuthController extends Controller
         $this->validator = $validator;
         $this->repo = $repo;
     }
-
-    // TODO: separate the validate and repository
 
     /**
      * User register
@@ -109,29 +107,22 @@ class JWTAuthController extends Controller
         }
     }
 
-    public function emailVerifycationRequest(Request $request): JsonResponse
+    /**
+     * Handle email verification request.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     */
+    public function emailVerificationRequest(Request $request): JsonResponse|RedirectResponse
     {
-        $validated = Validator::make($request->all(), [
-            'u' => [
-                'required',
-                'string',
-                'min:10',
-                new HashIdCheckRule('email-validate', 'user', 'The user is not found'),
-            ],
-            'p' => [
-                'required',
-                'string',
-                'min:10',
-                new HashIdCheckRule('email-validate', 'expired_at', 'The validate time is expired'),
-            ],
-        ]);
+        $validated = $this->validator->emailVerificationRequest($request);
 
-        if ($validated->fails()) {
-            return JsonResponseHelper::error(null, 'Invalid data');
+        if ($this->isJsonResponse($validated)) {
+            return $validated;
         }
 
         $result = $this->repo->emailVerification($validated->validated());
 
-        return $this->repoRedirect($result, 'Email verification successfully', 'email_verified');
+        return $this->repoRedirect($result, 'email_verified');
     }
 }
