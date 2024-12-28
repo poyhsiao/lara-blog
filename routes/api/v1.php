@@ -6,17 +6,26 @@ use Illuminate\Support\Facades\Route;
  * Auth
  */
 Route::group([], function () {
-    Route::post('/register', [App\Http\Controllers\JWTAuthController::class, 'register'])
-      ->name('register');
+    Route::post('register', [App\Http\Controllers\JWTAuthController::class, 'register'])
+        ->name('register');
 
-    Route::post('/login', [App\Http\Controllers\JWTAuthController::class, 'login'])
-      ->name('login');
+    Route::post('login', [App\Http\Controllers\JWTAuthController::class, 'login'])
+        ->name('login');
 
-    Route::get('verify-email', [App\Http\Controllers\JWTAuthController::class,'emailVerificationRequest'])
-      ->name('verify-email');
+    Route::patch('verify-email', [App\Http\Controllers\JWTAuthController::class,'emailVerificationRequest'])
+        ->name('verify-email');
+
+    Route::post('resend-email-verify', [App\Http\Controllers\JWTAuthController::class,'reSendEmailVerify'])
+        ->name('resend-email-verify');
 
     Route::patch('forget-password', [App\Http\Controllers\JWTAuthController::class, 'forgetPassword'])
-      ->name('forget-password');
+        ->name('forget-password');
+
+    Route::patch('reset-password', [App\Http\Controllers\JWTAuthController::class, 'resetPassword'])
+        ->name('reset-password');
+
+    Route::patch('new-password', [App\Http\Controllers\JWTAuthController::class, 'newPassword'])
+        ->name('new-password');
 
     Route::middleware(['jwt', 'verified'])->group(function () {
         Route::get('/me', [App\Http\Controllers\JWTAuthController::class, 'getMe'])
