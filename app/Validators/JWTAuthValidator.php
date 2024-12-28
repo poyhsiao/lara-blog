@@ -4,7 +4,6 @@ namespace App\Validators;
 
 use App\Helper\JsonResponseHelper;
 use App\Models\User;
-use App\Rules\HashIdCheckRule;
 use App\Validators\BaseValidator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -82,6 +81,63 @@ class JWTAuthValidator extends BaseValidator
     }
 
     /**
+     * Validate reset password request.
+     *
+     * Validates the provided user and code for resetting the password.
+     * Returns the validated data if successful, otherwise returns a JsonResponse
+     * with an error message indicating invalid data.
+     *
+     * @param \Illuminate\Http\Request $request The request object containing user and code data.
+     * @return array|JsonResponse The validated data or a JsonResponse with validation errors.
+     */
+    public function resetPassword(Request $request): array|JsonResponse
+    {
+        $validated = Validator::make($request->all(), [
+            'user' => [
+                'required',
+                'string',
+                'between:2:255',
+            ],
+            'code' => [
+                'required',
+                'string',
+                'size:7',
+            ],
+        ]);
+
+        if ($validated->fails()) {
+            return JsonResponseHelper::error(null, 'Invalid data');
+        }
+
+        return $validated->validated();
+    }
+
+    /**
+     * Validate new password request.
+     *
+     * Validates the provided password and confirm password data for updating the user's
+     * password. Returns the validated data if successful, otherwise returns a JsonResponse
+     * with an error message indicating invalid data.
+     *
+     * @param \Illuminate\Http\Request $request The request object containing password and confirm password data.
+     * @return array|JsonResponse The validated data or a JsonResponse with validation errors.
+     */
+    public function newPassword(Request $request): array|JsonResponse
+    {
+        $validated = Validator::make($request->all(), [
+            'user' => 'required|string|between:2:255',
+            'password' => 'required|string|min:8|max:255',
+            'confirm_password' => 'required|string|same:password',
+        ]);
+
+        if ($validated->fails()) {
+            return JsonResponseHelper::error(null, 'Invalid data');
+        }
+
+        return $validated->validated();
+    }
+
+    /**
      * Validate email verification request.
      *
      * @param \Illuminate\Http\Request $request
@@ -90,18 +146,32 @@ class JWTAuthValidator extends BaseValidator
     public function emailVerificationRequest(Request $request): array|JsonResponse
     {
         $validated = Validator::make($request->all(), [
-            'u' => [
-                'required',
-                'string',
-                'min:10',
-                new HashIdCheckRule('email-validate', 'user', 'The user is not found'),
-            ],
-            'p' => [
-                'required',
-                'string',
-                'min:10',
-                new HashIdCheckRule('email-validate', 'expired_at', 'The validate time is expired'),
-            ],
+            'user' => 'required|string|between:2,255',
+            'code' => 'required|string|size:7',
+        ]);
+
+        if ($validated->fails()) {
+            return JsonResponseHelper::error(null, 'Invalid data');
+        }
+
+        return $validated->validated();
+    }
+
+    /**
+     * Validate re-send email verification request.
+     *
+     * Validates the provided user and password for re-sending the email verification.
+     * Returns the validated data if successful, otherwise returns a JsonResponse
+     * with an error message indicating invalid data.
+     *
+     * @param \Illuminate\Http\Request $request The request object containing user and password data.
+     * @return array|JsonResponse The validated data or a JsonResponse with validation errors.
+     */
+    public function reSendEmailVerify(Request $request): array|JsonResponse
+    {
+        $validated = Validator::make($request->all(), [
+            'user' => 'required|string|between:2,255',
+            'password' => 'required|string|between:8,255',
         ]);
 
         if ($validated->fails()) {

@@ -3,10 +3,9 @@
 namespace App\Repositories;
 
 use App\Foundation\Helper\HashidTools;
-use App\Foundation\Helper\QrCodeTools;
 use App\Helper\JsonResponseHelper;
 use App\Mail\ForgetPasswordMail;
-use App\Mail\UserEmailVerify;
+use App\Mail\UserEmailVerifyMail;
 use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\JsonResponse;
@@ -42,26 +41,22 @@ class AuthRepository extends BaseRepository
      */
     public function register(array $data): array|JsonResponse
     {
-        $user = null;
+        $data['email_validate_token'] = $this->generateOneTimePassword();
 
         try {
+            $user = null;
+
             DB::transaction(function () use ($data, &$user) {
                 $user = $this->model::create($data);
 
                 /**
                  * Send verification email
                  */
-                $this->sendVerificationEmail($user);
+                $this->sendVerificationEmail($user, $data['email_validate_token']);
             });
 
-            /**
-             * Add token
-             */
-            $token = JWTAuth::fromUser($user);
-            $type = 'Bearer';
-
-            return compact('user', 'token', 'type');
-        } catch (\Exception $e) {
+            return $user?->toArray();
+        } catch (Throwable $e) {
             Log::error('Register failed', [
                 'data' => $data,
                 'message' => $e->getMessage(),
@@ -116,31 +111,70 @@ class AuthRepository extends BaseRepository
         }
     }
 
-    public function emailVerification(array $validated)
+    /**
+     * Verifies a user's email.
+     *
+     * Attempts to verify a user with the given code, and returns the user, a JWT token, and the token type.
+     * If the user is not found or the code is invalid/expired, logs the error and returns a JSON response with an error message.
+     * If the verification fails, logs the error and returns a JSON response with an error message.
+     *
+     * @param array $validated The validated data for verifying a user.
+     * @return array|JsonResponse An array containing the user, token, and type on success, or a JsonResponse with an error message on failure.
+     */
+    public function emailVerification(array $validated): array|JsonResponse
     {
-        $result = null;
+        $user = $validated['user'];
+        $code = $validated['code'];
 
         try {
-            $userId = $this->hash->decode($validated['u'])[0];
+            $user = $this->model::where('name', $user)
+                ->orWhere('email', $user)
+                ->whereNotNull('email_validate_token')
+                ->first();
 
-            DB::transaction(function () use ($userId, &$result) {
-                $result = $this->model::find($userId);
-                $result->email_verified_at = now();
-                $result->save();
+            if (!$user) {
+                return JsonResponseHelper::error(null, 'Invalid data');
+            }
+
+            [$theCode, $expire] = $user->email_validate_token;
+
+            if ($code !== $theCode || $expire < now()->timestamp) {
+                return JsonResponseHelper::error(null, 'Invalid code or code expired');
+            }
+
+            DB::transaction(function () use (&$user) {
+                $user->email_verified_at = now();
+                $user->email_validate_token = null;
+                $user->save();
             });
-        } catch (\Exception $e) {
+
+            $token = JWTAuth::fromUser($user);
+            $type = 'Bearer';
+
+            return compact('user', 'token', 'type');
+        } catch (Throwable $e) {
             Log::error('Email verification failed', [
                 'validated' => $validated,
                 'message' => $e->getMessage(),
             ]);
+            return JsonResponseHelper::unauthorized('Email verification failed');
         }
-        return $result;
     }
 
+    /**
+     * Handle the forget password process for a user.
+     *
+     * Searches for a user by email or name provided in the validated array.
+     * If the user is found, generates a one-time password and expiration timestamp,
+     * saves the reset password token to the user's record, and sends a forget password
+     * email with the generated code. Returns the user's data on success.
+     * Logs an error and returns a JSON response with an error message if the process fails.
+     *
+     * @param array $validated An associative array containing the 'user' key with the user's email or name.
+     * @return array|JsonResponse The user's data as an array on success, or a JsonResponse with an error message on failure.
+     */
     public function forgetPassword(array $validated): array|JsonResponse
     {
-        $result = null;
-
         try {
             $theUser = $validated['user'];
 
@@ -151,11 +185,17 @@ class AuthRepository extends BaseRepository
                 return JsonResponseHelper::error('User not found');
             }
 
-            $code = $this->generatePasswordQrCode($user);
+            DB::transaction(function () use (&$user) {
+                $expire = now()->addMinutes(5)->timestamp;
+                $code = $this->generateOneTimePassword();
 
-            $this->sendForgetPasswordEmail($user, $code['url'], $code['image']);
+                $user->reset_password_token = sprintf('%s-%s', $code, $expire);
+                $user->save();
 
-            return ['url' => $code['url']];
+                $this->sendForgetPasswordEmail($user, $code);
+            });
+
+            return $user->toArray();
         } catch (Throwable $e) {
             Log::error('Forget password failed', [
                 'data' => [
@@ -167,46 +207,135 @@ class AuthRepository extends BaseRepository
         }
     }
 
-    private function verifyEmailContent(User|Authenticatable $user): string
+    /**
+     * Reset the password for a user.
+     *
+     * Searches for a user by email or name provided in the validated array,
+     * and checks if the user has a valid reset password token and if the code
+     * matches the one in the token. If the check is successful, returns the user's
+     * data as an array. If the user is not found, the code is invalid, or the
+     * code has expired, returns a JSON response with an error message.
+     *
+     * @param array $validated An associative array containing the 'user' and 'code' keys.
+     * @return array|JsonResponse The user's data as an array on success, or a JsonResponse with an error message on failure.
+     */
+    public function resetPassword(array $validated): array|JsonResponse
     {
-        $encode = [
-            'user_id' => $this->hash->encode($user->id),
-            'exp' => $this->hash->encode(now()->addDays(7)->timestamp),
-        ];
+        $user = $validated['user'];
+        $code = $validated['code'];
 
-        $url = config('app.url') . '/api/v1/verify-email/' .
-        '?u=' . $encode['user_id'] . '&p=' . $encode['exp'];
+        if (!$user = $this->model::where('email', $user)
+            ->orWhere('name', $user)
+            ->whereNotNull('reset_password_token')
+        ->first()) {
+            return JsonResponseHelper::error('User not found');
+        }
 
-        return 'Please verify your email by linking ( ' . $url . ' )';
+        [$theCode, $expire] = $user->reset_password_token;
+
+        if ($code !== $theCode || $expire < now()->timestamp) {
+            return JsonResponseHelper::error('Invalid code or code expired');
+        }
+
+        return $user->toArray();
     }
 
-    private function generatePasswordQrCode(User|Authenticatable $user): array
+    /**
+     * Update the user's password.
+     *
+     * Searches for a user by email or name provided in the validated array,
+     * and checks if the user has a valid reset password token. If the user is found,
+     * hashes the new password, updates the user's password, and clears the reset password token.
+     * Returns the updated user data as an array on success. Logs an error and returns a
+     * JsonResponse with an error message if the user is not found or if an exception occurs.
+     *
+     * @param array $validated An associative array containing the 'user' and 'password' keys.
+     * @return array|JsonResponse The updated user's data as an array on success, or a JsonResponse with an error message on failure.
+     */
+    public function newPassword(array $validated): array|JsonResponse
     {
-        $encode = [
-            'user_id' => $this->hash->encode($user->id),
-            'exp' => $this->hash->encode(now()->addDays(7)->timestamp),
-        ];
+        $user = $validated['user'];
+        $password = $validated['password'];
 
-        $url = sprintf('%s/api/v1/reset-password/?u=%s&p=%s', config('app.url'), $encode['user_id'], $encode['exp']);
+        if (!$user = $this->model::where('email', $user)
+            ->orWhere('name', $user)
+            ->whereNotNull('reset_password_token')
+            ->first()) {
+            return JsonResponseHelper::error('User not found');
+        }
 
-        $qrCode = new QrCodeTools($url);
-        $qrCode->textType = 'url';
-        $qrCode->fileType = 'svg';
+        try {
+            DB::transaction(function () use (&$user, $password) {
+                $user->password = bcrypt($password);
+                $user->reset_password_token = null;
+                $user->save();
+            });
 
-        ob_start();
-        $qrCode->generate();
-        $image = ob_get_clean();
-
-        return compact('url', 'image');
+            return $user->toArray();
+        } catch (Throwable $e) {
+            Log::error('New password failed', [
+                'validated' => $validated,
+                'message' => $e->getMessage(),
+            ]);
+            return JsonResponseHelper::error(null, 'New password failed');
+        }
     }
 
-    private function sendVerificationEmail(User|Authenticatable $user): ?string
+    /**
+     * Resend the email verification for a user.
+     *
+     * Searches for a user by email or name provided in the validated array,
+     * and checks if the user has a valid email verification token. If the user is found,
+     * generates a new verification code and sends a verification email.
+     * Returns the user's data as an array on success. Logs an error and returns a
+     * JsonResponse with an error message if the user is not found or if an exception occurs.
+     *
+     * @param array $validated An associative array containing the 'user' and 'password' keys.
+     * @return array|JsonResponse The user's data as an array on success, or a JsonResponse with an error message on failure.
+     */
+    public function reSendEmailVerify(array $validated): array|JsonResponse
     {
-        return Mail::to($user->email)->send(new UserEmailVerify($user, $this->verifyEmailContent($user)));
+        $user = $validated['user'];
+        $password = $validated['password'];
+
+        try {
+            $user = $this->model::where('name', $user)
+                ->orWhere('email', $user)
+                ->whereNotNull('email_validate_token')
+                ->first();
+
+            if (!$user) {
+                return JsonResponseHelper::error(null, 'Invalid data');
+            }
+
+            $code = $this->generateOneTimePassword();
+
+            if (!$this->sendVerificationEmail($user, $code)) {
+                return JsonResponseHelper::error(null, 'ReSend email verification failed');
+            }
+
+            return $user->toArray();
+        } catch (Throwable $e) {
+            Log::error('Resent email verification failed', [
+                'validated' => $validated,
+                'message' => $e->getMessage(),
+            ]);
+            return JsonResponseHelper::error(null, 'Resent email verification failed');
+        }
     }
 
-    private function sendForgetPasswordEmail(User|Authenticatable $user, $url, $qrcode): ?string
+    private function generateOneTimePassword(): string
     {
-        return Mail::to($user->email)->send(new ForgetPasswordMail($user, $url, $qrcode));
+        return (string) str_pad(sprintf('%s%s', now()->microsecond, substr(now()->timestamp, -1)), 7, '0', STR_PAD_RIGHT);
+    }
+
+    private function sendVerificationEmail(User|Authenticatable $user, string $code): ?string
+    {
+        return Mail::to($user->email)->send(new UserEmailVerifyMail($user, $code));
+    }
+
+    private function sendForgetPasswordEmail(User|Authenticatable $user, string $code): ?string
+    {
+        return Mail::to($user->email)->send(new ForgetPasswordMail($code));
     }
 }

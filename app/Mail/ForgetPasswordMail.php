@@ -2,9 +2,7 @@
 
 namespace App\Mail;
 
-use App\Models\User;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Address;
@@ -17,20 +15,14 @@ class ForgetPasswordMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    protected $user;
-
-    protected $url;
-
-    protected $qrcode;
+    protected string $code;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(User|Authenticatable $user, string $url, mixed $qrcode)
+    public function __construct(string $code)
     {
-        $this->user = $user;
-        $this->url = $url;
-        $this->qrcode = $qrcode;
+        $this->code = $code;
     }
 
     /**
@@ -40,7 +32,7 @@ class ForgetPasswordMail extends Mailable implements ShouldQueue
     {
         return new Envelope(
             from: new Address(config('misc.admin.email'), config('misc.admin.name')),
-            subject: 'Forget Password',
+            subject: 'Please check your validation code',
         );
     }
 
@@ -52,9 +44,7 @@ class ForgetPasswordMail extends Mailable implements ShouldQueue
         return new Content(
             text: 'mail.users.forgetPassword-text',
             with: [
-                'user_name' => $this->user->name,
-                'user_display_name' => $this->user->display_name,
-                'url' => $this->url,
+                'code' => $this->code,
             ],
         );
     }
@@ -66,9 +56,6 @@ class ForgetPasswordMail extends Mailable implements ShouldQueue
      */
     public function attachments(): array
     {
-        return [
-            Attachment::fromData(fn () => $this->qrcode, 'qrcode.svg')
-                ->withMime('image/svg+xml'),
-        ];
+        return [];
     }
 }

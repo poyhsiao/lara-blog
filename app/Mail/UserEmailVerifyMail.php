@@ -12,21 +12,21 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class UserEmailVerify extends Mailable implements ShouldQueue
+class UserEmailVerifyMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
     protected $user;
 
-    protected $url;
+    protected $code;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(User|Authenticatable $user, string $url)
+    public function __construct(User|Authenticatable $user, string $code)
     {
         $this->user = $user;
-        $this->url = $url;
+        $this->code = $code;
     }
 
     /**
@@ -46,11 +46,10 @@ class UserEmailVerify extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            markdown: 'mail.users.verify',
+            text: 'mail.users.emailVerify-text',
             with: [
-                'user_name' => $this->user->name,
                 'user_display_name' => $this->user->display_name,
-                'url' => $this->url,
+                'code' => $this->code,
             ],
         );
     }

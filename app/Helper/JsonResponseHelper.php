@@ -18,6 +18,10 @@ class JsonResponseHelper
      */
     public static function success(mixed $data, string $message = 'success'): JsonResponse
     {
+        if ($data instanceof JsonResponse) {
+            return $data;
+        }
+
         return response()->json([
             'status_code' => Response::HTTP_OK,
             'data' => [
@@ -38,6 +42,10 @@ class JsonResponseHelper
      */
     public static function error(mixed $data, string $message = 'error', int $errorCode = Response::HTTP_BAD_REQUEST): JsonResponse
     {
+        if ($data instanceof JsonResponse) {
+            return $data;
+        }
+
         return response()->json([
             'status_code' => $errorCode,
             'data' => null,
@@ -57,6 +65,10 @@ class JsonResponseHelper
      */
     public static function unauthorized(string $message = 'Unauthorized', mixed $data = null): JsonResponse
     {
+        if ($data instanceof JsonResponse) {
+            return $data;
+        }
+
         return response()->json([
             'status_code' => Response::HTTP_UNAUTHORIZED,
             'data' => null,
@@ -76,6 +88,10 @@ class JsonResponseHelper
      */
     public static function forbidden(string $message = 'Forbidden', mixed $data = null): JsonResponse
     {
+        if ($data instanceof JsonResponse) {
+            return $data;
+        }
+
         return response()->json([
             'status_code' => Response::HTTP_FORBIDDEN,
             'data' => null,
@@ -95,6 +111,10 @@ class JsonResponseHelper
      */
     public static function notFound(string $message = 'Not Found', mixed $data = null): JsonResponse
     {
+        if ($data instanceof JsonResponse) {
+            return $data;
+        }
+
         return response()->json([
             'status_code' => Response::HTTP_NOT_FOUND,
             'data' => null,
@@ -114,6 +134,10 @@ class JsonResponseHelper
      */
     public static function notAcceptable(string $message = 'Unacceptable', mixed $data = null): JsonResponse
     {
+        if ($data instanceof JsonResponse) {
+            return $data;
+        }
+
         return response()->json([
             'status_code' => Response::HTTP_NOT_ACCEPTABLE,
             'data' => null,
