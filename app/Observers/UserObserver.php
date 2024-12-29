@@ -13,7 +13,7 @@ class UserObserver
     {
         $this->ttl = config('cache.default_ttl');
     }
-
+  
     /**
      * Handle the User "created" event.
      */
