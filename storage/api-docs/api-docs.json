@@ -6453,8 +6453,8 @@
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Forget Password",
-                "description": "Forget Password",
+                "summary": "Forget password",
+                "description": "Forget password",
                 "operationId": "forgetPassword",
                 "requestBody": {
                     "required": true,
@@ -6467,7 +6467,7 @@
                                 "properties": {
                                     "user": {
                                         "type": "string",
-                                        "example": "johndoe@example.com"
+                                        "example": "user"
                                     }
                                 },
                                 "type": "object"
@@ -6488,9 +6488,33 @@
                                         },
                                         "data": {
                                             "properties": {
-                                                "url": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
                                                     "type": "string",
-                                                    "example": "https://example.com/reset-password?u=johndoe@example.com&p=xxxxxxxxx"
+                                                    "example": "John Doe"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "QHs4o@example.com"
+                                                },
+                                                "display_name": {
+                                                    "type": "string",
+                                                    "example": "John Doe"
+                                                },
+                                                "gender": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "active": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "role": {
+                                                    "type": "integer",
+                                                    "example": 0
                                                 }
                                             },
                                             "type": "object"
@@ -6520,13 +6544,10 @@
                                             "example": null
                                         },
                                         "error": {
-                                            "properties": {
-                                                "message": {
-                                                    "type": "string",
-                                                    "example": "Invalid data"
-                                                }
-                                            },
-                                            "type": "object"
+                                            "type": "object",
+                                            "example": {
+                                                "message": "Logout failed"
+                                            }
                                         }
                                     },
                                     "type": "object"
@@ -6549,42 +6570,10 @@
                                             "example": null
                                         },
                                         "error": {
-                                            "properties": {
-                                                "message": {
-                                                    "type": "string",
-                                                    "example": "Unauthorized"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status_code": {
-                                            "type": "integer",
-                                            "example": 404
-                                        },
-                                        "data": {
                                             "type": "object",
-                                            "example": null
-                                        },
-                                        "error": {
-                                            "properties": {
-                                                "message": {
-                                                    "type": "string",
-                                                    "example": "Post not found"
-                                                }
-                                            },
-                                            "type": "object"
+                                            "example": {
+                                                "message": "Unauthorized"
+                                            }
                                         }
                                     },
                                     "type": "object"
@@ -6595,34 +6584,38 @@
                 }
             }
         },
-        "/api/v1/email-verify": {
+        "/api/v1/reset-password": {
             "patch": {
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Email Verification Request",
-                "description": "Email Verification Request",
-                "operationId": "emailVerifycationRequest",
-                "parameters": [
-                    {
-                        "name": "u",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "example": "xxxxxxxxx"
-                        }
-                    },
-                    {
-                        "name": "p",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "example": "xxxxxxxxx"
+                "summary": "Reset password",
+                "description": "Reset password",
+                "operationId": "resetPassword",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "user",
+                                    "code"
+                                ],
+                                "properties": {
+                                    "user": {
+                                        "type": "string",
+                                        "example": "user"
+                                    },
+                                    "code": {
+                                        "type": "string",
+                                        "example": "1234567"
+                                    }
+                                },
+                                "type": "object"
+                            }
                         }
                     }
-                ],
+                },
                 "responses": {
                     "200": {
                         "description": "Success",
@@ -6636,6 +6629,10 @@
                                         },
                                         "data": {
                                             "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
                                                 "name": {
                                                     "type": "string",
                                                     "example": "John Doe"
@@ -6649,6 +6646,454 @@
                                                     "example": "John Doe"
                                                 },
                                                 "gender": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "active": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "role": {
+                                                    "type": "integer",
+                                                    "example": 0
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "error": {
+                                            "type": "object",
+                                            "example": null
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 400
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": null
+                                        },
+                                        "error": {
+                                            "type": "object",
+                                            "example": {
+                                                "message": "Logout failed"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 401
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": null
+                                        },
+                                        "error": {
+                                            "type": "object",
+                                            "example": {
+                                                "message": "Unauthorized"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/new-password": {
+            "patch": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "New password",
+                "description": "New password",
+                "operationId": "newPassword",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "user",
+                                    "password",
+                                    "confirm_password"
+                                ],
+                                "properties": {
+                                    "user": {
+                                        "type": "string",
+                                        "example": "user"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password"
+                                    },
+                                    "confirm_password": {
+                                        "type": "string",
+                                        "example": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "John Doe"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "johndoe@example.com"
+                                                },
+                                                "display_name": {
+                                                    "type": "string",
+                                                    "example": "John Doe"
+                                                },
+                                                "gender": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "active": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "role": {
+                                                    "type": "integer",
+                                                    "example": 0
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "error": {
+                                            "type": "object",
+                                            "example": null
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 400
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": null
+                                        },
+                                        "error": {
+                                            "type": "object",
+                                            "example": {
+                                                "message": "Logout failed"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 401
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": null
+                                        },
+                                        "error": {
+                                            "type": "object",
+                                            "example": {
+                                                "message": "Unauthorized"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/verify-email": {
+            "patch": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Email Verification Request",
+                "description": "Email Verification Request",
+                "operationId": "emailVerificationRequest",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "user",
+                                    "code"
+                                ],
+                                "properties": {
+                                    "user": {
+                                        "type": "string",
+                                        "example": "user"
+                                    },
+                                    "code": {
+                                        "type": "string",
+                                        "example": "1234567"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "user": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "John Doe"
+                                                        },
+                                                        "email": {
+                                                            "type": "string",
+                                                            "example": "johndoe@example.com"
+                                                        },
+                                                        "display_name": {
+                                                            "type": "string",
+                                                            "example": "John Doe"
+                                                        },
+                                                        "gender": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "active": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "role": {
+                                                            "type": "integer",
+                                                            "example": 0
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "token": {
+                                                    "type": "string",
+                                                    "example": "xxxxxxxxx"
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "example": "Bearer"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "error": {
+                                            "type": "object",
+                                            "example": null
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 400
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": null
+                                        },
+                                        "error": {
+                                            "type": "object",
+                                            "example": {
+                                                "message": "Logout failed"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 401
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": null
+                                        },
+                                        "error": {
+                                            "type": "object",
+                                            "example": {
+                                                "message": "Unauthorized"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/resend-email-verify": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Resend Email Verification",
+                "operationId": "reSendEmailVerify",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "user",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "user": {
+                                        "type": "string",
+                                        "example": "user"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "John Doe"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "johndoe@example.com"
+                                                },
+                                                "display_name": {
+                                                    "type": "string",
+                                                    "example": "John Doe"
+                                                },
+                                                "gender": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "active": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "role": {
                                                     "type": "integer",
                                                     "example": 1
                                                 }
@@ -6680,13 +7125,10 @@
                                             "example": null
                                         },
                                         "error": {
-                                            "properties": {
-                                                "message": {
-                                                    "type": "string",
-                                                    "example": "Invalid data"
-                                                }
-                                            },
-                                            "type": "object"
+                                            "type": "object",
+                                            "example": {
+                                                "message": "Logout failed"
+                                            }
                                         }
                                     },
                                     "type": "object"
@@ -6709,42 +7151,10 @@
                                             "example": null
                                         },
                                         "error": {
-                                            "properties": {
-                                                "message": {
-                                                    "type": "string",
-                                                    "example": "Unauthorized"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status_code": {
-                                            "type": "integer",
-                                            "example": 404
-                                        },
-                                        "data": {
                                             "type": "object",
-                                            "example": null
-                                        },
-                                        "error": {
-                                            "properties": {
-                                                "message": {
-                                                    "type": "string",
-                                                    "example": "Post not found"
-                                                }
-                                            },
-                                            "type": "object"
+                                            "example": {
+                                                "message": "Unauthorized"
+                                            }
                                         }
                                     },
                                     "type": "object"
