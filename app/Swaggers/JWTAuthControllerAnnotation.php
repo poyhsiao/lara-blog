@@ -400,11 +400,11 @@ class JWTAuthControllerAnnotation extends ControllerAnnotation
     }
 
     /**
-     * @OA\Patch(
+     * @OA\Patch (
      *     path="/api/v1/forget-password",
      *     operationId="forgetPassword",
-     *     summary="Forget Password",
-     *     description="Forget Password",
+     *     summary="Forget password",
+     *     description="Forget password",
      *     tags={"Auth"},
      *     @OA\RequestBody(
      *         required=true,
@@ -413,7 +413,7 @@ class JWTAuthControllerAnnotation extends ControllerAnnotation
      *             @OA\Property(
      *                 property="user",
      *                 type="string",
-     *                 example="johndoe@example.com"
+     *                 example="user",
      *             ),
      *         ),
      *     ),
@@ -430,20 +430,50 @@ class JWTAuthControllerAnnotation extends ControllerAnnotation
      *                 property="data",
      *                 type="object",
      *                 @OA\Property(
-     *                     property="url",
+     *                     property="id",
+     *                     type="integer",
+     *                     example=1,
+     *                 ),
+     *                 @OA\Property(
+     *                     property="name",
      *                     type="string",
-     *                     example="https://example.com/reset-password?u=johndoe@example.com&p=xxxxxxxxx"
+     *                     example="John Doe",
+     *                 ),
+     *                 @OA\Property(
+     *                    property="email",
+     *                    type="string",
+     *                    example="QHs4o@example.com",
+     *                 ),
+     *                 @OA\Property(
+     *                    property="display_name",
+     *                    type="string",
+     *                    example="John Doe",
+     *                 ),
+     *                 @OA\Property(
+     *                     property="gender",
+     *                     type="integer",
+     *                     example=1,
+     *                 ),
+     *                 @OA\Property(
+     *                    property="active",
+     *                    type="integer",
+     *                    example=1,
+     *                 ),
+     *                 @OA\Property(
+     *                    property="role",
+     *                    type="integer",
+     *                    example=0,
      *                 ),
      *             ),
      *             @OA\Property(
-     *                 property="error",
-     *                 type="object",
-     *                 example=null,
+     *                property="error",
+     *                type="object",
+     *                example=null,
      *             ),
      *         ),
      *     ),
      *     @OA\Response(
-     *         response="400",
+     *         response=400,
      *         description="Bad Request",
      *         @OA\JsonContent(
      *             @OA\Property(
@@ -454,21 +484,20 @@ class JWTAuthControllerAnnotation extends ControllerAnnotation
      *             @OA\Property(
      *                 property="data",
      *                 type="object",
-     *                 example=null,
+     *                 example=null
      *             ),
      *             @OA\Property(
      *                 property="error",
      *                 type="object",
-     *                 @OA\Property(
-     *                     property="message",
-     *                     type="string",
-     *                     example="Invalid data"
-     *                 ),
-     *            ),
-     *        ),
+     *                 example={
+     *                     "message": "Logout failed",
+     *                 }
+     *             ),
+     *         ),
      *     ),
+     *
      *     @OA\Response(
-     *         response="401",
+     *         response=401,
      *         description="Unauthorized",
      *         @OA\JsonContent(
      *             @OA\Property(
@@ -479,41 +508,14 @@ class JWTAuthControllerAnnotation extends ControllerAnnotation
      *             @OA\Property(
      *                 property="data",
      *                 type="object",
-     *                 example=null,
+     *                 example=null
      *             ),
      *             @OA\Property(
      *                 property="error",
      *                 type="object",
-     *                 @OA\Property(
-     *                     property="message",
-     *                     type="string",
-     *                     example="Unauthorized"
-     *                 ),
-     *             ),
-     *         ),
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Not Found",
-     *         @OA\JsonContent(
-     *             @OA\Property(
-     *                 property="status_code",
-     *                 type="integer",
-     *                 example=404
-     *             ),
-     *             @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     *                 example=null,
-     *             ),
-     *             @OA\Property(
-     *                 property="error",
-     *                 type="object",
-     *                 @OA\Property(
-     *                     property="message",
-     *                     type="string",
-     *                     example="Post not found"
-     *                 ),
+     *                 example={
+     *                     "message": "Unauthorized",
+     *                 }
      *             ),
      *         ),
      *     ),
@@ -524,28 +526,26 @@ class JWTAuthControllerAnnotation extends ControllerAnnotation
     }
 
     /**
-     * @OA\Patch(
-     *     path="/api/v1/email-verify",
-     *     operationId="emailVerifycationRequest",
-     *     summary="Email Verification Request",
-     *     description="Email Verification Request",
+     * @OA\Patch (
+     *     path="/api/v1/reset-password",
+     *     operationId="resetPassword",
+     *     summary="Reset password",
+     *     description="Reset password",
      *     tags={"Auth"},
-     *     @OA\Parameter(
-     *         name="u",
-     *         in="path",
+     *     @OA\RequestBody(
      *         required=true,
-     *         @OA\Schema(
-     *             type="string",
-     *             example="xxxxxxxxx",
-     *         ),
-     *     ),
-     *     @OA\Parameter(
-     *         name="p",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(
-     *             type="string",
-     *             example="xxxxxxxxx",
+     *         @OA\JsonContent(
+     *             required={"user", "code"},
+     *             @OA\Property(
+     *                 property="user",
+     *                 type="string",
+     *                 example="user",
+     *             ),
+     *             @OA\Property(
+     *                 property="code",
+     *                 type="string",
+     *                 example="1234567",
+     *             ),
      *         ),
      *     ),
      *     @OA\Response(
@@ -555,41 +555,56 @@ class JWTAuthControllerAnnotation extends ControllerAnnotation
      *             @OA\Property(
      *                 property="status_code",
      *                 type="integer",
-     *                 example=200
+     *                 example=200,
      *             ),
      *             @OA\Property(
      *                 property="data",
      *                 type="object",
      *                 @OA\Property(
+     *                     property="id",
+     *                     type="integer",
+     *                     example=1,
+     *                 ),
+     *                 @OA\Property(
      *                     property="name",
      *                     type="string",
-     *                     example="John Doe"
+     *                     example="John Doe",
      *                 ),
      *                 @OA\Property(
      *                     property="email",
      *                     type="string",
-     *                     example="johndoe@example.com"
+     *                     example="johndoe@example.com",
      *                 ),
      *                 @OA\Property(
      *                     property="display_name",
      *                     type="string",
-     *                     example="John Doe"
+     *                     example="John Doe",
      *                 ),
      *                 @OA\Property(
      *                     property="gender",
      *                     type="integer",
      *                     example=1,
      *                 ),
+     *                 @OA\Property(
+     *                    property="active",
+     *                    type="integer",
+     *                    example=1,
+     *                 ),
+     *                 @OA\Property(
+     *                    property="role",
+     *                    type="integer",
+     *                    example=0,
+     *                 ),
      *             ),
      *             @OA\Property(
-     *                 property="error",
-     *                 type="object",
-     *                 example=null
+     *                property="error",
+     *                type="object",
+     *                example=null,
      *             ),
      *         ),
-     *     ),
-     *     @OA\Response(
-     *         response="400",
+     *    ),
+     *   @OA\Response(
+     *         response=400,
      *         description="Bad Request",
      *         @OA\JsonContent(
      *             @OA\Property(
@@ -600,21 +615,19 @@ class JWTAuthControllerAnnotation extends ControllerAnnotation
      *             @OA\Property(
      *                 property="data",
      *                 type="object",
-     *                 example=null,
+     *                 example=null
      *             ),
      *             @OA\Property(
      *                 property="error",
      *                 type="object",
-     *                 @OA\Property(
-     *                     property="message",
-     *                     type="string",
-     *                     example="Invalid data"
-     *                 ),
-     *            ),
-     *        ),
+     *                 example={
+     *                     "message": "Logout failed",
+     *                 }
+     *             ),
+     *         ),
      *     ),
      *     @OA\Response(
-     *         response="401",
+     *         response=401,
      *         description="Unauthorized",
      *         @OA\JsonContent(
      *             @OA\Property(
@@ -625,47 +638,425 @@ class JWTAuthControllerAnnotation extends ControllerAnnotation
      *             @OA\Property(
      *                 property="data",
      *                 type="object",
-     *                 example=null,
+     *                 example=null
      *             ),
      *             @OA\Property(
      *                 property="error",
      *                 type="object",
-     *                 @OA\Property(
-     *                     property="message",
-     *                     type="string",
-     *                     example="Unauthorized"
-     *                 ),
-     *             ),
-     *         ),
-     *     ),
-     *     @OA\Response(
-     *         response="404",
-     *         description="Not Found",
-     *         @OA\JsonContent(
-     *             @OA\Property(
-     *                 property="status_code",
-     *                 type="integer",
-     *                 example=404
-     *             ),
-     *             @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     *                 example=null,
-     *             ),
-     *             @OA\Property(
-     *                 property="error",
-     *                 type="object",
-     *                 @OA\Property(
-     *                     property="message",
-     *                     type="string",
-     *                     example="Post not found"
-     *                 ),
+     *                 example={
+     *                     "message": "Unauthorized",
+     *                 }
      *             ),
      *         ),
      *     ),
      * )
      */
-    public function emailVerifycationRequest()
+    public function resetPassword()
     {
     }
+
+    /**
+     * @OA\Patch (
+     *    path="/api/v1/new-password",
+     *    operationId="newPassword",
+     *    summary="New password",
+     *    description="New password",
+     *    tags={"Auth"},
+     *    @OA\RequestBody(
+     *        required=true,
+     *        @OA\JsonContent(
+     *            required={"user", "password", "confirm_password"},
+     *            @OA\Property(
+     *                property="user",
+     *                type="string",
+     *                example="user",
+     *            ),
+     *            @OA\Property(
+     *                property="password",
+     *                type="string",
+     *                example="password",
+     *            ),
+     *            @OA\Property(
+     *                property="confirm_password",
+     *                type="string",
+     *                example="password",
+     *            ),
+     *        ),
+     *    ),
+     *    @OA\Response(
+     *        response=200,
+     *        description="Success",
+     *        @OA\JsonContent(
+     *            @OA\Property(
+     *                property="status_code",
+     *                type="integer",
+     *                example=200,
+     *            ),
+     *            @OA\Property(
+     *                property="data",
+     *                type="object",
+     *                @OA\Property(
+     *                    property="id",
+     *                    type="integer",
+     *                    example=1,
+     *                ),
+     *                @OA\Property(
+     *                    property="name",
+     *                    type="string",
+     *                    example="John Doe",
+     *                ),
+     *                @OA\Property(
+     *                    property="email",
+     *                    type="string",
+     *                    example="johndoe@example.com",
+     *                ),
+     *                @OA\Property(
+     *                    property="display_name",
+     *                    type="string",
+     *                    example="John Doe",
+     *                ),
+     *                @OA\Property(
+     *                    property="gender",
+     *                    type="integer",
+     *                    example=1,
+     *                ),
+     *                @OA\Property(
+     *                    property="active",
+     *                    type="integer",
+     *                    example=1,
+     *                ),
+     *                @OA\Property(
+     *                    property="role",
+     *                    type="integer",
+     *                    example=0,
+     *                ),
+     *            ),
+     *            @OA\Property(
+     *                property="error",
+     *                type="object",
+     *                example=null,
+     *            ),
+     *       ),
+     *  ),
+     *  @OA\Response(
+     *         response=400,
+     *         description="Bad Request",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=400
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 example=null
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 example={
+     *                     "message": "Logout failed",
+     *                 }
+     *             ),
+     *         ),
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=401
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 example=null
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 example={
+     *                     "message": "Unauthorized",
+     *                 }
+     *             ),
+     *         ),
+     *     ),
+     * )
+     */
+    public function newPassword()
+    {
+    }
+
+    /**
+     * @OA\Patch (
+     *     path="/api/v1/verify-email",
+     *     operationId="emailVerificationRequest",
+     *     summary="Email Verification Request",
+     *     description="Email Verification Request",
+     *     tags={"Auth"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"user", "code"},
+     *             @OA\Property(
+     *                 property="user",
+     *                 type="string",
+     *                 example="user",
+     *             ),
+     *             @OA\Property(
+     *                 property="code",
+     *                 type="string",
+     *                 example="1234567",
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=200,
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="user",
+     *                     type="object",
+     *                     @OA\Property(
+     *                         property="id",
+     *                         type="integer",
+     *                         example=1,
+     *                     ),
+     *                     @OA\Property(
+     *                         property="name",
+     *                         type="string",
+     *                         example="John Doe",
+     *                     ),
+     *                     @OA\Property(
+     *                         property="email",
+     *                         type="string",
+     *                         example="johndoe@example.com",
+     *                     ),
+     *                     @OA\Property(
+     *                         property="display_name",
+     *                         type="string",
+     *                         example="John Doe",
+     *                     ),
+     *                     @OA\Property(
+     *                         property="gender",
+     *                         type="integer",
+     *                         example=1,
+     *                     ),
+     *                     @OA\Property(
+     *                         property="active",
+     *                         type="integer",
+     *                         example=1,
+     *                     ),
+     *                     @OA\Property(
+     *                         property="role",
+     *                         type="integer",
+     *                         example=0,
+     *                     ),
+     *                ),
+     *                @OA\Property(
+     *                    property="token",
+     *                    type="string",
+     *                    example="xxxxxxxxx",
+     *                ),
+     *                @OA\Property(
+     *                    property="type",
+     *                    type="string",
+     *                    example="Bearer",
+     *                ),
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad Request",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=400
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 example=null
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 example={
+     *                     "message": "Logout failed",
+     *                 }
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=401
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 example=null
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 example={
+     *                     "message": "Unauthorized",
+     *                 }
+     *             ),
+     *         ),
+     *     ),
+     * )
+     */
+    public function emailVerificationRequest() {}
+
+    /**
+     * @OA\Post(
+     *     path="/api/v1/resend-email-verify",
+     *     operationId="reSendEmailVerify",
+     *     summary="Resend Email Verification",
+     *     tags={"Auth"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"user", "password"},
+     *             @OA\Property(
+     *                 property="user",
+     *                 type="string",
+     *                 example="user",
+     *             ),
+     *             @OA\Property(
+     *                 property="password",
+     *                 type="string",
+     *                 example="password",
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=200,
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="id",
+     *                     type="integer",
+     *                     example=1,
+     *                 ),
+     *                 @OA\Property(
+     *                     property="name",
+     *                     type="string",
+     *                     example="John Doe",
+     *                 ),
+     *                 @OA\Property(
+     *                     property="email",
+     *                     type="string",
+     *                     example="johndoe@example.com",
+     *                 ),
+     *                 @OA\Property(
+     *                     property="display_name",
+     *                     type="string",
+     *                     example="John Doe",
+     *                 ),
+     *                 @OA\Property(
+     *                     property="gender",
+     *                     type="integer",
+     *                     example=1,
+     *                 ),
+     *                 @OA\Property(
+     *                     property="active",
+     *                     type="integer",
+     *                     example=1,
+     *                 ),
+     *                 @OA\Property(
+     *                     property="role",
+     *                     type="integer",
+     *                     example=1,
+     *                 ),
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 example=null,
+     *             ),
+     *         ),
+     *     ),
+     *          @OA\Response(
+     *         response=400,
+     *         description="Bad Request",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=400
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 example=null
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 example={
+     *                     "message": "Logout failed",
+     *                 }
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="status_code",
+     *                 type="integer",
+     *                 example=401
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 example=null
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="object",
+     *                 example={
+     *                     "message": "Unauthorized",
+     *                 }
+     *             ),
+     *         ),
+     *     ),
+     * )
+     */
+    public function reSendEmailVerify() {}
 }

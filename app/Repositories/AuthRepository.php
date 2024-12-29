@@ -264,6 +264,10 @@ class AuthRepository extends BaseRepository
             return JsonResponseHelper::error('User not found');
         }
 
+        if (!$user->isVerified() || $user->deleted_at) {
+            return JsonResponseHelper::error('User not found');
+        }
+
         try {
             DB::transaction(function () use (&$user, $password) {
                 $user->password = bcrypt($password);
@@ -299,12 +303,18 @@ class AuthRepository extends BaseRepository
         $password = $validated['password'];
 
         try {
-            $user = $this->model::where('name', $user)
-                ->orWhere('email', $user)
-                ->whereNotNull('email_validate_token')
-                ->first();
+            $token = JWTAuth::attempt(['email' => $user, 'password' => $password]) ?: JWTAuth::attempt(['name' => $user, 'password' => $password]);
 
-            if (!$user) {
+            if (!$token) {
+                return JsonResponseHelper::error(null, 'Invalid data');
+            }
+
+            /**
+             * @var User $user
+             */
+            $user = Auth::user();
+
+            if (!$user->email_validate_token || !$user->isActive() || $user->deleted_at) {
                 return JsonResponseHelper::error(null, 'Invalid data');
             }
 
