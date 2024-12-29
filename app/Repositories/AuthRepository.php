@@ -334,16 +334,37 @@ class AuthRepository extends BaseRepository
         }
     }
 
+    /**
+     * Generate a one-time password.
+     *
+     * Generates a random 7-digit string.
+     *
+     * @return string The generated one-time password.
+     */
     private function generateOneTimePassword(): string
     {
-        return (string) str_pad(sprintf('%s%s', now()->microsecond, substr(now()->timestamp, -1)), 7, '0', STR_PAD_RIGHT);
+        return str_pad((string) (hexdec(bin2hex(random_bytes(4))) % 10000000), 7, '0', STR_PAD_LEFT);
     }
 
+    /**
+     * Sends a verification email to the user.
+     *
+     * @param User|Authenticatable $user The user to send the email to.
+     * @param string $code The verification code.
+     * @return ?string The message ID of the sent email, or null if sending failed.
+     */
     private function sendVerificationEmail(User|Authenticatable $user, string $code): ?string
     {
         return Mail::to($user->email)->send(new UserEmailVerifyMail($user, $code));
     }
 
+    /**
+     * Sends a forget password email to the user.
+     *
+     * @param User|Authenticatable $user The user to send the email to.
+     * @param string $code The verification code.
+     * @return ?string The message ID of the sent email, or null if sending failed.
+     */
     private function sendForgetPasswordEmail(User|Authenticatable $user, string $code): ?string
     {
         return Mail::to($user->email)->send(new ForgetPasswordMail($code));
