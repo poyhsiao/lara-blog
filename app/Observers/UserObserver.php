@@ -7,12 +7,19 @@ use Illuminate\Support\Facades\Cache;
 
 class UserObserver
 {
+    protected $ttl;
+
+    public function __construct()
+    {
+        $this->ttl = config('cache.default_ttl');
+    }
+
     /**
      * Handle the User "created" event.
      */
     public function created(User $user): void
     {
-        Cache::put('user.id.' . $user->id, $user->toArray());
+        Cache::put('user.id.' . $user->id, $user->toArray(), $this->ttl);
     }
 
     /**
@@ -20,7 +27,7 @@ class UserObserver
      */
     public function updated(User $user): void
     {
-        Cache::put('user.id.' . $user->id, $user->toArray());
+        Cache::put('user.id.' . $user->id, $user->toArray(), $this->ttl);
     }
 
     /**
@@ -36,7 +43,7 @@ class UserObserver
      */
     public function restored(User $user): void
     {
-        Cache::put('user.id.' . $user->id, $user->toArray());
+        Cache::put('user.id.' . $user->id, $user->toArray(), $this->ttl);
     }
 
     /**

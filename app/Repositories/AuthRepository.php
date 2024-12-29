@@ -41,18 +41,19 @@ class AuthRepository extends BaseRepository
      */
     public function register(array $data): array|JsonResponse
     {
-        $data['email_validate_token'] = $this->generateOneTimePassword();
+        $code = $this->generateOneTimePassword();
+        $data['email_validate_token'] = sprintf('%s-%s', $code, now()->addMinutes(config('misc.one_time_password.ttl', 5))->timestamp);
 
         try {
             $user = null;
 
-            DB::transaction(function () use ($data, &$user) {
+            DB::transaction(function () use ($code, $data, &$user) {
                 $user = $this->model::create($data);
 
                 /**
                  * Send verification email
                  */
-                $this->sendVerificationEmail($user, $data['email_validate_token']);
+                $this->sendVerificationEmail($user, $code);
             });
 
             return $user?->toArray();
@@ -186,7 +187,7 @@ class AuthRepository extends BaseRepository
             }
 
             DB::transaction(function () use (&$user) {
-                $expire = now()->addMinutes(5)->timestamp;
+                $expire = now()->addMinutes(config('misc.one_time_password.ttl', 5))->timestamp;
                 $code = $this->generateOneTimePassword();
 
                 $user->reset_password_token = sprintf('%s-%s', $code, $expire);
@@ -227,7 +228,7 @@ class AuthRepository extends BaseRepository
         if (!$user = $this->model::where('email', $user)
             ->orWhere('name', $user)
             ->whereNotNull('reset_password_token')
-        ->first()) {
+            ->first()) {
             return JsonResponseHelper::error('User not found');
         }
 
@@ -319,10 +320,14 @@ class AuthRepository extends BaseRepository
             }
 
             $code = $this->generateOneTimePassword();
+            $emailValidateToken = sprintf('%s-%s', $code, now()->addMinutes(config('misc.one_time_password.ttl', 5))->timestamp);
 
-            if (!$this->sendVerificationEmail($user, $code)) {
-                return JsonResponseHelper::error(null, 'ReSend email verification failed');
-            }
+            DB::transaction(function () use ($code, $emailValidateToken, &$user) {
+                $user->email_validate_token = $emailValidateToken;
+                $user->save();
+
+                $this->sendVerificationEmail($user, $code);
+            });
 
             return $user->toArray();
         } catch (Throwable $e) {
