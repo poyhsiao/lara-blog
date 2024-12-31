@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Helper\JsonResponseHelper;
+use App\Models\User;
 use App\Repositories\UserRepository;
 use App\Validators\UserValidator;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,7 +22,12 @@ class UserController extends Controller
     public function __construct(UserRepository $repo, UserValidator $validator)
     {
         $this->repo = $repo;
+
         $this->validator = $validator;
+
+        /**
+         * @var User|Authenticatable $user
+         */
         $this->user = Auth::user();
     }
 

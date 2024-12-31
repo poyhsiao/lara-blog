@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\HashModelIdCast;
 use Illuminate\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -49,6 +50,8 @@ class User extends Authenticatable implements JWTSubject
         'reset_password_token',
         'email_validate_token',
         'register_type',
+        'active',
+        'role',
         'created_at',
         'updated_at',
     ];
@@ -61,6 +64,7 @@ class User extends Authenticatable implements JWTSubject
     protected function casts(): array
     {
         return [
+            'id' => HashModelIdCast::class.':users',
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'gender' => 'integer',
@@ -107,6 +111,21 @@ class User extends Authenticatable implements JWTSubject
     public function scopeActive(Builder|User $query): Builder
     {
         return $query->where('active', 1);
+    }
+
+    public function scopeInactive(Builder|User $query): Builder
+    {
+        return $query->where('active', 0);
+    }
+
+    public function scopeVerified(Builder|User $query): Builder
+    {
+        return $query->where('email_verified_at', '!=', null);
+    }
+
+    public function scopeNotVerified(Builder|User $query): Builder
+    {
+        return $query->where('email_verified_at', null);
     }
 
     public function scopeCanLogin(Builder|User $query): Builder

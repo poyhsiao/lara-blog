@@ -3,21 +3,21 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Helper\JsonResponseHelper;
-use App\Helper\QueryHelper;
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Repositories\Admin\AdminUserRepository;
+use App\Validators\Admin\AdminUserValidator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 
 class AdminUserController extends Controller
 {
+    private $validator;
+
     private $repo;
 
-    public function __construct(AdminUserRepository $repo)
+    public function __construct(AdminUserValidator $validator, AdminUserRepository $repo)
     {
+        $this->validator = $validator;
         $this->repo = $repo;
     }
 
@@ -29,21 +29,9 @@ class AdminUserController extends Controller
      */
     public function getUserDetail(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'user' => 'required|string',
-        ]);
+        $result = $this->getUser($request);
 
-        if ($validator->fails()) {
-            return JsonResponseHelper::error($validator->errors(), 'Invalid data');
-        }
-
-        $user = $this->repo->getUserDetail($request->user);
-
-        if (!$user) {
-            return JsonResponseHelper::notFound('User not found');
-        }
-
-        return JsonResponseHelper::success(compact('user'), 'Get user successfully');
+        return $this->repoResponse($result, 'Get user detail successfully');
     }
 
     /**
@@ -54,32 +42,15 @@ class AdminUserController extends Controller
      */
     public function getAllUsers(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'page' => 'integer|min:1',
-            'limit' => 'integer|min:1',
-            'order' => 'string',
-            'detail' => 'integer|in:0,1',
-            'desc' => 'integer|in:0,1',
-        ]);
+        $validated = $this->validator->getAllUsers($request);
 
-        if ($validator->fails()) {
-            return JsonResponseHelper::error($validator->errors(), 'Invalid data');
+        if ($this->isJsonResponse($validated)) {
+            return $validated;
         }
 
-        $page = $request->page ?? 1;
-        $limit = $request->limit ?? 10;
-        $order = $request->order ?? 'id';
-        $detail = (bool)$request->detail ?? false;
-        $desc = (bool)$request->desc ?? false;
+        $result = $this->repo->getAllUsers($request, $validated['order'], $validated['desc']);
 
-        $paginator = $this->repo
-            ->getAllUsers($order, $desc)
-            ->paginate($limit, ['*'], 'users', $page)
-            ->withQueryString();
-
-        $users = QueryHelper::easyPaginate($paginator, 'users', $detail, ['password', 'remember_token']);
-
-        return JsonResponseHelper::success(compact('users'), 'Get all users successfully');
+        return $this->repoResponse($result, 'Get all users successfully');
     }
 
     /**
@@ -90,32 +61,15 @@ class AdminUserController extends Controller
      */
     public function getInactiveUsers(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'page' => 'integer|min:1',
-            'limit' => 'integer|min:1',
-            'order' => 'string',
-            'detail' => 'integer|in:0,1',
-            'desc' => 'integer|in:0,1',
-        ]);
+        $validated = $this->validator->getAllUsers($request);
 
-        if ($validator->fails()) {
-            return JsonResponseHelper::error($validator->errors(), 'Invalid data');
+        if ($this->isJsonResponse($validated)) {
+            return $validated;
         }
 
-        $page = $request->page ?? 1;
-        $limit = $request->limit ?? 10;
-        $order = $request->order ?? 'id';
-        $detail = (bool)$request->detail ?? false;
-        $desc = (bool)$request->desc ?? false;
+        $result = $this->repo->getAllInactiveUsers($request, $validated['order'], $validated['desc']);
 
-        $paginator = $this->repo
-            ->getAllInactiveUsers($order, $desc)
-            ->paginate($limit, ['*'], 'users', $page)
-            ->withQueryString();
-
-        $users = QueryHelper::easyPaginate($paginator, 'users', $detail, ['password', 'remember_token']);
-
-        return JsonResponseHelper::success(compact('users'), 'Get all inactive users successfully');
+        return $this->repoResponse($result, 'Get all inactive users successfully');
     }
 
     /**
@@ -126,32 +80,15 @@ class AdminUserController extends Controller
      */
     public function getNonValidatedUsers(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'page' => 'integer|min:1',
-            'limit' => 'integer|min:1',
-            'order' => 'string',
-            'detail' => 'integer|in:0,1',
-            'desc' => 'integer|in:0,1',
-        ]);
+        $validator = $this->validator->getAllUsers($request);
 
-        if ($validator->fails()) {
-            return JsonResponseHelper::error($validator->errors(), 'Invalid data');
+        if ($this->isJsonResponse($validator)) {
+            return $validator;
         }
 
-        $page = $request->page ?? 1;
-        $limit = $request->limit ?? 10;
-        $order = $request->order ?? 'id';
-        $detail = (bool)$request->detail ?? false;
-        $desc = (bool)$request->desc ?? false;
+        $result = $this->repo->getNonValidatedUsers($request, $validator['order'], $validator['desc']);
 
-        $paginator = $this->repo
-            ->getNonValidatedUsers($order, $desc)
-            ->paginate($limit, ['*'], 'users', $page)
-            ->withQueryString();
-
-        $users = QueryHelper::easyPaginate($paginator, 'users', $detail, ['password', 'remember_token']);
-
-        return JsonResponseHelper::success(compact('users'), 'Get all non validated users successfully');
+        return $this->repoResponse($result, 'Get all non validated users successfully');
     }
 
     /**
@@ -162,32 +99,15 @@ class AdminUserController extends Controller
      */
     public function getAllTrashedUsers(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'page' => 'integer|min:1',
-            'limit' => 'integer|min:1',
-            'order' => 'string',
-            'detail' => 'integer|in:0,1',
-            'desc' => 'integer|in:0,1',
-        ]);
+        $validator = $this->validator->getAllUsers($request);
 
-        if ($validator->fails()) {
-            return JsonResponseHelper::error($validator->errors(), 'Invalid data');
+        if ($this->isJsonResponse($validator)) {
+            return $validator;
         }
 
-        $page = $request->page ?? 1;
-        $limit = $request->limit ?? 10;
-        $order = $request->order ?? 'id';
-        $detail = (bool)$request->detail ?? false;
-        $desc = (bool)$request->desc ?? false;
+        $result = $this->repo->getAllTrashedUsers($request, $validator['order'], $validator['desc']);
 
-        $paginator = $this->repo
-            ->getAllDeletedUsers($order, $desc)
-            ->paginate($limit, ['*'], 'users', $page)
-            ->withQueryString();
-
-        $users = QueryHelper::easyPaginate($paginator, 'users', $detail, ['password', 'remember_token']);
-
-        return JsonResponseHelper::success($users, 'Get all trashed users successfully');
+        return $this->repoResponse($result, 'Get all trashed users successfully');
     }
 
     /**
@@ -198,69 +118,50 @@ class AdminUserController extends Controller
      */
     public function updateUserProfile(Request $request): JsonResponse
     {
-        if (!$theUser = $this->validateGivenUser($request)) {
-            return JsonResponseHelper::notFound('The user is not found or you don\'t have permission');
+        $user = $this->getUser($request);
+
+        if ($this->isJsonResponse($user)) {
+            return $user;
         }
 
-        $data = $request->only(['name', 'email', 'display_name', 'gender']);
+        $validator = $this->validator->updateUserProfile($request, $user);
 
-        $validator = Validator::make($data, [
-            'name' => [
-                'string',
-                'between:2,255',
-                Rule::unique('users', 'name')->ignore($theUser->id),
-            ],
-            'email' => [
-                'email',
-                'max:255',
-                Rule::unique('users', 'email')->ignore($theUser->id),
-            ],
-            'display_name' => [
-                'string',
-                'between:2,255',
-                Rule::unique('users', 'display_name')->ignore($theUser->id),
-            ],
-            'gender' => 'enum:0,1,2',
-        ]);
-
-        if ($validator->fails()) {
-            return JsonResponseHelper::notAcceptable('Unacceptable', $validator->errors());
+        if ($this->isJsonResponse($validator)) {
+            return $validator;
         }
 
-        if (!$user = $this->repo->updateUser($theUser, $data)) {
-            return JsonResponseHelper::error('Update user failed');
-        }
+        $result = $this->repo->updateUserProfile($user, $validator);
 
-        return JsonResponseHelper::success(compact('user'), 'Update user successfully');
+        return $this->repoResponse($result, 'Update user profile successfully');
     }
 
     /**
-     * Update user's password
+     * Update the password of a user.
      *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * Validates the new password from the request and updates the user's password
+     * if validation is successful. Returns a JSON response indicating the result
+     * of the operation.
+     *
+     * @param \Illuminate\Http\Request $request The request object containing the new password.
+     * @return \Illuminate\Http\JsonResponse A JSON response containing the success or error message.
      */
     public function setPassword(Request $request): JsonResponse
     {
-        if (!$theUser = $this->validateGivenUser($request)) {
-            return JsonResponseHelper::notFound('The user is not found or you don\'t have permission');
+        $user = $this->getUser($request);
+
+        if ($this->isJsonResponse($user)) {
+            return $user;
         }
 
-        $data = $request->only(['password']);
+        $validator = $this->validator->setPassword($request);
 
-        $validator = Validator::make($data, [
-            'password' => 'required|string|min:8',
-        ]);
-
-        if ($validator->fails()) {
-            return JsonResponseHelper::notAcceptable('Unacceptable', $validator->errors());
+        if ($this->isJsonResponse($validator)) {
+            return $validator;
         }
 
-        if (!$user = $this->repo->updateUser($theUser, $data)) {
-            return JsonResponseHelper::error('Update user failed');
-        }
+        $result = $this->repo->updateUserProfile($user, $validator);
 
-        return JsonResponseHelper::success(compact('user'), 'Update user successfully');
+        return $this->repoResponse($result, 'Update user password successfully');
     }
 
     /**
@@ -271,105 +172,93 @@ class AdminUserController extends Controller
      */
     public function setVerify(Request $request): JsonResponse
     {
-        if (!$theUser = $this->validateGivenUser($request)) {
-            return JsonResponseHelper::notFound('The user is not found or you don\'t have permission');
+        $user = $this->getUser($request);
+
+        if ($this->isJsonResponse($user)) {
+            return $user;
         }
 
-        $data = $request->only(['verify']);
+        $validator = $this->validator->setVerify($request);
 
-        $validator = Validator::make($data, [
-            'verify' => 'required|in:0,1',
-        ]);
-
-        if ($validator->fails()) {
-            return JsonResponseHelper::notAcceptable('Unacceptable', $validator->errors());
+        if ($this->isJsonResponse($validator)) {
+            return $validator;
         }
 
-        if (!$user = $this->repo->setVerify($theUser, (bool)$request->verify)) {
-            return JsonResponseHelper::error('Update user failed');
-        }
+        $result = $this->repo->setVerify($user, (bool) $validator['validate']);
 
-        return JsonResponseHelper::success(compact('user'), 'Update user successfully');
+        return $this->repoResponse($result, 'Update user verify status successfully');
     }
 
     /**
-     * Set user's active or not
+     * Update the active status of a user.
      *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * Validates the active status from the request and updates the user's active status
+     * if validation is successful. Returns a JSON response indicating the result of the operation.
+     *
+     * @param \Illuminate\Http\Request $request The request object containing the active status.
+     * @return \Illuminate\Http\JsonResponse A JSON response containing the success or error message.
      */
     public function setActive(Request $request): JsonResponse
     {
-        if (!$theUser = $this->validateGivenUser($request)) {
-            return JsonResponseHelper::notFound('The user is not found or you don\'t have permission');
+        $user = $this->getUser($request);
+
+        if ($this->isJsonResponse($user)) {
+            return $user;
         }
 
-        $data = $request->only(['active']);
+        $validator = $this->validator->setActive($request);
 
-        $validator = Validator::make($data, [
-            'active' => 'required|in:0,1',
-        ]);
-
-        if ($validator->fails()) {
-            return JsonResponseHelper::notAcceptable('Unacceptable', $validator->errors());
+        if ($this->isJsonResponse($validator)) {
+            return $validator;
         }
 
-        if (!$user = $this->repo->setActive($theUser, (bool) $request->active)) {
-            return JsonResponseHelper::error('Update user failed');
-        }
+        $result = $this->repo->setActive($user, (bool) $validator['active']);
 
-        return JsonResponseHelper::success(compact('user'), 'Update user successfully');
+        return $this->repoResponse($result, 'Update user active status successfully');
     }
 
     /**
-     * Soft-delete or restore user
+     * Set user's trashed status.
      *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * Validates the trashed status from the request and updates the user's trashed status
+     * if validation is successful. Returns a JSON response indicating the result of the operation.
+     *
+     * @param \Illuminate\Http\Request $request The request object containing the trashed status.
+     * @return \Illuminate\Http\JsonResponse A JSON response containing the success or error message.
      */
     public function setTrash(Request $request): JsonResponse
     {
-        if (!$theUser = $this->validateGivenUser($request)) {
-            return JsonResponseHelper::notFound('The user is not found or you don\'t have permission');
+        $user = $this->getUser($request);
+
+        if ($this->isJsonResponse($user)) {
+            return $user;
         }
 
-        $data = $request->only(['trash']);
+        $validator = $this->validator->setTrash($request);
 
-        $validator = Validator::make($data, [
-            'trash' => 'required|in:0,1',
-        ]);
-
-        if ($validator->fails()) {
-            return JsonResponseHelper::notAcceptable('Unacceptable', $validator->errors());
+        if ($this->isJsonResponse($validator)) {
+            return $validator;
         }
 
-        if (!$user = $this->repo->setTrash($theUser, (bool) $request->trash)) {
-            return JsonResponseHelper::error('Update user failed');
-        }
+        $result = $this->repo->setTrash($user, (bool) $validator['trash']);
 
-        return JsonResponseHelper::success(compact('user'), 'Update user successfully');
+        return $this->repoResponse($result, 'Update user trash status successfully');
     }
 
-    /**
-     * Validate user and return the user
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \App\Models\User|null
-     */
-    private function validateGivenUser(Request $request): ?User
+    private function getUser(Request $request): array|JsonResponse
     {
-        $validate = Validator::make($request->all(), [
-            'user' => 'required|string',
-        ]);
+        $validator = $this->validator->getUserDetail($request);
 
-        if ($validate->fails()) {
-            return null;
+        if ($this->isJsonResponse($validator)) {
+            return $validator;
         }
 
-        try {
-            return $this->repo->getUserDetail($request->user, true);
-        } catch (\Exception $e) {
-            return null;
+        $user = $this->repo->getUserDetail($validator['user']);
+
+        if (!$user) {
+            return JsonResponseHelper::notFound('User not found');
         }
+
+        return $user;
     }
 }

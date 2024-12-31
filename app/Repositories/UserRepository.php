@@ -21,6 +21,7 @@ class UserRepository extends BaseRepository
         $this->model = $model;
     }
 
+    // TODO: Update all the return model to array
 
     /**
      * Change the user's password.

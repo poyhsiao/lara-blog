@@ -2,18 +2,21 @@
 
 namespace App\Helper;
 
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
+
 class QueryHelper
 {
     /**
-     * Customized pagination
+     * Make pagination response easier
      *
-     * @param mixed $paginator
-     * @param string $keyName
-     * @param bool $detail
-     * @param array $hidden
+     * @param  Paginator|LengthAwarePaginator  $paginator
+     * @param  string  $keyName
+     * @param  bool  $detail
+     * @param  array  $hidden
      * @return array
      */
-    public static function easyPaginate($paginator, string $keyName = 'data', bool $detail = false, array $hidden = ['password', 'remember_token']): array
+    public static function easyPaginate(Paginator|LengthAwarePaginator $paginator, string $keyName = 'data', bool $detail = false, ?array $hidden = null): array
     {
         $items = collect($paginator->items())
           ->each(function ($item) use ($detail, $hidden) {

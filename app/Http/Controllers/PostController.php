@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Repositories\PostRepository;
 use App\Validators\PostValidator;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,6 +22,9 @@ class PostController extends Controller
     {
         $this->repo = $repo;
         $this->validator = $validator;
+        /**
+         * @var User|Authenticatable $user
+         */
         $this->user = Auth::user();
     }
 

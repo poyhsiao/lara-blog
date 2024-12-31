@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Helper\JsonResponseHelper;
-use Illuminate\Http\Client\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 

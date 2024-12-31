@@ -4,11 +4,6 @@ namespace App\Swaggers;
 
 class UserControllerAnnotation extends ControllerAnnotation
 {
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
     /**
      * @OA\Get(
      *     path="/api/v1/user/me",
