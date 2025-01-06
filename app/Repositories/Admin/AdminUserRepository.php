@@ -37,7 +37,7 @@ class AdminUserRepository extends BaseRepository
     public function getUserDetail(string $user, bool $onlyNormal = false): array|JsonResponse
     {
         try {
-            if (isInt($user)) {
+            if (is_numeric($user)) {
                 $user = ($onlyNormal) ?
                     $this->model::withTrashed()->findOrFail($user) :
                     $this->model::findOrFail($user);

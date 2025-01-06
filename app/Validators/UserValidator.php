@@ -14,6 +14,8 @@ class UserValidator extends BaseValidator
 {
     protected $model;
 
+    private const INTEGER_IN_0_1 = 'integer|in:0,1';
+
     public function __construct(User $model)
     {
         $this->model = $model;
@@ -100,10 +102,10 @@ class UserValidator extends BaseValidator
         }
 
         $validated = Validator::make($request->all(), [
-            'posts' => 'integer|in:0,1',
-            'comments' => 'integer|in:0,1',
-            'emotions' => 'integer|in:0,1',
-            'emotion_users' => 'integer|in:0,1',
+            'posts' => self::INTEGER_IN_0_1,
+            'comments' => self::INTEGER_IN_0_1,
+            'emotions' => self::INTEGER_IN_0_1,
+            'emotion_users' => self::INTEGER_IN_0_1,
         ]);
 
         $response = $validated->fails()

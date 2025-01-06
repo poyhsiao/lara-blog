@@ -13,6 +13,8 @@ class JWTAuthValidator extends BaseValidator
 {
     protected $model;
 
+    private const CHECK_USER_STRING_FORMAT = 'required|string|between:2,255';
+
     public function __construct(User $model)
     {
         $this->model = $model;
@@ -50,12 +52,12 @@ class JWTAuthValidator extends BaseValidator
     public function login(Request $request): array|JsonResponse
     {
         $validated = Validator::make($request->all(), [
-            'user' => 'required|string',
-            'password' => 'required|string',
+            'user' => self::CHECK_USER_STRING_FORMAT,
+            'password' => self::CHECK_USER_STRING_FORMAT,
         ]);
 
         if ($validated->fails()) {
-            return JsonResponseHelper::error('Invalid data', $validated->errors());
+            return JsonResponseHelper::error(self::INVALID_DATA_ERROR, $validated->errors());
         }
 
         return $validated->validated();
@@ -70,11 +72,11 @@ class JWTAuthValidator extends BaseValidator
     public function forgetPassword(Request $request): array|JsonResponse
     {
         $validated = Validator::make($request->all(), [
-            'user' => 'required|string',
+            'user' => self::CHECK_USER_STRING_FORMAT,
         ]);
 
         if ($validated->fails()) {
-            return JsonResponseHelper::error('Invalid data', $validated->errors());
+            return JsonResponseHelper::error(self::INVALID_DATA_ERROR, $validated->errors());
         }
 
         return $validated->validated();
@@ -106,7 +108,7 @@ class JWTAuthValidator extends BaseValidator
         ]);
 
         if ($validated->fails()) {
-            return JsonResponseHelper::error(null, 'Invalid data');
+            return JsonResponseHelper::error(null, self::INVALID_DATA_ERROR);
         }
 
         return $validated->validated();
@@ -131,7 +133,7 @@ class JWTAuthValidator extends BaseValidator
         ]);
 
         if ($validated->fails()) {
-            return JsonResponseHelper::error(null, 'Invalid data');
+            return JsonResponseHelper::error(null, self::INVALID_DATA_ERROR);
         }
 
         return $validated->validated();
@@ -146,12 +148,12 @@ class JWTAuthValidator extends BaseValidator
     public function emailVerificationRequest(Request $request): array|JsonResponse
     {
         $validated = Validator::make($request->all(), [
-            'user' => 'required|string|between:2,255',
+            'user' => self::CHECK_USER_STRING_FORMAT,
             'code' => 'required|string|size:7',
         ]);
 
         if ($validated->fails()) {
-            return JsonResponseHelper::error(null, 'Invalid data');
+            return JsonResponseHelper::error(null, self::INVALID_DATA_ERROR);
         }
 
         return $validated->validated();
@@ -170,12 +172,12 @@ class JWTAuthValidator extends BaseValidator
     public function reSendEmailVerify(Request $request): array|JsonResponse
     {
         $validated = Validator::make($request->all(), [
-            'user' => 'required|string|between:2,255',
+            'user' => self::CHECK_USER_STRING_FORMAT,
             'password' => 'required|string|between:8,255',
         ]);
 
         if ($validated->fails()) {
-            return JsonResponseHelper::error(null, 'Invalid data');
+            return JsonResponseHelper::error(null, self::INVALID_DATA_ERROR);
         }
 
         return $validated->validated();

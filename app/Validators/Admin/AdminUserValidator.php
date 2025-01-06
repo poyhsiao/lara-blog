@@ -12,6 +12,8 @@ use Illuminate\Validation\Rule;
 
 class AdminUserValidator extends BaseValidator
 {
+    private const SWITCH_ITEM_FORMAT = 'required|in:0,1';
+
     public function __construct(User $model)
     {
         $this->model = $model;
@@ -151,7 +153,7 @@ class AdminUserValidator extends BaseValidator
     public function setVerify(Request $request): array|JsonResponse
     {
         $validated = Validator::make($request->all(), [
-            'verify' => 'required|in:0,1',
+            'verify' => self::SWITCH_ITEM_FORMAT,
         ]);
 
         if ($validated->fails()) {
@@ -173,7 +175,7 @@ class AdminUserValidator extends BaseValidator
     public function setActive(Request $request): array|JsonResponse
     {
         $validated = Validator::make($request->all(), [
-            'active' => 'required|in:0,1',
+            'active' => self::SWITCH_ITEM_FORMAT,
         ]);
 
         if ($validated->fails()) {
@@ -195,7 +197,7 @@ class AdminUserValidator extends BaseValidator
     public function setTrash(Request $request): array|JsonResponse
     {
         $validated = Validator::make($request->all(), [
-            'trash' => 'required|in:0,1',
+            'trash' => self::SWITCH_ITEM_FORMAT,
         ]);
 
         if ($validated->fails()) {

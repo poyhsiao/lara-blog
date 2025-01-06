@@ -17,6 +17,8 @@ class PostValidator extends BaseValidator
 {
     protected $model;
 
+    private const CHECK_POST_EXISTS = 'required|numeric|exists:posts,id';
+
     public function __construct(Post $model)
     {
         $this->model = $model;
@@ -61,7 +63,7 @@ class PostValidator extends BaseValidator
     public function getById(int $postId, User|Authenticatable $user): array|JsonResponse
     {
         $requestData = ['id' => $postId];
-        $validationRules = ['id' => 'required|numeric|exists:posts,id'];
+        $validationRules = ['id' => self::CHECK_POST_EXISTS];
 
         $validator = Validator::make($requestData, $validationRules);
 
@@ -184,7 +186,7 @@ class PostValidator extends BaseValidator
     public function restore(int $postId): array|JsonResponse
     {
         $validation = Validator::make(['id' => $postId], [
-            'id' => 'required|numeric|exists:posts,id',
+            'id' => self::CHECK_POST_EXISTS,
         ]);
 
         if ($validation->fails()) {
@@ -207,7 +209,7 @@ class PostValidator extends BaseValidator
     public function forceDelete(int $postId): array|JsonResponse
     {
         $validation = Validator::make(['id' => $postId], [
-            'id' => 'required|numeric|exists:posts,id',
+            'id' => self::CHECK_POST_EXISTS,
         ]);
 
         if ($validation->fails()) {
