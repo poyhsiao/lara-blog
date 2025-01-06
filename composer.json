@@ -20,6 +20,7 @@
         "laravel/scout": "^10.11",
         "laravel/tinker": "^2.9",
         "meilisearch/meilisearch-php": "^1.12",
+        "sentry/sentry-laravel": "^4.10",
         "tymon/jwt-auth": "^2.1"
     },
     "require-dev": {
@@ -52,7 +53,6 @@
             "@php artisan package:discover --ansi"
         ],
         "post-update-cmd": [
-            "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
         ],
         "post-root-package-install": [

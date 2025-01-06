@@ -10,6 +10,7 @@ use Illuminate\Http\Middleware\HandleCors;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Support\Facades\Route;
 use Psr\Log\LogLevel;
+use Sentry\Laravel\Integration;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -44,6 +45,9 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
+        /** Sentry integrated */
+        Integration::handles($exceptions);
+
         /** PDOexception will be logged as critical */
         $exceptions->level(PDOException::class, LogLevel::CRITICAL);
 

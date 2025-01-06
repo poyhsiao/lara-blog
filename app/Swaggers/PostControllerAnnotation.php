@@ -748,7 +748,7 @@ class PostControllerAnnotation extends ControllerAnnotation
 
     /**
      * @OA\Get(
-     *     path="/api/v1/posts",
+     *     path="/api/v1/post",
      *     operationId="getPosts",
      *     summary="Get all posts",
      *     description="Get all posts",
@@ -897,7 +897,7 @@ class PostControllerAnnotation extends ControllerAnnotation
 
     /**
      * @OA\Get(
-     *     path="/api/v1/posts/trashed",
+     *     path="/api/v1/post/trashed",
      *     operationId="getTrashedPosts",
      *     summary="Get trashed posts",
      *     description="Get trashed posts",

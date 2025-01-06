@@ -12,6 +12,8 @@ class TagRepository extends BaseRepository
 {
     protected $model;
 
+    private const FAILED_GET_TAGS = 'Failed to get tags';
+
     public function __construct(Tag $model)
     {
         $this->model = $model;
@@ -30,8 +32,8 @@ class TagRepository extends BaseRepository
         try {
             return $this->model::all()->toArray();
         } catch (\Exception $e) {
-            Log::error('Fail to get tags', ['message' => $e->getMessage()]);
-            return JsonResponseHelper::error(null, 'Fail to get tags');
+            Log::error(self::FAILED_GET_TAGS, ['message' => $e->getMessage()]);
+            return JsonResponseHelper::error(null, self::FAILED_GET_TAGS);
         }
     }
 
@@ -49,11 +51,11 @@ class TagRepository extends BaseRepository
         try {
             return $this->model::with('posts')->find($id);
         } catch (\Exception $e) {
-            Log::error('Fail to get tag', [
+            Log::error(self::FAILED_GET_TAGS, [
                 'id' => $id,
                 'message' => $e->getMessage()
             ]);
-            return JsonResponseHelper::error(null, 'Fail to get tag');
+            return JsonResponseHelper::error(null, self::FAILED_GET_TAGS);
         }
     }
 

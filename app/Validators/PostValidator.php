@@ -70,7 +70,7 @@ class PostValidator extends BaseValidator
         }
 
         if (!$this->isUserAuthorized($user, $this->model::find($postId))) {
-            return JsonResponseHelper::unauthorized('You are not authorized to perform this action');
+            return JsonResponseHelper::unauthorized(self::NOT_AUTHORIZED_ERROR);
         }
 
         return $validator->validated();
@@ -106,40 +106,42 @@ class PostValidator extends BaseValidator
             ],
         ]);
 
+        $response = null;
+
         if ($idValidation->fails()) {
-            return JsonResponseHelper::notAcceptable('Update post failed', $idValidation->errors());
+            $response = JsonResponseHelper::notAcceptable('Update post failed', $idValidation->errors());
+        } elseif (!$this->isUserAuthorized($user, $this->model::find($postId))) {
+            $response = JsonResponseHelper::unauthorized(self::NOT_AUTHORIZED_ERROR);
+        } else {
+            $postValidation = Validator::make($request->all(), [
+                'title' => [
+                    'string',
+                    'between:2,255',
+                    Rule::unique('posts', 'title')->ignore($postId),
+                ],
+                'content' => [
+                    'string',
+                    'max:16777215',
+                ],
+                'publish_status' => 'integer|in:0,1,2',
+                'category_ids' => [
+                    'array',
+                    new ExistInDb('categories', 'id', 'some categories not found'),
+                ],
+                'tag_ids' => [
+                    'array',
+                    new ExistInDb('tags', 'id', 'some tags not found'),
+                ],
+            ]);
+
+            if ($postValidation->fails()) {
+                $response = JsonResponseHelper::notAcceptable('Update post failed', $postValidation->errors());
+            } else {
+                $response = $postValidation->validated();
+            }
         }
 
-        if (!$this->isUserAuthorized($user, $this->model::find($postId))) {
-            return JsonResponseHelper::unauthorized('You are not authorized to perform this action');
-        }
-
-        $postValidation = Validator::make($request->all(), [
-            'title' => [
-                'string',
-                'between:2,255',
-                Rule::unique('posts', 'title')->ignore($postId),
-            ],
-            'content' => [
-                'string',
-                'max:16777215',
-            ],
-            'publish_status' => 'integer|in:0,1,2',
-            'category_ids' => [
-                'array',
-                new ExistInDb('categories', 'id', 'some categories not found'),
-            ],
-            'tag_ids' => [
-                'array',
-                new ExistInDb('tags', 'id', 'some tags not found'),
-            ],
-        ]);
-
-        if ($postValidation->fails()) {
-            return JsonResponseHelper::notAcceptable('Update post failed', $postValidation->errors());
-        }
-
-        return $postValidation->validated();
+        return $response;
     }
 
     /**
@@ -163,7 +165,7 @@ class PostValidator extends BaseValidator
         }
 
         if (!$this->isUserAuthorized($user, $this->model::find($postId))) {
-            return JsonResponseHelper::unauthorized('You are not authorized to perform this action');
+            return JsonResponseHelper::unauthorized(self::NOT_AUTHORIZED_ERROR);
         }
 
         return $validation->validated();

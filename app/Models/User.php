@@ -64,7 +64,6 @@ class User extends Authenticatable implements JWTSubject
     protected function casts(): array
     {
         return [
-            'id' => HashModelIdCast::class.':users',
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'gender' => 'integer',

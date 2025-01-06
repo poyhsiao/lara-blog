@@ -5,7 +5,6 @@ namespace App\Validators;
 use App\Helper\JsonResponseHelper;
 use App\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -104,16 +103,18 @@ class UserValidator extends BaseValidator
             'posts' => 'integer|in:0,1',
             'comments' => 'integer|in:0,1',
             'emotions' => 'integer|in:0,1',
-            'emotionUsers' => 'integer|in:0,1',
+            'emotion_users' => 'integer|in:0,1',
         ]);
 
-        if ($validated->fails()) {
-            return JsonResponseHelper::notAcceptable('Get user failed', $validated->errors());
+        $response = $validated->fails()
+            ? JsonResponseHelper::notAcceptable('Get user failed', $validated->errors())
+            : $validated->validated();
+
+        if (is_array($response)) {
+            $response['user_id'] = $theId;
         }
 
-        $result = $validated->validated();
-        $result['user_id'] = $theId;
-        return $result;
+        return $response;
     }
 
     /**

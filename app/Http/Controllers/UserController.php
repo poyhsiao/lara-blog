@@ -93,6 +93,8 @@ class UserController extends Controller
             return $validator;
         }
 
+        dump($validator);
+
         $result = $this->repo->getById($validator);
 
         return $this->repoResponse($result, 'Get user by id successfully');

@@ -707,42 +707,48 @@ class UserControllerAnnotation extends ControllerAnnotation
      *         in="path",
      *         required=true,
      *     ),
-     *     @OA\RequestBody(
+     *     @OA\Parameter(
+     *         name="posts",
+     *         in="query",
+     *         description="Include posts, 0 = no, 1 = yes",
      *         required=false,
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(
-     *                 property="posts",
-     *                 type="integer",
-     *                 enum={1, 0},
-     *                 description="Include posts, 0 = no, 1 = yes",
-     *                 default=0,
-     *                 example=1,
-     *             ),
-     *             @OA\Property(
-     *                 property="comments",
-     *                 type="integer",
-     *                 enum={1, 0},
-     *                 description="Include comments, 0 = no, 1 = yes",
-     *                 default=0,
-     *                 example=1,
-     *             ),
-     *             @OA\Property(
-     *                 property="emotions",
-     *                 type="integer",
-     *                 enum={1, 0},
-     *                 description="Include emotions, 0 = no, 1 = yes",
-     *                 default=0,
-     *                 example=1,
-     *             ),
-     *             @OA\Property(
-     *                 property="emotionUsers",
-     *                 type="integer",
-     *                 enum={1, 0},
-     *                 description="Include emotion users, 0 = no, 1 = yes",
-     *                 default=0,
-     *                 example=1,
-     *             ),
+     *         @OA\Schema(
+     *            type="integer",
+     *            enum={1, 0},
+     *            default=0,
+     *         ),
+     *     ),
+     *     @OA\Parameter(
+     *         name="comments",
+     *         in="query",
+     *         description="Include comments, 0 = no, 1 = yes",
+     *         required=false,
+     *         @OA\Schema(
+     *            type="integer",
+     *            enum={1, 0},
+     *            default=0,
+     *        ),
+     *     ),
+     *     @OA\Parameter(
+     *         name="emotions",
+     *         in="query",
+     *         description="Include emotions, 0 = no, 1 = yes",
+     *         required=false,
+     *         @OA\Schema(
+     *            type="integer",
+     *            enum={1, 0},
+     *            default=0,
+     *         ),
+     *     ),
+     *     @OA\Parameter(
+     *         name="emotion_users",
+     *         in="query",
+     *         description="Include emotion users, 0 = no, 1 = yes",
+     *         required=false,
+     *         @OA\Schema(
+     *            type="integer",
+     *            enum={1, 0},
+     *            default=0,
      *         ),
      *     ),
      *     @OA\Response(

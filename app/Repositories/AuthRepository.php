@@ -2,7 +2,6 @@
 
 namespace App\Repositories;
 
-use App\Foundation\Helper\HashidTools;
 use App\Helper\JsonResponseHelper;
 use App\Mail\ForgetPasswordMail;
 use App\Mail\UserEmailVerifyMail;
@@ -20,12 +19,11 @@ class AuthRepository extends BaseRepository
 {
     protected $model;
 
-    protected $hash;
+    private const USER_NOT_FOUND_ERROR = 'User not found';
 
-    public function __construct(User $model, HashidTools $hashids)
+    public function __construct(User $model)
     {
         $this->model = $model;
-        $this->hash = $hashids->connection('email-validate');
     }
 
     /**
@@ -42,7 +40,9 @@ class AuthRepository extends BaseRepository
     public function register(array $data): array|JsonResponse
     {
         $code = $this->generateOneTimePassword();
-        $data['email_validate_token'] = sprintf('%s-%s', $code, now()->addMinutes(config('misc.one_time_password.ttl', 5))->timestamp);
+        $data['email_validate_token'] = $this->validationFormat($code, now()->addMinutes(config('misc.one_time_password.ttl', 5))->timestamp);
+
+        $response = null;
 
         try {
             $user = null;
@@ -56,14 +56,16 @@ class AuthRepository extends BaseRepository
                 $this->sendVerificationEmail($user, $code);
             });
 
-            return $user?->toArray();
+            $response = $user?->toArray();
         } catch (Throwable $e) {
             Log::error('Register failed', [
                 'data' => $data,
                 'message' => $e->getMessage(),
             ]);
-            return JsonResponseHelper::error(null, 'Register failed');
+            $response = JsonResponseHelper::error(null, 'Register failed');
         }
+
+        return $response;
     }
 
     /**
@@ -92,24 +94,26 @@ class AuthRepository extends BaseRepository
             ]);
 
             if (!$token) {
-                return JsonResponseHelper::unauthorized('Login failed');
+                return $this->handleLoginError(self::LOGIN_FAILED_ERROR);
             }
 
-            $authenticatedUser = Auth::user();
+            $user = Auth::user();
             $tokenType = 'Bearer';
 
-            if ($authenticatedUser->active !== 1 || $authenticatedUser->email_verified_at === null) {
-                return JsonResponseHelper::unauthorized('The user is not active or email is not verified');
+            if ($user->active !== 1 || $user->email_verified_at === null) {
+                return $this->handleLoginError('The user is not active or email is not verified');
             }
 
-            return compact('authenticatedUser', 'token', 'tokenType');
+            $response = compact('user', 'token', 'tokenType');
         } catch (Throwable $exception) {
-            Log::error('Login failed', [
+            Log::error(self::LOGIN_FAILED_ERROR, [
                 'data' => $data,
                 'message' => $exception->getMessage(),
             ]);
-            return JsonResponseHelper::error(null, 'Login failed');
+            $response = JsonResponseHelper::error(null, self::LOGIN_FAILED_ERROR);
         }
+
+        return $response;
     }
 
     /**
@@ -133,32 +137,30 @@ class AuthRepository extends BaseRepository
                 ->whereNotNull('email_validate_token')
                 ->first();
 
-            if (!$user) {
-                return JsonResponseHelper::error(null, 'Invalid data');
+            if ($user) {
+                [$theCode, $expire] = $user->email_validate_token;
+
+                if ($code === $theCode && $expire >= now()->timestamp) {
+                    DB::transaction(function () use (&$user) {
+                        $user->email_verified_at = now();
+                        $user->email_validate_token = null;
+                        $user->save();
+                    });
+
+                    $token = JWTAuth::fromUser($user);
+                    $type = 'Bearer';
+
+                    return compact('user', 'token', 'type');
+                }
             }
 
-            [$theCode, $expire] = $user->email_validate_token;
-
-            if ($code !== $theCode || $expire < now()->timestamp) {
-                return JsonResponseHelper::error(null, 'Invalid code or code expired');
-            }
-
-            DB::transaction(function () use (&$user) {
-                $user->email_verified_at = now();
-                $user->email_validate_token = null;
-                $user->save();
-            });
-
-            $token = JWTAuth::fromUser($user);
-            $type = 'Bearer';
-
-            return compact('user', 'token', 'type');
+            return JsonResponseHelper::error(null, 'Invalid code or code expired');
         } catch (Throwable $e) {
             Log::error('Email verification failed', [
                 'validated' => $validated,
                 'message' => $e->getMessage(),
             ]);
-            return JsonResponseHelper::unauthorized('Email verification failed');
+            return self::handleLoginError('Email verification failed');
         }
     }
 
@@ -183,14 +185,14 @@ class AuthRepository extends BaseRepository
             ->orWhere('name', $theUser)->first();
 
             if (!$user) {
-                return JsonResponseHelper::error('User not found');
+                return JsonResponseHelper::error(self::USER_NOT_FOUND_ERROR);
             }
 
             DB::transaction(function () use (&$user) {
                 $expire = now()->addMinutes(config('misc.one_time_password.ttl', 5))->timestamp;
                 $code = $this->generateOneTimePassword();
 
-                $user->reset_password_token = sprintf('%s-%s', $code, $expire);
+                $user->reset_password_token = $this->validationFormat($code, $expire);
                 $user->save();
 
                 $this->sendForgetPasswordEmail($user, $code);
@@ -229,7 +231,7 @@ class AuthRepository extends BaseRepository
             ->orWhere('name', $user)
             ->whereNotNull('reset_password_token')
             ->first()) {
-            return JsonResponseHelper::error('User not found');
+            return JsonResponseHelper::error(self::USER_NOT_FOUND_ERROR);
         }
 
         [$theCode, $expire] = $user->reset_password_token;
@@ -258,15 +260,13 @@ class AuthRepository extends BaseRepository
         $user = $validated['user'];
         $password = $validated['password'];
 
-        if (!$user = $this->model::where('email', $user)
+        $user = $this->model::where('email', $user)
             ->orWhere('name', $user)
             ->whereNotNull('reset_password_token')
-            ->first()) {
-            return JsonResponseHelper::error('User not found');
-        }
+            ->first();
 
-        if (!$user->isVerified() || $user->deleted_at) {
-            return JsonResponseHelper::error('User not found');
+        if (!$user || !$user->isVerified() || $user->deleted_at) {
+            return JsonResponseHelper::error(self::USER_NOT_FOUND_ERROR);
         }
 
         try {
@@ -306,30 +306,28 @@ class AuthRepository extends BaseRepository
         try {
             $token = JWTAuth::attempt(['email' => $user, 'password' => $password]) ?: JWTAuth::attempt(['name' => $user, 'password' => $password]);
 
-            if (!$token) {
-                return JsonResponseHelper::error(null, 'Invalid data');
+            if ($token) {
+                /**
+                 * @var User $user
+                 */
+                $user = Auth::user();
+
+                if ($user->email_validate_token && $user->isActive() && !$user->deleted_at) {
+                    $code = $this->generateOneTimePassword();
+                    $emailValidateToken = $this->validationFormat($code, now()->addMinutes(config('misc.one_time_password.ttl', 5))->timestamp);
+
+                    DB::transaction(function () use ($code, $emailValidateToken, &$user) {
+                        $user->email_validate_token = $emailValidateToken;
+                        $user->save();
+
+                        $this->sendVerificationEmail($user, $code);
+                    });
+
+                    return $user->toArray();
+                }
             }
 
-            /**
-             * @var User $user
-             */
-            $user = Auth::user();
-
-            if (!$user->email_validate_token || !$user->isActive() || $user->deleted_at) {
-                return JsonResponseHelper::error(null, 'Invalid data');
-            }
-
-            $code = $this->generateOneTimePassword();
-            $emailValidateToken = sprintf('%s-%s', $code, now()->addMinutes(config('misc.one_time_password.ttl', 5))->timestamp);
-
-            DB::transaction(function () use ($code, $emailValidateToken, &$user) {
-                $user->email_validate_token = $emailValidateToken;
-                $user->save();
-
-                $this->sendVerificationEmail($user, $code);
-            });
-
-            return $user->toArray();
+            return JsonResponseHelper::error(null, self::INVALID_DATA_ERROR);
         } catch (Throwable $e) {
             Log::error('Resent email verification failed', [
                 'validated' => $validated,
@@ -373,5 +371,15 @@ class AuthRepository extends BaseRepository
     private function sendForgetPasswordEmail(User|Authenticatable $user, string $code): ?string
     {
         return Mail::to($user->email)->send(new ForgetPasswordMail($code));
+    }
+
+    private function validationFormat(string $code, string $expire): string
+    {
+        return sprintf('%s-%s', $code, $expire);
+    }
+
+    private function handleLoginError(string $message): JsonResponse
+    {
+        return JsonResponseHelper::unauthorized($message);
     }
 }

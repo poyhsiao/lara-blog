@@ -91,7 +91,7 @@ class CategoryValidator extends BaseValidator
         ]);
 
         if ($validated->fails()) {
-            return JsonResponseHelper::notAcceptable('Update category failed', $validated->errors());
+            return JsonResponseHelper::notAcceptable(self::UPDATE_FAILED_ERROR, $validated->errors());
         }
 
         return array_merge($validated->validated(), compact('id'));
@@ -107,15 +107,7 @@ class CategoryValidator extends BaseValidator
      */
     public function delete(int $id): int|JsonResponse
     {
-        $validated = Validator::make(['id' => $id], [
-            'id' => 'required|numeric|exists:categories,id',
-        ]);
-
-        if ($validated->fails()) {
-            return JsonResponseHelper::notAcceptable('Update category failed', $validated->errors());
-        }
-
-        return (int)$validated->validated()['id'];
+        return $this->validateId($id);
     }
 
     /**
@@ -128,7 +120,7 @@ class CategoryValidator extends BaseValidator
      */
     public function restore(int $id): int|JsonResponse
     {
-        return $this->delete($id);
+        return $this->validateId($id);
     }
 
     /**
@@ -146,7 +138,7 @@ class CategoryValidator extends BaseValidator
         ]);
 
         if ($validated->fails()) {
-            return JsonResponseHelper::notAcceptable('Update category failed', $validated->errors());
+            return JsonResponseHelper::notAcceptable(self::UPDATE_FAILED_ERROR, $validated->errors());
         }
 
         return (int)$validated->validated()['id'];

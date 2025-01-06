@@ -34,7 +34,7 @@ class AdminUserValidator extends BaseValidator
         ]);
 
         if ($validated->fails()) {
-            return JsonResponseHelper::error($validated->errors(), 'Invalid data');
+            return JsonResponseHelper::error($validated->errors(), self::INVALID_DATA_ERROR);
         }
 
         return $validated->validated();
@@ -60,7 +60,7 @@ class AdminUserValidator extends BaseValidator
         ]);
 
         if ($validator->fails()) {
-            return JsonResponseHelper::error($validator->errors(), 'Invalid data');
+            return JsonResponseHelper::error($validator->errors(), self::INVALID_DATA_ERROR);
         }
 
 
@@ -86,9 +86,9 @@ class AdminUserValidator extends BaseValidator
      */
     public function updateUserProfile(Request $request, array $user): array|JsonResponse
     {
-        $userId = $this->hashToId($user['id']);
+        $userId = $user['id'];
 
-        if (!$userId) {
+        if (!array_key_exists('id', $user)) {
             return JsonResponseHelper::notFound('User not found');
         }
 
@@ -112,7 +112,7 @@ class AdminUserValidator extends BaseValidator
         ]);
 
         if ($validated->fails()) {
-            return JsonResponseHelper::error($validated->errors(), 'Invalid data');
+            return JsonResponseHelper::error($validated->errors(), self::INVALID_DATA_ERROR);
         }
 
         return $validated->validated();
@@ -133,7 +133,7 @@ class AdminUserValidator extends BaseValidator
         ]);
 
         if ($validated->fails()) {
-            return JsonResponseHelper::error($validated->errors(), 'Invalid data');
+            return JsonResponseHelper::error($validated->errors(), self::INVALID_DATA_ERROR);
         }
 
         return $validated->validated();
@@ -155,7 +155,7 @@ class AdminUserValidator extends BaseValidator
         ]);
 
         if ($validated->fails()) {
-            return JsonResponseHelper::error($validated->errors(), 'Invalid data');
+            return JsonResponseHelper::error($validated->errors(), self::INVALID_DATA_ERROR);
         }
 
         return $validated->validated();
@@ -177,7 +177,7 @@ class AdminUserValidator extends BaseValidator
         ]);
 
         if ($validated->fails()) {
-            return JsonResponseHelper::error($validated->errors(), 'Invalid data');
+            return JsonResponseHelper::error($validated->errors(), self::INVALID_DATA_ERROR);
         }
 
         return $validated->validated();
@@ -199,7 +199,7 @@ class AdminUserValidator extends BaseValidator
         ]);
 
         if ($validated->fails()) {
-            return JsonResponseHelper::error($validated->errors(), 'Invalid data');
+            return JsonResponseHelper::error($validated->errors(), self::INVALID_DATA_ERROR);
         }
 
         return $validated->validated();

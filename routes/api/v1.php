@@ -108,7 +108,7 @@ Route::group(['prefix' => 'post', 'name' => 'post.', 'middleware' => ['jwt', 've
     /**
      * Get a post by ID
      */
-    Route::get('/id/{id}', [App\Http\Controllers\PostController::class, 'getPostById'])
+    Route::get('id/{id}', [App\Http\Controllers\PostController::class, 'getPostById'])
     ->name('getPostById');
 
     /**
@@ -198,7 +198,7 @@ Route::group(['prefix' => 'category', 'name' => 'category.', 'middleware' => ['j
     /**
      * Restore a deleted category (admin required)
      */
-    Route::patch('/restore/{id}', [App\Http\Controllers\CategoryController::class, 'restore'])
+    Route::patch('restore/{id}', [App\Http\Controllers\CategoryController::class, 'restore'])
         ->middleware('jwt-admin')
         ->name('restore');
 });
@@ -241,7 +241,7 @@ Route::group(['prefix' => 'tag', 'name' => 'tag.', 'middleware' => ['jwt', 'veri
     /**
      * Delete a tag (admin required)
      */
-    Route::delete('/id/{id}', [App\Http\Controllers\TagController::class, 'delete'])
+    Route::delete('id/{id}', [App\Http\Controllers\TagController::class, 'delete'])
         ->middleware('jwt-admin')
         ->name('delete');
 
@@ -266,7 +266,7 @@ Route::group(['prefix' => 'comment', 'name' => 'comment.', 'middleware' => ['jwt
     /**
      * Get a comment by ID
      */
-    Route::get('/id/{id}', [App\Http\Controllers\CommentController::class, 'getById'])
+    Route::get('id/{id}', [App\Http\Controllers\CommentController::class, 'getById'])
         ->name('getById');
 
     /**

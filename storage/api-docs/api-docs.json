@@ -7166,6 +7166,168 @@
             }
         },
         "/api/v1/post": {
+            "get": {
+                "tags": [
+                    "Post"
+                ],
+                "summary": "Get all posts",
+                "description": "Get all posts",
+                "operationId": "getPosts",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "slug": {
+                                                        "type": "string",
+                                                        "example": "the-slug"
+                                                    },
+                                                    "title": {
+                                                        "type": "string",
+                                                        "example": "the title"
+                                                    },
+                                                    "content": {
+                                                        "type": "string",
+                                                        "example": "the content"
+                                                    },
+                                                    "publish_status": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "user_id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "example": "2020-01-01 00:00:00"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "example": "2020-01-01 00:00:00"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "error": {
+                                            "type": "object",
+                                            "example": null
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 400
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": null
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Invalid data"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 401
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": null
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Unauthorized"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status_code": {
+                                            "type": "integer",
+                                            "example": 404
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": null
+                                        },
+                                        "error": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Post not found"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
             "post": {
                 "tags": [
                     "Post"
@@ -7957,171 +8119,7 @@
                 ]
             }
         },
-        "/api/v1/posts": {
-            "get": {
-                "tags": [
-                    "Post"
-                ],
-                "summary": "Get all posts",
-                "description": "Get all posts",
-                "operationId": "getPosts",
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status_code": {
-                                            "type": "integer",
-                                            "example": 200
-                                        },
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "properties": {
-                                                    "id": {
-                                                        "type": "integer",
-                                                        "example": 1
-                                                    },
-                                                    "slug": {
-                                                        "type": "string",
-                                                        "example": "the-slug"
-                                                    },
-                                                    "title": {
-                                                        "type": "string",
-                                                        "example": "the title"
-                                                    },
-                                                    "content": {
-                                                        "type": "string",
-                                                        "example": "the content"
-                                                    },
-                                                    "publish_status": {
-                                                        "type": "integer",
-                                                        "example": 1
-                                                    },
-                                                    "user_id": {
-                                                        "type": "integer",
-                                                        "example": 1
-                                                    },
-                                                    "created_at": {
-                                                        "type": "string",
-                                                        "example": "2020-01-01 00:00:00"
-                                                    },
-                                                    "updated_at": {
-                                                        "type": "string",
-                                                        "example": "2020-01-01 00:00:00"
-                                                    }
-                                                },
-                                                "type": "object"
-                                            }
-                                        },
-                                        "error": {
-                                            "type": "object",
-                                            "example": null
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status_code": {
-                                            "type": "integer",
-                                            "example": 400
-                                        },
-                                        "data": {
-                                            "type": "object",
-                                            "example": null
-                                        },
-                                        "error": {
-                                            "properties": {
-                                                "message": {
-                                                    "type": "string",
-                                                    "example": "Invalid data"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status_code": {
-                                            "type": "integer",
-                                            "example": 401
-                                        },
-                                        "data": {
-                                            "type": "object",
-                                            "example": null
-                                        },
-                                        "error": {
-                                            "properties": {
-                                                "message": {
-                                                    "type": "string",
-                                                    "example": "Unauthorized"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status_code": {
-                                            "type": "integer",
-                                            "example": 404
-                                        },
-                                        "data": {
-                                            "type": "object",
-                                            "example": null
-                                        },
-                                        "error": {
-                                            "properties": {
-                                                "message": {
-                                                    "type": "string",
-                                                    "example": "Post not found"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/posts/trashed": {
+        "/api/v1/post/trashed": {
             "get": {
                 "tags": [
                     "Admin/Post"
@@ -10602,60 +10600,64 @@
                         "name": "id",
                         "in": "path",
                         "required": true
-                    }
-                ],
-                "requestBody": {
-                    "required": false,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "posts": {
-                                        "description": "Include posts, 0 = no, 1 = yes",
-                                        "type": "integer",
-                                        "default": 0,
-                                        "enum": [
-                                            1,
-                                            0
-                                        ],
-                                        "example": 1
-                                    },
-                                    "comments": {
-                                        "description": "Include comments, 0 = no, 1 = yes",
-                                        "type": "integer",
-                                        "default": 0,
-                                        "enum": [
-                                            1,
-                                            0
-                                        ],
-                                        "example": 1
-                                    },
-                                    "emotions": {
-                                        "description": "Include emotions, 0 = no, 1 = yes",
-                                        "type": "integer",
-                                        "default": 0,
-                                        "enum": [
-                                            1,
-                                            0
-                                        ],
-                                        "example": 1
-                                    },
-                                    "emotionUsers": {
-                                        "description": "Include emotion users, 0 = no, 1 = yes",
-                                        "type": "integer",
-                                        "default": 0,
-                                        "enum": [
-                                            1,
-                                            0
-                                        ],
-                                        "example": 1
-                                    }
-                                },
-                                "type": "object"
-                            }
+                    },
+                    {
+                        "name": "posts",
+                        "in": "query",
+                        "description": "Include posts, 0 = no, 1 = yes",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 0,
+                            "enum": [
+                                1,
+                                0
+                            ]
+                        }
+                    },
+                    {
+                        "name": "comments",
+                        "in": "query",
+                        "description": "Include comments, 0 = no, 1 = yes",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 0,
+                            "enum": [
+                                1,
+                                0
+                            ]
+                        }
+                    },
+                    {
+                        "name": "emotions",
+                        "in": "query",
+                        "description": "Include emotions, 0 = no, 1 = yes",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 0,
+                            "enum": [
+                                1,
+                                0
+                            ]
+                        }
+                    },
+                    {
+                        "name": "emotion_users",
+                        "in": "query",
+                        "description": "Include emotion users, 0 = no, 1 = yes",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 0,
+                            "enum": [
+                                1,
+                                0
+                            ]
                         }
                     }
-                },
+                ],
                 "responses": {
                     "200": {
                         "description": "Success",

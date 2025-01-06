@@ -28,15 +28,7 @@ class TagValidator extends BaseValidator
      */
     public function id(int $id): array|JsonResponse
     {
-        $validated = Validator::make(compact('id'), [
-            'id' => 'required|numeric|exists:tags,id',
-        ]);
-
-        if ($validated->fails()) {
-            return JsonResponseHelper::notAcceptable('Get tag failed', $validated->errors());
-        }
-
-        return $validated->validated();
+        return $this->validateId($id);
     }
 
     /**
@@ -121,15 +113,7 @@ class TagValidator extends BaseValidator
      */
     public function delete(int $tagId): array|JsonResponse
     {
-        $validator = Validator::make(['id' => $tagId], [
-            'id' => 'required|numeric|exists:tags,id',
-        ]);
-
-        if ($validator->fails()) {
-            return JsonResponseHelper::notAcceptable('Delete tag failed', $validator->errors());
-        }
-
-        return $validator->validated();
+        return $this->validateId($tagId);
     }
 
     /**
@@ -146,14 +130,29 @@ class TagValidator extends BaseValidator
      */
     public function restore(int $tagId): array|JsonResponse
     {
-        $validator = Validator::make(['id' => $tagId], [
+        return $this->validateId($tagId);
+    }
+
+    /**
+     * Validate the tag ID.
+     *
+     * This method checks if the provided ID is a valid numeric value and exists in the tags table.
+     * If validation fails, it returns a JsonResponse with the validation errors.
+     * Otherwise, it returns the validated ID as an integer.
+     *
+     * @param int $id The ID of the tag to validate.
+     * @return array|JsonResponse The validated ID as an integer or a JsonResponse with validation errors.
+     */
+    private function validateId(int $id): array|JsonResponse
+    {
+        $validated = Validator::make(['id' => $id], [
             'id' => 'required|numeric|exists:tags,id',
         ]);
 
-        if ($validator->fails()) {
-            return JsonResponseHelper::notAcceptable('Restore tag failed', $validator->errors());
+        if ($validated->fails()) {
+            return JsonResponseHelper::notAcceptable('Get tag failed', $validated->errors());
         }
 
-        return $validator->validated();
+        return $validated->validated();
     }
 }

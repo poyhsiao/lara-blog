@@ -3,7 +3,6 @@
 namespace App\Validators;
 
 use App\Foundation\Helper\HashidTools;
-use Hashids\Hashids;
 use Illuminate\Database\Eloquent\Model;
 
 abstract class BaseValidator
@@ -11,6 +10,12 @@ abstract class BaseValidator
     protected $model;
 
     protected $hashConnection;
+
+    protected const INVALID_DATA_ERROR = 'invalid data';
+
+    protected const NOT_AUTHORIZED_ERROR = 'You are note authorized to perform this action';
+
+    protected const UPDATE_FAILED_ERROR = 'Update failed';
 
     public function __construct(Model $model)
     {

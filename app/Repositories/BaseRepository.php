@@ -13,6 +13,10 @@ abstract class BaseRepository
 {
     protected $model;
 
+    protected const INVALID_DATA_ERROR = 'Invalid data';
+
+    protected const LOGIN_FAILED_ERROR = 'Login failed';
+
     public function __construct(Model $model)
     {
         $this->model = $model;

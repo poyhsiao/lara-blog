@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
+use function PHPUnit\Framework\isInt;
+
 class AdminUserRepository extends BaseRepository
 {
     protected $model;
@@ -35,10 +37,10 @@ class AdminUserRepository extends BaseRepository
     public function getUserDetail(string $user, bool $onlyNormal = false): array|JsonResponse
     {
         try {
-            if ($id = $this->hashToId($user)) {
+            if (isInt($user)) {
                 $user = ($onlyNormal) ?
-                    $this->model::withTrashed()->findOrFail($id) :
-                    $this->model::findOrFail($id);
+                    $this->model::withTrashed()->findOrFail($user) :
+                    $this->model::findOrFail($user);
             } else {
                 $user = ($onlyNormal) ?
                 $this->model::where('email', $user)
@@ -198,8 +200,7 @@ class AdminUserRepository extends BaseRepository
     public function updateUserProfile(array $user, array $validated): array|JsonResponse
     {
         try {
-            $userId = $this->hashToId($user['id']);
-            $user = $this->model::find($userId);
+            $user = $this->model::find($user['id']);
 
             DB::transaction(function () use (&$user, $validated) {
                 $user->update($validated);
@@ -213,7 +214,7 @@ class AdminUserRepository extends BaseRepository
                 'message' => $e->getMessage(),
             ]);
             return JsonResponseHelper::error(null, 'Update user profile failed');
-        };
+        }
     }
 
     /**
@@ -229,7 +230,7 @@ class AdminUserRepository extends BaseRepository
             DB::transaction(function () use ($user, $data, &$result) {
                 $result = tap($user)->update($data);
             });
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
             return null;
         }
 
@@ -248,8 +249,7 @@ class AdminUserRepository extends BaseRepository
     public function setVerify(array $user, bool $verify)
     {
         try {
-            $userId = $this->hashToId($user['id']);
-            $user = $this->model::find($userId);
+            $user = $this->model::find($user['id']);
 
             DB::transaction(function () use (&$user, $verify) {
                 $user->email_verified_at = $verify ? now() : null;
@@ -283,8 +283,7 @@ class AdminUserRepository extends BaseRepository
     public function setActive(array $user, bool $active): array|JsonResponse
     {
         try {
-            $userId = $this->hashToId($user['id']);
-            $user = $this->model::find($userId);
+            $user = $this->model::find($user['id']);
 
             DB::transaction(function () use (&$user, $active) {
                 $user->active = $active;
@@ -319,8 +318,7 @@ class AdminUserRepository extends BaseRepository
     public function setTrash(array $user, bool $trash): array|JsonResponse
     {
         try {
-            $userId = $this->hashToId($user['id']);
-            $user = $this->model::find($userId);
+            $user = $this->model::find($user['id']);
 
             DB::transaction(function () use (&$user, $trash) {
                 if ($trash) {
@@ -339,11 +337,5 @@ class AdminUserRepository extends BaseRepository
             ]);
             return JsonResponseHelper::error(null, 'Set trash failed');
         }
-    }
-
-    private function hashToId(string $hash): ?int
-    {
-        $code = $this->hash->decode($hash);
-        return ($code) ? $code[0] : null;
     }
 }

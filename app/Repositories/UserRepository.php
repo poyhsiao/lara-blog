@@ -11,6 +11,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class UserRepository extends BaseRepository
 {
@@ -20,8 +21,6 @@ class UserRepository extends BaseRepository
     {
         $this->model = $model;
     }
-
-    // TODO: Update all the return model to array
 
     /**
      * Change the user's password.
@@ -36,30 +35,32 @@ class UserRepository extends BaseRepository
      */
     public function changePassword(User|Authenticatable $user, string $password, string $newPassword): User|JsonResponse
     {
+        $response = null;
+
         if (!$user) {
-            return JsonResponseHelper::notFound('User not found');
+            $response = JsonResponseHelper::notFound('User not found');
+        } elseif (!$this->checkPassword($user, $password)) {
+            $response = JsonResponseHelper::error(null, 'The current password is incorrect');
+        } else {
+            try {
+                DB::transaction(function () use (&$user, $newPassword) {
+                    $user->password = $newPassword;
+                    $user->save();
+                });
+
+                $response = $user;
+            } catch (\Exception $e) {
+                Log::error('Change password failed', [
+                    'id' => $user->id,
+                    'password' => $password,
+                    'new_password' => $newPassword,
+                    'message' => $e->getMessage(),
+                ]);
+                $response = JsonResponseHelper::error($e->getMessage(), 'Change password failed');
+            }
         }
 
-        if (!$this->checkPassword($user, $password)) {
-            return JsonResponseHelper::error(null, 'The current password is incorrect');
-        }
-
-        try {
-            DB::transaction(function () use (&$user, $newPassword) {
-                $user->password = $newPassword;
-                $user->save();
-            });
-
-            return $user;
-        } catch (\Exception $e) {
-            Log::error('Change password failed', [
-                'id' => $user->id,
-                'password' => $password,
-                'new_password' => $newPassword,
-                'message' => $e->getMessage(),
-            ]);
-            return JsonResponseHelper::error($e->getMessage(), 'Change password failed');
-        }
+        return $response;
     }
 
     /**
@@ -85,7 +86,7 @@ class UserRepository extends BaseRepository
             return $user;
         } catch (\Exception $e) {
             Log::error('Update profile failed', [
-                'id'=> $user->id,
+                'id' => $user->id,
                 'message' => $e->getMessage(),
             ]);
             return JsonResponseHelper::error($e->getMessage(), 'Update profile failed');
@@ -116,8 +117,8 @@ class UserRepository extends BaseRepository
 
             $includeRelations = Arr::except($validated, ['user_id']);
             foreach ($includeRelations as $relation => $shouldLoad) {
-                if ($shouldLoad === 1) {
-                    $relations[] = $relation;
+                if ($shouldLoad === '1') {
+                    $relations[] = Str::camel($relation);
                 }
             }
 

@@ -13,6 +13,8 @@ class CategoryRepository extends BaseRepository
 {
     protected $model;
 
+    private const FAILED_GET_CATEGORY = 'Failed to get category';
+
     public function __construct(Category $model)
     {
         $this->model = $model;
@@ -33,10 +35,10 @@ class CategoryRepository extends BaseRepository
 
             return $this->getSubCategories($result);
         } catch (\Exception $e) {
-            Log::error('Failed to get categories', [
+            Log::error(self::FAILED_GET_CATEGORY, [
                 'message' => $e->getMessage(),
             ]);
-            return JsonResponseHelper::error(null, 'Failed to get categories');
+            return JsonResponseHelper::error(null, self::FAILED_GET_CATEGORY);
         }
     }
 
@@ -76,10 +78,10 @@ class CategoryRepository extends BaseRepository
         try {
             return $this->model::onlyTrashed()->get()->toArray();
         } catch (\Exception $e) {
-            Log::error('Failed to get categories', [
+            Log::error(self::FAILED_GET_CATEGORY, [
                 'message' => $e->getMessage(),
             ]);
-            return JsonResponseHelper::error(null, 'Failed to get categories');
+            return JsonResponseHelper::error(null, self::FAILED_GET_CATEGORY);
         }
     }
 
